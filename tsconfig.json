@@ -1,0 +1,29 @@
+{
+  "extends": "./.void/tsconfig.json",
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "types": [
+      "void/env"
+    ],
+    "jsx": "react-jsx"
+  },
+  "exclude": ["**/*.test.ts"],
+  "include": [
+    "src",
+    "lib",
+    "components",
+    "env.ts",
+    "auth.ts",
+    "pages",
+    "routes",
+    "middleware",
+    "crons",
+    "queues",
+    "db"
+  ]
+}
