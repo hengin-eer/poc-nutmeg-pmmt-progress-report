@@ -1,7 +1,7 @@
 # NUTMEG PMMT 進捗確認アプリ（プロトタイプ）
 
 PMMT（部門長MT）の事前記入・確認事項の非同期議論・決まったことや TODO の記録を 1 か所にまとめるアプリ。
-設計ドキュメント（Design Doc）は局内向けのため、このリポジトリには含めていない。
+設計は [設計ドキュメント](docs/design-doc.md)、決定事項は [意思決定ログ](docs/decisions.md) を参照。
 
 - フレームワーク：[Void](https://void.cloud)（Vite + Cloudflare Workers）+ React
 - DB：Cloudflare D1（SQLite）+ Drizzle
