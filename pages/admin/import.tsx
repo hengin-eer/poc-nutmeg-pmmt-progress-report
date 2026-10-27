@@ -1,6 +1,6 @@
 import { Form, Link, useForm } from "@void/react";
 import { useMemo, useState } from "react";
-import { RecordPill } from "../../components/ui";
+import { Icon, RecordPill } from "../../components/ui";
 import { formatJst, parseMinutes, type RecordKind } from "../../lib/domain";
 import type { Props } from "./import.server";
 
@@ -50,19 +50,22 @@ export default function ImportPage({ cycles, units }: Props) {
 
   return (
     <>
-      <div className="sub" style={{ marginBottom: 8 }}>
-        <Link href="/admin">← 管理</Link>
-      </div>
+      <nav className="crumbs">
+        <Link href="/admin">
+          <Icon name="arrow-left-line" />
+          管理
+        </Link>
+      </nav>
       <div className="page-head">
         <div>
           <h1>議事録・過去の回の取り込み</h1>
-          <div className="sub">議事録スキルの出力を貼り付けると、1 件ずつの候補に分かれます。✓ をつけたものだけ記録に登録されます。</div>
+          <div className="lead">議事録スキルの出力を貼り付けると、1 件ずつの候補に分かれます。✓ をつけたものだけ記録に登録されます。</div>
         </div>
       </div>
 
       <div className="grid grid-2">
-        <section className="card">
-          <h2>1. 議事録を貼り付ける</h2>
+        <section className="card card-lg">
+          <div className="section-head"><span className="step">1</span><h2>議事録を貼り付ける</h2></div>
           <p className="hint">
             過去の回を取り込む時は、先に<Link href="/admin">管理画面</Link>で過去の日付の回を作ってください。Notion から書き出した Markdown や文字起こしは、スキルで下の形式に変換してから貼り付けます。
           </p>
@@ -73,13 +76,14 @@ export default function ImportPage({ cycles, units }: Props) {
             </button>
             <span className="spacer" />
             <button className="primary" onClick={parse} disabled={!text.trim()}>
-              候補に分ける →
+              候補に分ける
+              <Icon name="arrow-right-line" />
             </button>
           </div>
         </section>
 
-        <section className="card">
-          <h2>2. 確認して登録する</h2>
+        <section className="card card-lg">
+          <div className="section-head"><span className="step">2</span><h2>確認して登録する</h2></div>
           {rows.length === 0 ? (
             <p className="empty">左に貼り付けて「候補に分ける」を押してください</p>
           ) : (

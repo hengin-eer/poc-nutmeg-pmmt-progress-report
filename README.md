@@ -77,12 +77,15 @@ db/seed.ts              デモ用のサンプルデータ
 lib/domain.ts           FW に依存しないロジック（日時・状態遷移・議事録の解析など）
 lib/server.ts           ログイン中のメンバーの判定（resolveMember）など
 lib/records-query.ts    記録の検索
+lib/items.ts            確認事項のスレッド（読み込み・コメント・リアクション・閉じる）
 lib/slack.ts            Slack 通知
 middleware/01.member.ts 全リクエストでメンバーを判定し、未ログインならログイン画面へ
 crons/notify.ts         毎時：締切前のリマインドと締切の通知
 pages/                  画面（*.server.ts がデータの読み込みと操作）
 routes/api/records.md.ts 記録の Markdown 書き出し
-components/ui.tsx       信号・忙しさ・状態などの小さな部品
+routes/api/items/[id].ts スレッドの JSON API（ページ遷移なしで開くパネル用）
+components/ui.tsx       アイコン（Remix Icon）・信号・忙しさ・状態などの小さな部品
+components/thread.tsx   スレッドのパネル・一覧の行
 ```
 
 ## 議事録スキル

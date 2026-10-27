@@ -1,5 +1,7 @@
 import { action } from "@void/react";
 import { auth } from "void/client";
+import { Icon } from "../components/ui";
+import "remixicon/fonts/remixicon.css";
 import type { Props } from "./login.server";
 
 export default function LoginPage({ demo, demoMembers, googleReady }: Props) {
@@ -8,8 +10,8 @@ export default function LoginPage({ demo, demoMembers, googleReady }: Props) {
   return (
     <div className="container">
       <div className="login stack">
-        <div className="card stack">
-          <div className="row">
+        <div className="card card-lg stack">
+          <div className="row" style={{ gap: 12 }}>
             <span className="brand-mark">N</span>
             <h1 style={{ margin: 0 }}>NUTMEG PMMT</h1>
           </div>
@@ -19,6 +21,7 @@ export default function LoginPage({ demo, demoMembers, googleReady }: Props) {
             disabled={!googleReady}
             onClick={() => auth.signIn.social({ provider: "google", callbackURL: "/" })}
           >
+            <Icon name="google-fill" />
             NUTMEG の Google アカウントでログイン
           </button>
           {!googleReady && <p className="hint">Google ログインはまだ設定されていません（AUTH_GOOGLE_CLIENT_ID）</p>}
@@ -28,7 +31,7 @@ export default function LoginPage({ demo, demoMembers, googleReady }: Props) {
         </div>
 
         {demo && (
-          <div className="card stack">
+          <div className="card card-lg stack">
             <div className="row">
               <h2 style={{ margin: 0 }}>デモ用ログイン</h2>
               <span className="demo-badge">DEMO_MODE</span>
@@ -43,7 +46,8 @@ export default function LoginPage({ demo, demoMembers, googleReady }: Props) {
                   <span className="meta">{m.unitName}</span>
                   <span className="spacer" />
                   <button className="small" onClick={() => loginAs(m.id)}>
-                    この人で入る
+                    <Icon name="login-box-line" />
+                    入る
                   </button>
                 </li>
               ))}

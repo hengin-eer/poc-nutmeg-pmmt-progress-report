@@ -1,6 +1,6 @@
 import { action, Form, Link, useForm } from "@void/react";
 import { useState } from "react";
-import { UNIT_KIND_LABEL, type UnitKind } from "../../components/ui";
+import { Icon, UNIT_KIND_LABEL, type UnitKind } from "../../components/ui";
 import { formatJst, toJstInput } from "../../lib/domain";
 import type { Props } from "./index.server";
 
@@ -12,9 +12,10 @@ export default function AdminPage({ cycles, units, members, defaults }: Props) {
       <div className="page-head">
         <div>
           <h1>管理</h1>
-          <div className="sub">局長・副局長だけが使えます</div>
+          <div className="lead">局長・副局長だけが使えます</div>
         </div>
         <Link href="/admin/import" className="button primary">
+          <Icon name="import-line" />
           議事録・過去の回を取り込む
         </Link>
       </div>
@@ -32,9 +33,12 @@ function CycleSection({ cycles, defaults, unitCount }: Pick<Props, "cycles" | "d
   const [deadline, setDeadline] = useState("");
 
   return (
-    <section className="card">
-      <h2>PMMT の回</h2>
-      <Form form={form} className="row" style={{ alignItems: "flex-end", marginBottom: 16 }}>
+    <section className="card card-lg">
+      <div className="section-head">
+        <Icon name="calendar-event-line" className="muted" />
+        <h2>PMMT の回</h2>
+      </div>
+      <Form form={form} className="row" style={{ alignItems: "flex-end", marginBottom: 12, gap: 16 }}>
         <div style={{ flex: 1, minWidth: 200 }}>
           <label htmlFor="meetingAt">PMMT の日時</label>
           <input id="meetingAt" type="datetime-local" value={form.data.meetingAt} onChange={(e) => form.setData("meetingAt", e.target.value)} />
@@ -50,7 +54,7 @@ function CycleSection({ cycles, defaults, unitCount }: Pick<Props, "cycles" | "d
         </button>
       </Form>
       {form.errors.deadlineAt && <p className="error">{form.errors.deadlineAt}</p>}
-      <p className="hint">新しい回を作ると、開いている回は自動で閉じます（「当日に話す」の残りは先送りとして記録）。過去の日付で作ると、取り込み用の「閉じた回」になります。</p>
+      <p className="hint" style={{ marginBottom: 24 }}>新しい回を作ると、開いている回は自動で閉じます（「当日に話す」の残りは先送りとして記録）。過去の日付で作ると、取り込み用の「閉じた回」になります。</p>
 
       <div className="table-wrap">
         <table>
@@ -123,8 +127,12 @@ function MemberSection({ members, units }: Pick<Props, "members" | "units">) {
   const unitName = (id: number | null) => units.find((u) => u.id === id)?.name ?? "—";
 
   return (
-    <section className="card section">
-      <h2>メンバー</h2>
+    <section className="card card-lg section">
+      <div className="section-head">
+        <Icon name="group-line" className="muted" />
+        <h2>メンバー</h2>
+        <span className="count">{members.length}</span>
+      </div>
       <p className="hint">ここに登録された NUTMEG アカウントだけがログインできます。Slack のユーザー ID を入れると、リマインドでメンションされます。</p>
       <div className="table-wrap">
         <table>
@@ -148,14 +156,16 @@ function MemberSection({ members, units }: Pick<Props, "members" | "units">) {
                 <td className="meta">{m.slackUserId ?? "—"}</td>
                 <td>
                   <button
-                    className="ghost small danger"
+                    className="icon-button danger"
+                    title="削除"
+                    aria-label={`${m.name} さんを削除`}
                     onClick={async () => {
                       if (!confirm(`${m.name} さんを削除しますか？`)) return;
                       const r = await action("/admin?deleteMember", { data: { id: m.id } });
                       if (!r.ok) alert(r.error.message);
                     }}
                   >
-                    削除
+                    <Icon name="delete-bin-line" />
                   </button>
                 </td>
               </tr>
@@ -164,7 +174,7 @@ function MemberSection({ members, units }: Pick<Props, "members" | "units">) {
         </table>
       </div>
 
-      <Form form={form} className="grid" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", alignItems: "end", marginTop: 16, gap: 8 }}>
+      <Form form={form} className="grid add-member" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))", alignItems: "end", marginTop: 24, gap: 12 }}>
         <div>
           <label>名前</label>
           <input type="text" value={form.data.name} onChange={(e) => form.setData("name", e.target.value)} />
@@ -201,6 +211,7 @@ function MemberSection({ members, units }: Pick<Props, "members" | "units">) {
           <input type="text" value={form.data.slackUserId} onChange={(e) => form.setData("slackUserId", e.target.value)} placeholder="U0123ABCD" />
         </div>
         <button type="submit" className="primary" disabled={form.pending}>
+          <Icon name="user-add-line" />
           追加
         </button>
       </Form>
@@ -211,8 +222,12 @@ function MemberSection({ members, units }: Pick<Props, "members" | "units">) {
 function UnitSection({ units }: Pick<Props, "units">) {
   const form = useForm("/admin?addUnit", { name: "", kind: "project" as UnitKind }, { resetOnSuccess: true });
   return (
-    <section className="card section">
-      <h2>報告ユニット</h2>
+    <section className="card card-lg section">
+      <div className="section-head">
+        <Icon name="flag-line" className="muted" />
+        <h2>報告ユニット</h2>
+        <span className="count">{units.length}</span>
+      </div>
       <p className="hint">進捗を報告する単位です。目的・概要は各ユニットのページで編集できます。</p>
       <ul className="list">
         {units.map((u) => (
@@ -222,7 +237,7 @@ function UnitSection({ units }: Pick<Props, "units">) {
           </li>
         ))}
       </ul>
-      <Form form={form} className="row" style={{ marginTop: 12 }}>
+      <Form form={form} className="row" style={{ marginTop: 20 }}>
         <input type="text" value={form.data.name} onChange={(e) => form.setData("name", e.target.value)} placeholder="ユニット名" style={{ flex: 1, minWidth: 160 }} />
         <select value={form.data.kind} onChange={(e) => form.setData("kind", e.target.value as UnitKind)} style={{ width: "auto" }}>
           {(Object.keys(UNIT_KIND_LABEL) as UnitKind[]).map((k) => (
