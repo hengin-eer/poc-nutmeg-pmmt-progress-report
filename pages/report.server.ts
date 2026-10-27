@@ -1,7 +1,7 @@
-import { items, records, reports, units } from "@schema";
+import { comments, items, records, reports, units } from "@schema";
 import { HTTPException } from "hono/http-exception";
 import { defineHandler, type InferProps } from "void";
-import { and, asc, db, eq, inArray, isNull } from "void/db";
+import { and, asc, count, db, eq, inArray, isNull } from "void/db";
 import { ValidationError } from "void/handler";
 import { z } from "zod";
 import { currentCycle, nowIso, requireMe } from "../lib/server";
@@ -25,13 +25,18 @@ export const loader = defineHandler(async (c) => {
     .from(items)
     .where(and(eq(items.cycleId, cycle.id), eq(items.unitId, unitId)))
     .orderBy(asc(items.createdAt));
+  const ids = myItems.map((i) => i.id);
+  const cc = ids.length
+    ? await db.select({ id: comments.itemId, n: count() }).from(comments).where(inArray(comments.itemId, ids)).groupBy(comments.itemId)
+    : [];
+  const ccm = new Map(cc.map((r) => [r.id, r.n]));
   // 自分のユニットの、終わっていない TODO・先送りした議題（前の回から持ち越し）
   const pending = await db
     .select()
     .from(records)
     .where(and(eq(records.unitId, unitId), inArray(records.kind, ["todo", "carryover"]), isNull(records.doneAt)))
     .orderBy(asc(records.createdAt));
-  return { me, unit, cycle, report: report ?? null, myItems, pending, now: nowIso() };
+  return { me, unit, cycle, report: report ?? null, myItems: myItems.map((i) => ({ ...i, comments: ccm.get(i.id) ?? 0 })), pending, now: nowIso() };
 });
 
 const saveSchema = z.object({
