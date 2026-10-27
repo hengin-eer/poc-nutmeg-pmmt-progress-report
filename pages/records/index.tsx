@@ -1,12 +1,14 @@
-import { action, Link, useRouter } from "@void/react";
+import { action, useRouter } from "@void/react";
 import { useState } from "react";
-import { RecordPill } from "../../components/ui";
+import { useThread } from "../../components/thread";
+import { Icon, RecordPill, SourceBadge } from "../../components/ui";
 import { formatJstDate, RECORD_KIND_LABEL, type RecordKind } from "../../lib/domain";
 import type { Props } from "./index.server";
 
 export default function RecordsPage({ me, filter, list, unitList }: Props) {
   const router = useRouter();
   const [q, setQ] = useState(filter.q);
+  const { open } = useThread();
 
   const go = (patch: Partial<Record<"q" | "kind" | "unit" | "status", string>>) => {
     const next = {
@@ -28,28 +30,27 @@ export default function RecordsPage({ me, filter, list, unitList }: Props) {
       <div className="page-head">
         <div>
           <h1>記録</h1>
-          <div className="sub">決まったこと・TODO・先送りした議題を、回をまたいで探せます</div>
+          <div className="lead">決まったこと・TODO・先送りした議題を、回をまたいで探せます</div>
         </div>
         <a className="button" href={`/api/records.md${exportQs ? `?${exportQs}` : ""}`} target="_blank" rel="noreferrer">
-          Markdown で書き出す
+          <Icon name="download-2-line" />
+          Markdown
         </a>
       </div>
 
-      <div className="card stack">
+      <div className="card stack" style={{ gap: 14 }}>
         <form
-          className="row"
+          className="search"
           onSubmit={(e) => {
             e.preventDefault();
             go({ q });
           }}
         >
-          <input type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="キーワード（例: MVV、予算、HP）" style={{ flex: 1, minWidth: 200 }} />
-          <button type="submit" className="primary">
-            検索
-          </button>
+          <Icon name="search-line" />
+          <input type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="キーワードで探す（例: MVV、予算、HP）" aria-label="キーワード" />
         </form>
         <div className="row">
-          <select value={filter.kind} onChange={(e) => go({ kind: e.target.value })} style={{ width: "auto" }} aria-label="種類">
+          <select value={filter.kind} onChange={(e) => go({ kind: e.target.value })} className="filter" aria-label="種類">
             <option value="">すべての種類</option>
             {(Object.keys(RECORD_KIND_LABEL) as RecordKind[]).map((k) => (
               <option key={k} value={k}>
@@ -57,7 +58,7 @@ export default function RecordsPage({ me, filter, list, unitList }: Props) {
               </option>
             ))}
           </select>
-          <select value={filter.unitId ?? ""} onChange={(e) => go({ unit: e.target.value })} style={{ width: "auto" }} aria-label="ユニット">
+          <select value={filter.unitId ?? ""} onChange={(e) => go({ unit: e.target.value })} className="filter" aria-label="ユニット">
             <option value="">すべてのユニット</option>
             {unitList.map((u) => (
               <option key={u.id} value={u.id}>
@@ -65,13 +66,13 @@ export default function RecordsPage({ me, filter, list, unitList }: Props) {
               </option>
             ))}
           </select>
-          <select value={filter.status} onChange={(e) => go({ status: e.target.value })} style={{ width: "auto" }} aria-label="状態">
+          <select value={filter.status} onChange={(e) => go({ status: e.target.value })} className="filter" aria-label="状態">
             <option value="">すべての状態</option>
             <option value="pending">持ち越し中</option>
             <option value="done">終わったもの</option>
           </select>
           <span className="spacer" />
-          <span className="meta">{list.length} 件</span>
+          <span className="count">{list.length} 件</span>
         </div>
       </div>
 
@@ -82,9 +83,10 @@ export default function RecordsPage({ me, filter, list, unitList }: Props) {
           <ul className="list">
             {list.map((r) => {
               const toggleable = r.kind !== "decision" && (me.isAdmin || r.unitId === me.unitId);
+              const done = Boolean(r.doneAt) && r.kind !== "decision";
               return (
-                <li key={r.id}>
-                  <div className="row" style={{ marginBottom: 2 }}>
+                <li key={r.id} className="record">
+                  <div className="record-check">
                     {r.kind !== "decision" && (
                       <input
                         type="checkbox"
@@ -94,20 +96,24 @@ export default function RecordsPage({ me, filter, list, unitList }: Props) {
                         onChange={(e) => action("/records?toggle", { data: { id: r.id, done: e.target.checked } })}
                       />
                     )}
-                    <RecordPill kind={r.kind} />
-                    <strong style={{ textDecoration: r.doneAt && r.kind !== "decision" ? "line-through" : undefined }}>{r.title}</strong>
                   </div>
-                  {r.body && <div className="body meta">{r.body}</div>}
-                  <div className="meta">
-                    {formatJstDate(r.meetingAt)} の PMMT
-                    {r.unitName && <> ・ {r.unitName}</>}
-                    {r.source === "minutes" && " ・ 議事録から"}
-                    {r.sourceItemId && (
-                      <>
-                        {" ・ "}
-                        <Link href={`/items/${r.sourceItemId}`}>元のスレッド</Link>
-                      </>
-                    )}
+                  <div style={{ minWidth: 0 }}>
+                    <div className={`record-title ${done ? "done" : ""}`}>{r.title}</div>
+                    {r.body && <div className="record-body">{r.body}</div>}
+                    <div className="record-meta">
+                      <RecordPill kind={r.kind} />
+                      {r.unitName && <span className="record-unit">{r.unitName}</span>}
+                      <span className="meta">{formatJstDate(r.meetingAt)}</span>
+                      <span className="spacer" />
+                      {r.source === "thread" && r.sourceItemId ? (
+                        <button type="button" className="source source-thread" onClick={() => open(r.sourceItemId!)} title="元のスレッドを開く">
+                          <Icon name="chat-3-line" />
+                          スレッド
+                        </button>
+                      ) : (
+                        <SourceBadge source={r.source} />
+                      )}
+                    </div>
                   </div>
                 </li>
               );
