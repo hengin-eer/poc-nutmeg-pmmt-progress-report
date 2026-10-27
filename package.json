@@ -16,19 +16,20 @@
   "license": "ISC",
   "type": "module",
   "devDependencies": {
-    "void": "^1.3.0",
-    "vite": "^8.0.10",
-    "typescript": "^7.0.2",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
     "@void/react": "1.3.0",
     "oxc-transform-react": "^0.149.0",
-    "@types/react": "^19.2.14",
-    "@types/react-dom": "^19.2.3"
+    "typescript": "^7.0.2",
+    "vite": "^8.0.10",
+    "void": "^1.3.0"
   },
   "private": true,
   "dependencies": {
     "hono": "^4.11.9",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
+    "remixicon": "^4.9.1",
     "zod": "^4.6.7"
   },
   "allowScripts": {
