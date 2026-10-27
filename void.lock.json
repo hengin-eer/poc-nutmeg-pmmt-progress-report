@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "source": {
+    "name": "nutmeg-pmmt-progress",
+    "workers_dev": true
+  },
+  "resolved": {
+    "name": "nutmeg-pmmt-progress",
+    "workers_dev": true,
+    "account_id": "8a63703958657b8e68b9e2465932ed36",
+    "compatibility_date": "2026-02-24",
+    "d1_databases": [
+      {
+        "binding": "DB",
+        "database_name": "nutmeg-pmmt-progress-db",
+        "database_id": "c66dedbd-b977-4071-b7a0-72ddfda16f61",
+        "migrations_dir": "./db/migrations"
+      }
+    ]
+  },
+  "text": "{\n  \"name\": \"nutmeg-pmmt-progress\",\n  \"workers_dev\": true,\n  \"account_id\": \"8a63703958657b8e68b9e2465932ed36\",\n  \"compatibility_date\": \"2026-02-24\",\n  \"d1_databases\": [\n    {\n      \"binding\": \"DB\",\n      \"database_name\": \"nutmeg-pmmt-progress-db\",\n      \"database_id\": \"c66dedbd-b977-4071-b7a0-72ddfda16f61\",\n      \"migrations_dir\": \"./db/migrations\"\n    }\n  ]\n}\n"
+}
