@@ -1,6 +1,10 @@
 import { defineConfig } from "void/config";
 
 export default defineConfig({
+  cloudflare: {
+    name: "nutmeg-pmmt-progress",
+    workers_dev: true,
+  },
   worker: {
     compatibility_date: "2026-02-24",
   },
