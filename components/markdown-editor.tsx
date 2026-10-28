@@ -1,7 +1,20 @@
+import { tv } from "tailwind-variants";
 import { useRef, useState } from "react";
 import { Markdown } from "./markdown";
-import { Button, EmptyState, Field, Icon } from "./ui";
+import { Button, EmptyState, Field, Icon, Label, Textarea } from "./ui";
 
+
+const editor = tv({
+  slots: {
+    root: "rounded-control border border-border bg-surface outline-3 outline-transparent transition-colors focus-within:border-accent focus-within:outline-accent-soft",
+    header: "flex gap-1 rounded-t-control border-b border-border bg-surface-2 px-2 pt-2",
+    panel: "min-h-40 w-full rounded-b-control border-0 bg-surface p-3 leading-[1.7] focus:outline-none",
+  },
+});
+const editorTab = tv({
+  base: "-mb-px gap-2 rounded-t-lg rounded-b-none border border-transparent bg-transparent px-3 py-2 text-meta font-bold text-muted transition-colors focus-visible:outline-2 focus-visible:outline-accent focus-visible:-outline-offset-4",
+  variants: { selected: { true: "border-border border-b-surface bg-surface text-text" } },
+});
 
 export function MarkdownEditor({ id, label, hint, value, onChange, placeholder, error }: {
   id: string;
@@ -12,20 +25,21 @@ export function MarkdownEditor({ id, label, hint, value, onChange, placeholder, 
   placeholder: string;
   error?: string;
 }) {
+  const styles = editor();
   const [preview, setPreview] = useState(false);
   const tabs = useRef<(HTMLButtonElement | null)[]>([]);
   return (
-    <Field className="field">
-      <div className="field-label">
-        <label id={`${id}-label`} htmlFor={id}>{label}</label>
-        <span id={`${id}-hint`} className="hint">{hint}</span>
+    <Field>
+      <div className="mb-2 flex flex-wrap items-baseline gap-x-2 gap-y-1 [&_label]:m-0 [&_label]:whitespace-nowrap">
+        <Label id={`${id}-label`} htmlFor={id}>{label}</Label>
+        <span id={`${id}-hint`} className="text-caption font-normal text-muted">{hint}</span>
       </div>
-      <div className="markdown-editor">
-        <div className="markdown-editor-header" role="tablist" aria-label={`${label}の表示切り替え`}>
+      <div data-slot="markdown-editor" className={styles.root()}>
+        <div className={styles.header()} role="tablist" aria-label={`${label}の表示切り替え`}>
           {([false, true] as const).map((isPreview, index) => (
             <Button
               key={String(isPreview)} ref={(node) => { tabs.current[index] = node; }}
-              type="button" role="tab" id={`${id}-tab-${index}`}
+              variant="plain" className={editorTab({ selected: preview === isPreview })} type="button" role="tab" id={`${id}-tab-${index}`}
               aria-selected={preview === isPreview} tabIndex={preview === isPreview ? 0 : -1}
               aria-controls={isPreview ? `${id}-preview` : `${id}-write`}
               onClick={() => setPreview(isPreview)}
@@ -46,15 +60,15 @@ export function MarkdownEditor({ id, label, hint, value, onChange, placeholder, 
           ))}
         </div>
         <div id={`${id}-write`} role="tabpanel" aria-labelledby={`${id}-tab-0`} hidden={preview}>
-          <textarea id={id} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder}
+          <Textarea className={styles.panel({ className: "block min-h-40 focus:outline-none" })} id={id} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder}
             aria-describedby={`${id}-hint${error ? ` ${id}-error` : ""}`} aria-invalid={!!error} />
         </div>
-        <div id={`${id}-preview`} hidden={!preview} className="markdown-preview" role="tabpanel"
+        <div id={`${id}-preview`} hidden={!preview} data-slot="markdown-preview" className={styles.panel()} role="tabpanel"
           aria-labelledby={`${id}-tab-1`} tabIndex={0}>
-          {preview && (value.trim() ? <Markdown>{value}</Markdown> : <EmptyState className="empty">まだ記入されていません</EmptyState>)}
+          {preview && (value.trim() ? <Markdown>{value}</Markdown> : <EmptyState>まだ記入されていません</EmptyState>)}
         </div>
       </div>
-      {error && <div id={`${id}-error`} className="error">{error}</div>}
+      {error && <div id={`${id}-error`} className="mt-2 text-caption text-red">{error}</div>}
     </Field>
   );
 }
