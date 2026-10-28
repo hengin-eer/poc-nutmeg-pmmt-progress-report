@@ -1,5 +1,6 @@
 import { action, Form, useForm } from "@void/react";
 import { useEffect, useState } from "react";
+import { MarkdownEditor } from "../components/markdown-editor";
 import { ThreadButton, useThread } from "../components/thread";
 import { BUSY, Busy, CrossBureau, Icon, KIND_ICON, PROGRESS_LABEL, RecordPill, StatePill, UNIT_KIND_LABEL } from "../components/ui";
 import { formatJst, remainingLabel } from "../lib/domain";
@@ -115,22 +116,12 @@ export default function ReportPage({ unit, cycle, report, myItems, pending, now 
               {form.errors.busyness && <div className="error">{form.errors.busyness}</div>}
             </div>
 
-            <div className="field">
-              <div className="field-label">
-                <label htmlFor="done">今週やったこと</label>
-                <span className="hint">1〜3 行。当日は話さないので、読めばわかるように</span>
-              </div>
-              <textarea id="done" value={form.data.done} onChange={(e) => form.setData("done", e.target.value)} placeholder={"- ○○の画面を作った\n- △△局と打ち合わせ"} />
-              {form.errors.done && <div className="error">{form.errors.done}</div>}
-            </div>
-
-            <div className="field">
-              <div className="field-label">
-                <label htmlFor="next">次にやること</label>
-                <span className="hint">次の回の確認に使います</span>
-              </div>
-              <textarea id="next" value={form.data.next} onChange={(e) => form.setData("next", e.target.value)} placeholder="- ○○のレビュー" />
-            </div>
+            <MarkdownEditor id="done" label="今週やったこと" hint="やったこと・結果・遅れを箇条書きで。数字やリンク、関わった局も添えると、当日聞かなくても伝わります"
+              value={form.data.done ?? ""} onChange={(value) => form.setData("done", value)}
+              placeholder={"- ○○の画面を作った（PR #12）\n- △△局と打ち合わせ → 11/10 までに仕様を確定\n- 遅れ：□□（理由と、いつまでに戻すか）"} error={form.errors.done} />
+            <MarkdownEditor id="next" label="次にやること" hint="次の回までにやること。担当と期限があれば添えて"
+              value={form.data.next ?? ""} onChange={(value) => form.setData("next", value)}
+              placeholder="- ○○のレビュー（佐藤・11/6）" error={form.errors.next} />
 
             {form.error && <p className="error">{form.error.message}</p>}
             <div className="row" style={{ marginTop: 8 }}>

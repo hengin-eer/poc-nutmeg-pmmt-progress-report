@@ -1,5 +1,6 @@
 import { Form, useForm } from "@void/react";
 import { useEffect, useState } from "react";
+import { Markdown } from "../../components/markdown";
 import { ItemRow } from "../../components/thread";
 import { Busy, Icon, ProgressPill, RecordPill, UNIT_KIND_LABEL } from "../../components/ui";
 import { formatJstDate } from "../../lib/domain";
@@ -89,13 +90,13 @@ export default function UnitPage({ unit, people, history, records, canEdit }: Pr
                 {h.done && (
                   <div className="report-block">
                     <h3>やったこと</h3>
-                    <div className="md">{h.done}</div>
+                    <Markdown>{h.done}</Markdown>
                   </div>
                 )}
                 {h.next && (
                   <div className="report-block">
                     <h3>次にやること</h3>
-                    <div className="md">{h.next}</div>
+                    <Markdown>{h.next}</Markdown>
                   </div>
                 )}
                 {h.items.length > 0 && (
