@@ -42,7 +42,7 @@ export function Shell({ me, demo, path, children }: { me: Me; demo: boolean; pat
 
   return (
     <ThreadProvider>
-      <div className="grid min-h-screen grid-cols-[auto_minmax(0,1fr)] bg-[linear-gradient(to_right,var(--surface)_calc(var(--sidebar)_-_1px),var(--border)_0_var(--sidebar),transparent_0)] max-md:block">
+      <div className="grid min-h-screen grid-cols-[auto_minmax(0,1fr)] bg-[linear-gradient(to_right,var(--surface)_calc(var(--sidebar)_-_1px),var(--border)_0_var(--sidebar),transparent_0)] max-md:block max-md:bg-none max-md:bg-bg">
         <Sidebar me={me} demo={demo} logout={logout}>{links}</Sidebar>
 
         <main className="min-w-0 px-12 pt-10 pb-24 [&>*]:max-w-[1440px] max-md:px-4 max-md:pt-6 max-md:pb-32">{children}</main>
