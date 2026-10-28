@@ -124,10 +124,6 @@ select.filter { width: auto; padding: 7px 10px; font-size: 14px; }
 .record-unit { font-size: 13px; font-weight: 700; color: var(--text-2); }
 
 /* ---------- ユニット ---------- */
-.purpose { font-size: 1.2rem; font-weight: 700; line-height: 1.6; margin: 0 0 8px; }
-.report-block + .report-block { margin-top: 14px; }
-.report-block h3 { font-size: 12px; color: var(--muted); font-weight: 700; margin-bottom: 4px; letter-spacing: 0.04em; }
-.report-block .md { color: var(--text); }
 .step { width: 26px; height: 26px; border-radius: 50%; background: var(--text); color: var(--bg); display: grid; place-items: center; font-weight: 800; font-size: 13px; flex: none; }
 
 /* ---------- Markdown ---------- */

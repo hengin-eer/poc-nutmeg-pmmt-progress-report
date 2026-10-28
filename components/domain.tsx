@@ -172,3 +172,9 @@ export function SourceBadge({ source }: { source: keyof typeof SOURCE_STYLE }) {
     </Badge>
   );
 }
+
+/** ユニット詳細と横断一覧で共有する記録のタイトル。 */
+export const recordTitle = tv({
+  base: "text-body leading-relaxed font-bold",
+  variants: { done: { true: "text-muted line-through" } },
+});

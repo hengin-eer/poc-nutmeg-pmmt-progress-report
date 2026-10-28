@@ -9,7 +9,7 @@ export default function UnitPage({ unit, people, history, records, canEdit }: Pr
     <>
       <UnitHeader unit={unit} people={people} />
       <UnitPurpose unit={unit} canEdit={canEdit} />
-      <div className="grid grid-2 section">
+      <div className="grid gap-6 grid-cols-[repeat(auto-fit,minmax(min(100%,24rem),1fr))] items-start max-sm:grid-cols-1 mt-10">
         <UnitHistory history={history} />
         <UnitRecords records={records} />
       </div>

@@ -1,6 +1,6 @@
 import { Form, useForm } from "@void/react";
 import { useEffect, useState } from "react";
-import { Button, Card, Field, Icon, IconButton, SectionHeader } from "../ui";
+import { Button, Card, Field, Icon, IconButton, Input, Label, Row, SectionHeader, Textarea } from "../ui";
 import { type Props } from "../../pages/units/[id].server";
 
 export function UnitPurpose({ unit, canEdit }: Pick<Props, "unit" | "canEdit">) {
@@ -11,46 +11,46 @@ export function UnitPurpose({ unit, canEdit }: Pick<Props, "unit" | "canEdit">) 
   }, [form.wasSuccessful]);
 
   return (
-    <Card as="section" className="card card-lg">
-      <SectionHeader className="section-head">
-        <Icon name="flag-line" className="muted" />
-        <h2>何のためにやっているか</h2>
-        <span className="spacer" />
+    <Card as="section" size="large">
+      <SectionHeader>
+        <Icon name="flag-line" className="text-muted" />
+        <h2 className="text-heading font-bold text-text">何のためにやっているか</h2>
+        <span className="flex-1" />
         {canEdit && !editing && (
-          <IconButton className="icon-button" onClick={() => setEditing(true)} title="編集" aria-label="編集">
+          <IconButton  onClick={() => setEditing(true)} title="編集" aria-label="編集">
             <Icon name="pencil-line" />
           </IconButton>
         )}
       </SectionHeader>
       {editing ? (
         <Form form={form}>
-          <Field className="field">
-            <div className="field-label">
-              <label htmlFor="purpose">目的</label>
-              <span className="hint">一文で。新入生が読んでもわかるように</span>
+          <Field>
+            <div className="mb-2 flex flex-wrap items-baseline gap-x-2 gap-y-1 [&_label]:m-0 [&_label]:whitespace-nowrap">
+              <Label htmlFor="purpose">目的</Label>
+              <span className="text-caption font-normal text-muted">一文で。新入生が読んでもわかるように</span>
             </div>
-            <input id="purpose" type="text" value={form.data.purpose} onChange={(e) => form.setData("purpose", e.target.value)} />
+            <Input id="purpose" type="text" value={form.data.purpose} onChange={(e) => form.setData("purpose", e.target.value)} />
           </Field>
-          <Field className="field">
-            <div className="field-label">
-              <label htmlFor="summary">概要</label>
+          <Field>
+            <div className="mb-2 flex flex-wrap items-baseline gap-x-2 gap-y-1 [&_label]:m-0 [&_label]:whitespace-nowrap">
+              <Label htmlFor="summary">概要</Label>
             </div>
-            <textarea id="summary" value={form.data.summary} onChange={(e) => form.setData("summary", e.target.value)} />
+            <Textarea id="summary" value={form.data.summary} onChange={(e) => form.setData("summary", e.target.value)} />
           </Field>
-          <div className="row">
-            <span className="spacer" />
-            <Button type="button" className="ghost" onClick={() => setEditing(false)}>
+          <Row>
+            <span className="flex-1" />
+            <Button type="button"  variant="ghost" onClick={() => setEditing(false)}>
               やめる
             </Button>
-            <Button type="submit" className="primary" disabled={form.pending}>
+            <Button type="submit"  variant="primary" disabled={form.pending}>
               保存
             </Button>
-          </div>
+          </Row>
         </Form>
       ) : (
         <>
-          <p className="purpose">{unit.purpose || <span className="muted">（まだ書かれていません）</span>}</p>
-          {unit.summary && <p className="md" style={{ margin: 0 }}>{unit.summary}</p>}
+          <p className="mb-2 text-heading leading-relaxed font-bold">{unit.purpose || <span className="text-muted">（まだ書かれていません）</span>}</p>
+          {unit.summary && <p className="whitespace-pre-wrap text-meta text-text-2 m-0">{unit.summary}</p>}
         </>
       )}
     </Card>
