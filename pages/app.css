@@ -7,3 +7,7 @@
 @layer theme, base, components, utilities;
 @import "tailwindcss/theme.css" layer(theme);
 @import "tailwindcss/utilities.css" layer(utilities);
+
+/* ログインで使っている既存の container は幅制限を持たない。
+ * Tailwind の同名ユーティリティによる位置ずれを防ぐ（PR B で再検討）。 */
+@source not inline("container");

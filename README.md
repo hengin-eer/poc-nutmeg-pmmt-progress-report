@@ -84,9 +84,28 @@ crons/notify.ts         毎時：締切前のリマインドと締切の通知
 pages/                  画面（*.server.ts がデータの読み込みと操作）
 routes/api/records.md.ts 記録の Markdown 書き出し
 routes/api/items/[id].ts スレッドの JSON API（ページ遷移なしで開くパネル用）
-components/ui.tsx       アイコン（Remix Icon）・信号・忙しさ・状態などの小さな部品
-components/thread.tsx   スレッドのパネル・一覧の行
+pages/app.css           Tailwind CSS v4 の入口（テーマ・ユーティリティ）
+pages/style.css         既存スタイル（PR A では維持）
+components/ui/          Button・Card・Pill・ヘッダー・フォーム枠などの汎用 UI
+components/domain.tsx   進捗・忙しさ・確認事項の状態・記録の種別などのドメイン部品
+components/layout/     Shell・Sidebar・MobileMenu
+components/thread/     スレッドの Provider・パネル・本文・コメント・状態変更・一覧
+components/report/     事前記入フォーム・確認事項フォーム・持ち越し一覧
+components/dashboard/  Hero・ユニットカード・確認事項一覧・持ち越し一覧
+components/unit/       ユニットの概要編集・更新履歴・記録
+components/records/    記録の検索フィルター・一覧・行
+components/admin/      回・メンバー・ユニットの管理、議事録取り込み
+components/login/      Google ログイン・デモ用ログイン
+components/markdown.tsx, markdown-editor.tsx  Markdown 表示・入力
 ```
+
+## スタイルの移行（Issue #4）
+
+PR A では `@tailwindcss/vite` を導入し、既存の HTML 要素・クラス名・`pages/style.css` を維持してコンポーネントを分割しています。汎用 UI はドメインの状態を知らず、`components/domain.tsx` が `Pill` などを組み合わせます。ボタンのバリアントは `tailwind-variants`、クラスの結合は `tailwind-merge` を使います。
+
+`pages/app.css` は `@import "tailwindcss"` のテーマ・ユーティリティ部分だけを読み込みます。[Preflight を外す公式手順](https://tailwindcss.com/docs/preflight#disabling-preflight)に従い、ブラウザー標準の見出し・リスト・フォームなどの表示を変えるリセットを避けています。既存スタイルはその後に読み込みます。また、ログイン画面の既存クラス `container` への幅制限を防ぐため、同名の Tailwind ユーティリティの生成を除外しています。
+
+PR B で CSS 変数を `@theme inline` のトークンに対応付け、各コンポーネントと Markdown 要素を Tailwind クラスへ移植し、`pages/style.css` を削除します。ダークモードの `prefers-color-scheme` と 900px・600px の切り替えは維持します。
 
 ## 議事録スキル
 
