@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button, Icon } from "../ui";
+import { Button, Icon, Textarea } from "../ui";
 import type { Result } from "./request";
 
 export function CommentForm({ run }: { run: (p: Record<string, unknown>) => Promise<Result> }) {
@@ -20,13 +20,13 @@ export function CommentForm({ run }: { run: (p: Record<string, unknown>) => Prom
 
   return (
     <form
-      className="comment-form"
+      className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-2 [&_textarea]:min-h-12 [&_[role=alert]]:col-span-full"
       onSubmit={(e) => {
         e.preventDefault();
         submit();
       }}
     >
-      <textarea
+      <Textarea
         value={body}
         onChange={(e) => setBody(e.target.value)}
         onKeyDown={(e) => {
@@ -35,10 +35,10 @@ export function CommentForm({ run }: { run: (p: Record<string, unknown>) => Prom
         placeholder="コメントする（Ctrl + Enter で送信）"
         rows={2}
       />
-      <Button type="submit" className="primary icon-only" disabled={pending || !body.trim()} aria-label="送信" title="送信">
+      <Button type="submit"  variant="primary" size="icon" disabled={pending || !body.trim()} aria-label="送信" title="送信">
         <Icon name="send-plane-2-fill" />
       </Button>
-      {error && <div className="error">{error}</div>}
+      {error && <div className="mt-2 text-caption text-red">{error}</div>}
     </form>
   );
 }

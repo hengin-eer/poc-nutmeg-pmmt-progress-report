@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ITEM_STATE_LABEL, type ItemState } from "../../lib/domain";
 import { STATE_ICON } from "../domain";
-import { Button, Icon, Segmented } from "../ui";
+import { Button, SegmentedButton, Icon, Input, Row, Segmented } from "../ui";
 import type { Result } from "./request";
 
 const CLOSE_HINT: Partial<Record<ItemState, string>> = {
@@ -27,13 +27,13 @@ export function ClosePanel({ nextStates, run }: { nextStates: ItemState[]; run: 
   };
 
   return (
-    <section className="close-panel">
-      <Segmented className="segmented" role="group" aria-label="状態を変える">
+    <section data-slot="close-panel" className="rounded-card border border-border p-3">
+      <Segmented role="group" aria-label="状態を変える">
         {nextStates.map((s) => (
-          <Button
+          <SegmentedButton
             key={s}
             type="button"
-            className={chosen === s ? "selected" : ""}
+            selected={chosen === s}
             onClick={() => {
               setChosen(chosen === s ? null : s);
               setError("");
@@ -41,20 +41,20 @@ export function ClosePanel({ nextStates, run }: { nextStates: ItemState[]; run: 
           >
             <Icon name={s === "open" ? "arrow-go-back-line" : STATE_ICON(s)} />
             {s === "open" ? "未解決に戻す" : ITEM_STATE_LABEL[s]}
-          </Button>
+          </SegmentedButton>
         ))}
       </Segmented>
       {chosen && (
         <form
-          className="close-form"
+          data-slot="close-form" className="mt-3 flex flex-col gap-2 [&_p]:m-0"
           onSubmit={(e) => {
             e.preventDefault();
             submit();
           }}
         >
-          <p className="hint">{CLOSE_HINT[chosen]}</p>
+          <p className="text-caption font-normal text-muted">{CLOSE_HINT[chosen]}</p>
           {needsNote && (
-            <input
+            <Input
               type="text"
               autoFocus
               value={note}
@@ -62,13 +62,13 @@ export function ClosePanel({ nextStates, run }: { nextStates: ItemState[]; run: 
               placeholder={chosen === "decided" ? "例: 1 週間後ろにずらす。新しい期限は 11/20" : "任意"}
             />
           )}
-          {error && <div className="error">{error}</div>}
-          <div className="row">
-            <span className="spacer" />
-            <Button type="submit" className="primary" disabled={pending}>
+          {error && <div className="mt-2 text-caption text-red">{error}</div>}
+          <Row>
+            <span className="flex-1" />
+            <Button type="submit"  variant="primary" disabled={pending}>
               {chosen === "open" ? "未解決に戻す" : `「${ITEM_STATE_LABEL[chosen]}」にする`}
             </Button>
-          </div>
+          </Row>
         </form>
       )}
     </section>
