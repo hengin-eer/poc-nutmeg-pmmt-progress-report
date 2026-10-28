@@ -1,4 +1,5 @@
 import { Link } from "@void/react";
+import { Markdown } from "../components/markdown";
 import { ItemRow } from "../components/thread";
 import { Busy, Icon, ProgressPill, RecordPill, UNIT_KIND_SHORT } from "../components/ui";
 import { formatJst, remainingLabel } from "../lib/domain";
@@ -55,15 +56,15 @@ export default function Dashboard({ me, cycle, cards, liveItems, openItems, pend
         </div>
         <div className="grid grid-cards">
           {cards.map((c) => (
-            <Link key={c.id} href={`/units/${c.id}`} className={`card card-link unit-card ${c.submitted ? "" : "missing"}`}>
+            <article key={c.id} className={`card unit-card ${c.submitted ? "" : "missing"}`}>
               <div className="row" style={{ alignItems: "flex-start" }}>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div className="name">{c.name}</div>
+                  <Link href={`/units/${c.id}`} className="name">{c.name}</Link>
                   <div className="kind">{UNIT_KIND_SHORT[c.kind]}</div>
                 </div>
                 {c.submitted ? <ProgressPill value={c.progress} /> : <span className="pill">未記入</span>}
               </div>
-              {c.submitted && <div className="excerpt">{c.excerpt}</div>}
+              {c.submitted && <Markdown className="excerpt">{c.excerpt}</Markdown>}
               <div className="foot">
                 {c.submitted && <Busy value={c.busyness} label />}
                 <span className="spacer" />
@@ -80,7 +81,7 @@ export default function Dashboard({ me, cycle, cards, liveItems, openItems, pend
                   </span>
                 )}
               </div>
-            </Link>
+            </article>
           ))}
         </div>
       </section>
