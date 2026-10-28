@@ -1,12 +1,14 @@
 import { Link } from "@void/react";
 import { useEffect, useState } from "react";
 import { ThreadView } from "../../components/thread";
-import { Icon } from "../../components/ui";
+import { Card, Icon } from "../../components/ui";
+
 import type { Props } from "./[id].server";
 
 export default function ItemPage({ data: initial, cycleOpen }: Props) {
   const [data, setData] = useState(initial);
   useEffect(() => setData(initial), [initial]);
+  const canReturnToReport = data.isMine && cycleOpen;
 
   return (
     <div className="narrow">
@@ -17,16 +19,16 @@ export default function ItemPage({ data: initial, cycleOpen }: Props) {
         </Link>
         <span className="spacer" />
         {/* 自分のユニットの確認事項なら、事前記入に戻れるように */}
-        {data.isMine && cycleOpen && (
+        {canReturnToReport && (
           <Link href="/report" className="button">
             <Icon name="edit-box-line" />
             事前記入に戻る
           </Link>
         )}
       </nav>
-      <div className="card card-lg">
+      <Card className="card card-lg">
         <ThreadView data={data} onChange={setData} />
-      </div>
+      </Card>
     </div>
   );
 }

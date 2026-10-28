@@ -1,3 +1,4 @@
+import { ITEM_KINDS } from "../lib/domain";
 import { sql } from "void/db";
 import { integer, sqliteTable, text, uniqueIndex } from "void/schema-d1";
 
@@ -64,7 +65,7 @@ export const items = sqliteTable("items", {
   cycleId: integer("cycle_id").notNull().references(() => cycles.id),
   unitId: integer("unit_id").notNull().references(() => units.id),
   authorId: integer("author_id").references(() => members.id),
-  kind: text("kind", { enum: ["confirm", "talk"] }).notNull(),
+  kind: text("kind", { enum: ITEM_KINDS }).notNull(),
   body: text("body").notNull(),
   crossBureau: integer("cross_bureau", { mode: "boolean" }).notNull().default(false),
   state: text("state", { enum: ["open", "decided", "live", "resolved", "deferred"] }).notNull().default("open"),
