@@ -6,6 +6,9 @@ import { Badge, Card, EmptyState, Icon, SectionHeader } from "../ui";
 type PendingSummaryProps = Pick<Props, "pending">;
 
 export function PendingSummary({ pending }: PendingSummaryProps) {
+  const hasNoPendingRecords = pending.length === 0;
+  function hasUnitName(p: (typeof pending)[number]) { return p.unitName; }
+
   return (
     <Card as="section" className="card section">
       <SectionHeader className="section-head">
@@ -13,7 +16,7 @@ export function PendingSummary({ pending }: PendingSummaryProps) {
         <h2>持ち越し中</h2>
         <Badge className="count">{pending.length}</Badge>
       </SectionHeader>
-      {pending.length === 0 ? (
+      {hasNoPendingRecords ? (
         <EmptyState className="empty">持ち越しているものはありません</EmptyState>
       ) : (
         <ul className="list">
@@ -21,7 +24,7 @@ export function PendingSummary({ pending }: PendingSummaryProps) {
             <li key={p.id} className="row" style={{ gap: 12 }}>
               <RecordPill kind={p.kind} />
               <span style={{ flex: 1, minWidth: 0 }}>{p.title}</span>
-              {p.unitName && <span className="meta">{p.unitName}</span>}
+              {hasUnitName(p) && <span className="meta">{p.unitName}</span>}
             </li>
           ))}
         </ul>

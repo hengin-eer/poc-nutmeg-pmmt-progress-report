@@ -5,12 +5,14 @@ import { type Props } from "../../pages/units/[id].server";
 type UnitHeaderProps = Pick<Props, "unit" | "people">;
 
 export function UnitHeader({ unit, people }: UnitHeaderProps) {
+  const hasMembers = people.length > 0;
+
   return (
     <PageHeader className="page-head">
       <div>
         <div className="eyebrow">{UNIT_KIND_LABEL[unit.kind]}</div>
         <h1>{unit.name}</h1>
-        {people.length > 0 && (
+        {hasMembers && (
           <div className="sub row" style={{ marginTop: 6 }}>
             <Icon name="group-line" />
             {people.map((p) => p.name).join("、")}

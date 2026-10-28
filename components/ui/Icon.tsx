@@ -2,6 +2,9 @@
 type IconProps = { name: string; className?: string; label?: string };
 
 export function Icon({ name, className = "", label }: IconProps) {
-  return <i className={`ri-${name} icon ${className}`} aria-hidden={label ? undefined : true} aria-label={label} role={label ? "img" : undefined} />;
+  const isDecorativeIcon = label ? undefined : true;
+  const iconRole = label ? "img" : undefined;
+
+  return <i className={`ri-${name} icon ${className}`} aria-hidden={isDecorativeIcon} aria-label={label} role={iconRole} />;
 }
 

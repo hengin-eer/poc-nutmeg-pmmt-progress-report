@@ -6,6 +6,8 @@ import { Icon, IconButton } from "../ui";
 type SidebarProps = { me: Me; demo: boolean; logout: () => void; children: ReactNode };
 
 export function Sidebar({ me, demo, logout, children }: SidebarProps) {
+  const memberUnitLabel = me.unitName ?? "ユニットなし";
+
   return (
         <aside className="sidebar">
           <Link href="/" className="brand">
@@ -23,7 +25,7 @@ export function Sidebar({ me, demo, logout, children }: SidebarProps) {
               <div className="me-text">
                 <div className="me-name">{me.name}</div>
                 <div className="meta">
-                  {me.unitName ?? "ユニットなし"}
+                  {memberUnitLabel}
                   {demo && <span className="demo-badge">デモ</span>}
                 </div>
               </div>

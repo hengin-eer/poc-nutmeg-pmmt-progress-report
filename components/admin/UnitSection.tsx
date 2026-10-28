@@ -8,9 +8,13 @@ type UnitSectionProps = Pick<Props, "units">;
 
 export function UnitSection({ units }: UnitSectionProps) {
   const form = useForm("/admin?addUnit", { name: "", kind: "project" as UnitKind }, { resetOnSuccess: true });
-    function handleNameChange(e: ChangeEvent<HTMLInputElement>) { return form.setData("name", e.target.value); }
+  function handleNameChange(e: ChangeEvent<HTMLInputElement>) { return form.setData("name", e.target.value); }
 
-  function handleKindChange(e: ChangeEvent<HTMLSelectElement>) { return form.setData("kind", e.target.value as UnitKind); }
+  function handleKindChange(e: ChangeEvent<HTMLSelectElement>) {
+    return form.setData("kind", e.target.value as UnitKind);
+  }
+
+  const hasNameError = form.errors.name;
 
   return (
     <Card as="section" className="card card-lg section">
@@ -41,7 +45,7 @@ export function UnitSection({ units }: UnitSectionProps) {
           追加
         </Button>
       </Form>
-      {form.errors.name && <p className="error">{form.errors.name}</p>}
+      {hasNameError && <p className="error">{form.errors.name}</p>}
     </Card>
   );
 }

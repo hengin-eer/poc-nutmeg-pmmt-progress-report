@@ -21,9 +21,11 @@ type MinutesInputProps = { state: ImportState };
 
 export function MinutesInput({ state }: MinutesInputProps) {
   const { text, setText, parse } = state;
-    function handleMinutesChange(e: ChangeEvent<HTMLTextAreaElement>) { return setText(e.target.value); }
+  function handleMinutesChange(e: ChangeEvent<HTMLTextAreaElement>) { return setText(e.target.value); }
 
   function handleLoadSample() { return setText(SAMPLE); }
+
+  const isParseDisabled = !text.trim();
 
   return (
     <Card as="section" className="card card-lg">
@@ -37,7 +39,7 @@ export function MinutesInput({ state }: MinutesInputProps) {
           サンプルを入れる
         </Button>
         <span className="spacer" />
-        <Button className="primary" onClick={parse} disabled={!text.trim()}>
+        <Button className="primary" onClick={parse} disabled={isParseDisabled}>
           候補に分ける
           <Icon name="arrow-right-line" />
         </Button>

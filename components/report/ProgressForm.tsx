@@ -1,7 +1,7 @@
 import { REPORT_COPY } from "./copy";
 import { Form, useForm } from "@void/react";
 import type { Props } from "../../pages/report.server";
-import { BUSY_OPTIONS, Busy, PROGRESS_OPTIONS, type ProgressValue } from "../domain";
+import { BUSY_OPTIONS, Busy, PROGRESS_OPTIONS, type BusyValue, type ProgressValue } from "../domain";
 import { MarkdownEditor } from "../markdown-editor";
 import { Button, Card, Field, Icon, SectionHeader } from "../ui";
 
@@ -18,9 +18,12 @@ export function ProgressForm({ unit, cycle, report }: ProgressFormProps) {
   });
   const showProgress = unit.kind === "project";
 
-    function handleProgressChange(value: (typeof PROGRESS_OPTIONS)[number]["value"]) { return form.setData("progress", form.data.progress === value ? "" : value); }
+  function handleSelectProgress(value: ProgressValue) {
+    const isAlreadySelected = form.data.progress === value;
+    form.setData("progress", isAlreadySelected ? "" : value);
+  }
 
-  function handleBusynessChange(value: (typeof BUSY_OPTIONS)[number]["value"]) { return form.setData("busyness", value); }
+  function handleSelectBusyness(value: BusyValue) { form.setData("busyness", value); }
 
   function handleDoneChange(value: string) { return form.setData("done", value); }
 
@@ -29,6 +32,16 @@ export function ProgressForm({ unit, cycle, report }: ProgressFormProps) {
   function handleSaveDraft() { return form.setData("submit", false); }
 
   function handleSubmitReport() { return form.setData("submit", true); }
+
+  function getProgressChoiceClass(value: ProgressValue) { return form.data.progress === value ? "selected" : ""; }
+  function getBusynessChoiceClass(value: BusyValue) { return form.data.busyness === value ? "selected" : ""; }
+  const hasBusynessError = form.errors.busyness;
+  const doneText = form.data.done ?? "";
+  const nextText = form.data.next ?? "";
+  const formError = form.error;
+  const isSavingDisabled = !isOpen || form.pending;
+  const showSavedFeedback = form.recentlySuccessful;
+  const submitLabel = report?.submittedAt ? "更新する" : "提出する";
 
   return (
     <Card as="section" className="card card-lg">
@@ -46,8 +59,8 @@ export function ProgressForm({ unit, cycle, report }: ProgressFormProps) {
                 <Button
                   type="button"
                   key={value}
-                  className={`choice ${form.data.progress === value ? "selected" : ""}`}
-                  onClick={() => handleProgressChange(value)}
+                  className={`choice ${getProgressChoiceClass(value)}`}
+                  onClick={() => handleSelectProgress(value)}
                 >
                   <span className={`dot ${value}`} />
                   {label}
@@ -66,8 +79,8 @@ export function ProgressForm({ unit, cycle, report }: ProgressFormProps) {
               <Button
                 type="button"
                 key={value}
-                className={`choice busy-${value} ${form.data.busyness === value ? "selected" : ""}`}
-                onClick={() => handleBusynessChange(value)}
+                className={`choice busy-${value} ${getBusynessChoiceClass(value)}`}
+                onClick={() => handleSelectBusyness(value)}
               >
                 <Icon name={icon} />
                 {label}
@@ -75,31 +88,31 @@ export function ProgressForm({ unit, cycle, report }: ProgressFormProps) {
               </Button>
             ))}
           </div>
-          {form.errors.busyness && <div className="error">{form.errors.busyness}</div>}
+          {hasBusynessError && <div className="error">{form.errors.busyness}</div>}
         </Field>
 
         <MarkdownEditor id="done" label={REPORT_COPY.done.label} hint={REPORT_COPY.done.hint}
-          value={form.data.done ?? ""} onChange={handleDoneChange}
+          value={doneText} onChange={handleDoneChange}
           placeholder={REPORT_COPY.done.placeholder} error={form.errors.done} />
         <MarkdownEditor id="next" label={REPORT_COPY.next.label} hint={REPORT_COPY.next.hint}
-          value={form.data.next ?? ""} onChange={handleNextChange}
+          value={nextText} onChange={handleNextChange}
           placeholder={REPORT_COPY.next.placeholder} error={form.errors.next} />
 
-        {form.error && <p className="error">{form.error.message}</p>}
+        {formError && <p className="error">{formError.message}</p>}
         <div className="row" style={{ marginTop: 8 }}>
-          <Button type="submit" className="ghost" disabled={!isOpen || form.pending} onClick={handleSaveDraft}>
+          <Button type="submit" className="ghost" disabled={isSavingDisabled} onClick={handleSaveDraft}>
             <Icon name="save-3-line" />
             下書き保存
           </Button>
-          {form.recentlySuccessful && (
+          {showSavedFeedback && (
             <span className="sub">
               <Icon name="check-line" /> 保存しました
             </span>
           )}
           <span className="spacer" />
-          <Button type="submit" className="primary" disabled={!isOpen || form.pending} onClick={handleSubmitReport}>
+          <Button type="submit" className="primary" disabled={isSavingDisabled} onClick={handleSubmitReport}>
             <Icon name="send-plane-2-line" />
-            {report?.submittedAt ? "更新する" : "提出する"}
+            {submitLabel}
           </Button>
         </div>
       </Form>

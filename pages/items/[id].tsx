@@ -9,6 +9,8 @@ export default function ItemPage({ data: initial, cycleOpen }: Props) {
   const [data, setData] = useState(initial);
   useEffect(() => setData(initial), [initial]);
 
+  const canReturnToReport = data.isMine && cycleOpen;
+
   return (
     <div className="narrow">
       <nav className="crumbs">
@@ -18,7 +20,7 @@ export default function ItemPage({ data: initial, cycleOpen }: Props) {
         </Link>
         <span className="spacer" />
         {/* 自分のユニットの確認事項なら、事前記入に戻れるように */}
-        {data.isMine && cycleOpen && (
+        {canReturnToReport && (
           <Link href="/report" className="button">
             <Icon name="edit-box-line" />
             事前記入に戻る

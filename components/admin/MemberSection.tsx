@@ -14,25 +14,37 @@ export function MemberSection({ members, units }: MemberSectionProps) {
   const form = useForm("/admin?addMember", { name: "", email: "", role: "lead" as const, unitId: units[0]?.id ?? 0, slackUserId: "" }, { resetOnSuccess: true });
   const unitName = (id: number | null) => units.find((u) => u.id === id)?.name ?? "—";
 
-    function handleFinishEditing() { return setEditing(null); }
+  function handleFinishEditing() { return setEditing(null); }
 
   function handleEditMember(m: (typeof members)[number]) { return setEditing(m.id); }
 
   async function handleDeleteMember(m: (typeof members)[number]) {
-                      if (!confirm(`${m.name} さんを削除しますか？`)) return;
-                      const r = await action("/admin?deleteMember", { data: { id: m.id } });
-                      if (!r.ok) alert(r.error.message);
-                    }
+    if (!confirm(`${m.name} さんを削除しますか？`)) return;
+    const r = await action("/admin?deleteMember", { data: { id: m.id } });
+    if (!r.ok) alert(r.error.message);
+  }
 
   function handleNameChange(e: ChangeEvent<HTMLInputElement>) { return form.setData("name", e.target.value); }
 
   function handleEmailChange(e: ChangeEvent<HTMLInputElement>) { return form.setData("email", e.target.value); }
 
-  function handleRoleChange(e: ChangeEvent<HTMLSelectElement>) { return form.setData("role", e.target.value as typeof form.data.role); }
+  function handleRoleChange(e: ChangeEvent<HTMLSelectElement>) {
+    return form.setData("role", e.target.value as typeof form.data.role);
+  }
 
-  function handleUnitIdChange(e: ChangeEvent<HTMLSelectElement>) { return form.setData("unitId", Number(e.target.value)); }
+  function handleUnitIdChange(e: ChangeEvent<HTMLSelectElement>) {
+    return form.setData("unitId", Number(e.target.value));
+  }
 
-  function handleSlackUserIdChange(e: ChangeEvent<HTMLInputElement>) { return form.setData("slackUserId", e.target.value); }
+  function handleSlackUserIdChange(e: ChangeEvent<HTMLInputElement>) {
+    return form.setData("slackUserId", e.target.value);
+  }
+
+  function isEditingMember(m: (typeof members)[number]) { return editing === m.id; }
+  function isCurrentMember(m: (typeof members)[number]) { return m.id === me?.id; }
+  function getMemberSlackLabel(m: (typeof members)[number]) { return m.slackUserId ?? "—"; }
+  const hasNameError = form.errors.name;
+  const hasEmailError = form.errors.email;
 
   return (
     <Card as="section" className="card card-lg section">
@@ -55,15 +67,15 @@ export function MemberSection({ members, units }: MemberSectionProps) {
             </tr>
           </thead>
           <tbody>
-            {members.map((m) => editing === m.id ? (
-              <MemberEditRow key={m.id} member={m} units={units} isSelf={m.id === me?.id} onDone={handleFinishEditing} />
+            {members.map((m) => isEditingMember(m) ? (
+              <MemberEditRow key={m.id} member={m} units={units} isSelf={isCurrentMember(m)} onDone={handleFinishEditing} />
             ) : (
               <tr key={m.id}>
                 <td>{m.name}</td>
                 <td className="meta">{m.email}</td>
                 <td>{ROLE_LABEL[m.role]}</td>
                 <td>{unitName(m.unitId)}</td>
-                <td className="meta">{m.slackUserId ?? "—"}</td>
+                <td className="meta">{getMemberSlackLabel(m)}</td>
                 <td>
                   <IconButton
                     type="button"
@@ -93,12 +105,12 @@ export function MemberSection({ members, units }: MemberSectionProps) {
         <div>
           <label>名前</label>
           <input type="text" value={form.data.name} onChange={handleNameChange} />
-          {form.errors.name && <div className="error">{form.errors.name}</div>}
+          {hasNameError && <div className="error">{form.errors.name}</div>}
         </div>
         <div>
           <label>アドレス</label>
           <input type="email" value={form.data.email} onChange={handleEmailChange} placeholder="25.t.yamada.nutfes@gmail.com" />
-          {form.errors.email && <div className="error">{form.errors.email}</div>}
+          {hasEmailError && <div className="error">{form.errors.email}</div>}
         </div>
         <div>
           <label>役割</label>

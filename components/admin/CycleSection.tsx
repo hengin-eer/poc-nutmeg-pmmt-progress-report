@@ -12,23 +12,29 @@ export function CycleSection({ cycles, defaults, unitCount }: CycleSectionProps)
   const [editing, setEditing] = useState<number | null>(null);
   const [deadline, setDeadline] = useState("");
 
-    function handleMeetingAtChange(e: ChangeEvent<HTMLInputElement>) { return form.setData("meetingAt", e.target.value); }
+  function handleMeetingAtChange(e: ChangeEvent<HTMLInputElement>) { return form.setData("meetingAt", e.target.value); }
 
   function handleDeadlineAtChange(e: ChangeEvent<HTMLInputElement>) { return form.setData("deadlineAt", e.target.value); }
 
   function handleEditedDeadlineChange(e: ChangeEvent<HTMLInputElement>) { return setDeadline(e.target.value); }
 
   async function handleUpdateDeadline(cy: (typeof cycles)[number]) {
-                          await action("/admin?updateDeadline", { data: { id: cy.id, deadlineAt: deadline } });
-                          setEditing(null);
-                        }
+    await action("/admin?updateDeadline", { data: { id: cy.id, deadlineAt: deadline } });
+    setEditing(null);
+  }
 
-  function handleEditMember(cy: (typeof cycles)[number]) {
-                            setEditing(cy.id);
-                            setDeadline(toJstInput(cy.deadlineAt));
-                          }
+  function handleEditDeadline(cy: (typeof cycles)[number]) {
+    setEditing(cy.id);
+    setDeadline(toJstInput(cy.deadlineAt));
+  }
 
-  function handleCloseCycle(cy: (typeof cycles)[number]) { return confirm("この回を閉じますか？") && action("/admin?closeCycle", { data: { id: cy.id } }); }
+  function handleCloseCycle(cy: (typeof cycles)[number]) {
+    return confirm("この回を閉じますか？") && action("/admin?closeCycle", { data: { id: cy.id } });
+  }
+
+  const hasDeadlineAtError = form.errors.deadlineAt;
+  function isEditingCycle(cy: (typeof cycles)[number]) { return editing === cy.id; }
+  function isCycleOpen(cy: (typeof cycles)[number]) { return cy.status === "open"; }
 
   return (
     <Card as="section" className="card card-lg">
@@ -51,7 +57,7 @@ export function CycleSection({ cycles, defaults, unitCount }: CycleSectionProps)
           回を作る
         </Button>
       </Form>
-      {form.errors.deadlineAt && <p className="error">{form.errors.deadlineAt}</p>}
+      {hasDeadlineAtError && <p className="error">{form.errors.deadlineAt}</p>}
       <p className="hint" style={{ marginBottom: 24 }}>新しい回を作ると、開いている回は自動で閉じます（「当日に話す」の残りは先送りとして記録）。過去の日付で作ると、取り込み用の「閉じた回」になります。</p>
 
       <div className="table-wrap">
@@ -70,7 +76,7 @@ export function CycleSection({ cycles, defaults, unitCount }: CycleSectionProps)
               <tr key={cy.id}>
                 <td>{formatJst(cy.meetingAt)}</td>
                 <td>
-                  {editing === cy.id ? (
+                  {isEditingCycle(cy) ? (
                     <div className="row">
                       <input type="datetime-local" value={deadline} onChange={handleEditedDeadlineChange} style={{ width: "auto" }} />
                       <Button
@@ -83,10 +89,10 @@ export function CycleSection({ cycles, defaults, unitCount }: CycleSectionProps)
                   ) : (
                     <span className="row">
                       {formatJst(cy.deadlineAt)}
-                      {cy.status === "open" && (
+                      {isCycleOpen(cy) && (
                         <Button
                           className="ghost small"
-                          onClick={() => handleEditMember(cy)}
+                          onClick={() => handleEditDeadline(cy)}
                         >
                           変更
                         </Button>
@@ -97,9 +103,9 @@ export function CycleSection({ cycles, defaults, unitCount }: CycleSectionProps)
                 <td>
                   {cy.submitted} / {unitCount}
                 </td>
-                <td>{cy.status === "open" ? <Pill className="pill green">受付中</Pill> : <Pill className="pill">終了</Pill>}</td>
+                <td>{isCycleOpen(cy) ? <Pill className="pill green">受付中</Pill> : <Pill className="pill">終了</Pill>}</td>
                 <td>
-                  {cy.status === "open" && (
+                  {isCycleOpen(cy) && (
                     <Button className="small" onClick={() => handleCloseCycle(cy)}>
                       閉じる
                     </Button>

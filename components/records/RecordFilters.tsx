@@ -22,10 +22,10 @@ export function RecordFilters({ filter, list, unitList }: RecordFiltersProps) {
     const qs = new URLSearchParams(Object.entries(next).filter(([, v]) => v)).toString();
     router.visit(`/records${qs ? `?${qs}` : ""}`, { preserveScroll: true });
   };
-    function handleSearch(e: FormEvent<HTMLFormElement>) {
-          e.preventDefault();
-          go({ q });
-        }
+  function handleSearch(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    go({ q });
+  }
 
   function handleQueryChange(e: ChangeEvent<HTMLInputElement>) { return setQ(e.target.value); }
 
@@ -34,6 +34,8 @@ export function RecordFilters({ filter, list, unitList }: RecordFiltersProps) {
   function handleUnitFilterChange(e: ChangeEvent<HTMLSelectElement>) { return go({ unit: e.target.value }); }
 
   function handleStatusFilterChange(e: ChangeEvent<HTMLSelectElement>) { return go({ status: e.target.value }); }
+
+  const selectedUnitValue = filter.unitId ?? "";
 
   return (
     <Card className="card stack" style={{ gap: 14 }}>
@@ -53,7 +55,7 @@ export function RecordFilters({ filter, list, unitList }: RecordFiltersProps) {
             </option>
           ))}
         </select>
-        <select value={filter.unitId ?? ""} onChange={handleUnitFilterChange} className="filter" aria-label="ユニット">
+        <select value={selectedUnitValue} onChange={handleUnitFilterChange} className="filter" aria-label="ユニット">
           <option value="">すべてのユニット</option>
           {unitList.map((u) => (
             <option key={u.id} value={u.id}>

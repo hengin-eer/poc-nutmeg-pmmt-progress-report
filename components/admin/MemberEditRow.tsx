@@ -25,19 +25,31 @@ export function MemberEditRow({ member, units, isSelf, onDone }: MemberEditRowPr
     if (form.wasSuccessful) onDone();
   }, [form.wasSuccessful, onDone]);
 
-    function handleNameChange(e: ChangeEvent<HTMLInputElement>) { return form.setData("name", e.target.value); }
+  function handleNameChange(e: ChangeEvent<HTMLInputElement>) { return form.setData("name", e.target.value); }
 
-  function handleRoleChange(e: ChangeEvent<HTMLSelectElement>) { return form.setData("role", e.target.value as typeof form.data.role); }
+  function handleRoleChange(e: ChangeEvent<HTMLSelectElement>) {
+    return form.setData("role", e.target.value as typeof form.data.role);
+  }
 
-  function handleUnitIdChange(e: ChangeEvent<HTMLSelectElement>) { return form.setData("unitId", Number(e.target.value)); }
+  function handleUnitIdChange(e: ChangeEvent<HTMLSelectElement>) {
+    return form.setData("unitId", Number(e.target.value));
+  }
 
-  function handleSlackUserIdChange(e: ChangeEvent<HTMLInputElement>) { return form.setData("slackUserId", e.target.value); }
+  function handleSlackUserIdChange(e: ChangeEvent<HTMLInputElement>) {
+    return form.setData("slackUserId", e.target.value);
+  }
+
+  const hasNameError = form.errors.name;
+  const hasRoleError = form.errors.role;
+  const hasUnitIdError = form.errors.unitId;
+  const hasSlackUserIdError = form.errors.slackUserId;
+  const hasIdError = form.errors.id;
 
   return (
     <tr>
       <td>
         <input form={formId} aria-label="名前" aria-invalid={Boolean(form.errors.name)} value={form.data.name} onChange={handleNameChange} />
-        {form.errors.name && <div className="error" role="alert">{form.errors.name}</div>}
+        {hasNameError && <div className="error" role="alert">{form.errors.name}</div>}
       </td>
       <td className="meta">{member.email}</td>
       <td>
@@ -45,18 +57,18 @@ export function MemberEditRow({ member, units, isSelf, onDone }: MemberEditRowPr
           {Object.entries(ROLE_LABEL).map(([key, label]) => <option key={key} value={key}>{label}</option>)}
         </select>
         {isSelf && <div className="hint">自分の役割は変更できません</div>}
-        {form.errors.role && <div className="error" role="alert">{form.errors.role}</div>}
+        {hasRoleError && <div className="error" role="alert">{form.errors.role}</div>}
       </td>
       <td>
         <select form={formId} aria-label="ユニット" aria-invalid={Boolean(form.errors.unitId)} value={form.data.unitId} onChange={handleUnitIdChange}>
           <option value={0}>なし</option>
           {units.map((unit) => <option key={unit.id} value={unit.id}>{unit.name}</option>)}
         </select>
-        {form.errors.unitId && <div className="error" role="alert">{form.errors.unitId}</div>}
+        {hasUnitIdError && <div className="error" role="alert">{form.errors.unitId}</div>}
       </td>
       <td>
         <input form={formId} aria-label="Slack ID" aria-invalid={Boolean(form.errors.slackUserId)} value={form.data.slackUserId} placeholder="U0123ABCD" onChange={handleSlackUserIdChange} />
-        {form.errors.slackUserId && <div className="error" role="alert">{form.errors.slackUserId}</div>}
+        {hasSlackUserIdError && <div className="error" role="alert">{form.errors.slackUserId}</div>}
       </td>
       <td>
         <Form id={formId} form={form} className="stack" style={{ gap: 8 }}>
@@ -68,7 +80,7 @@ export function MemberEditRow({ member, units, isSelf, onDone }: MemberEditRowPr
               <Icon name="close-line" />
             </IconButton>
           </div>
-          {form.errors.id && <div className="error" role="alert">{form.errors.id}</div>}
+          {hasIdError && <div className="error" role="alert">{form.errors.id}</div>}
         </Form>
       </td>
     </tr>

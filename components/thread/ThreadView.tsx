@@ -18,7 +18,16 @@ export function ThreadView({ data, onChange }: ThreadViewProps) {
     return res;
   };
 
-    function handleReaction(r: (typeof reactionSummary)[number]) { return run({ op: "react", emoji: r.emoji }); }
+  function handleReaction(r: (typeof reactionSummary)[number]) { return run({ op: "react", emoji: r.emoji }); }
+
+  const hasResolutionNote = item.resolutionNote;
+  const hasClosingAuthor = data.closedByName;
+  function getReactionSelectionClass(r: (typeof reactionSummary)[number]) { return r.mine ? "mine" : ""; }
+  function getReactionCountClass(r: (typeof reactionSummary)[number]) { return r.count ? "" : "zero"; }
+  function getReactionTitle(r: (typeof reactionSummary)[number]) { return r.names.join("、") || "リアクションする"; }
+  function hasReactionCount(r: (typeof reactionSummary)[number]) { return r.count > 0; }
+  const canChangeItemState = data.canClose;
+  const hasNoComments = thread.length === 0;
 
   return (
     <article className="thread">
@@ -39,13 +48,13 @@ export function ThreadView({ data, onChange }: ThreadViewProps) {
 
       <p className="thread-body">{item.body}</p>
 
-      {item.resolutionNote && (
+      {hasResolutionNote && (
         <div className={`resolution state-${item.state}`}>
           <Icon name={STATE_ICON(item.state)} />
           <div>
             <strong>{ITEM_STATE_LABEL[item.state]}</strong>
             <div>{item.resolutionNote}</div>
-            {data.closedByName && <div className="meta">{data.closedByName}</div>}
+            {hasClosingAuthor && <div className="meta">{data.closedByName}</div>}
           </div>
         </div>
       )}
@@ -55,23 +64,23 @@ export function ThreadView({ data, onChange }: ThreadViewProps) {
           <Button
             key={r.emoji}
             type="button"
-            className={`reaction ${r.mine ? "mine" : ""} ${r.count ? "" : "zero"}`}
-            title={r.names.join("、") || "リアクションする"}
+            className={`reaction ${getReactionSelectionClass(r)} ${getReactionCountClass(r)}`}
+            title={getReactionTitle(r)}
             onClick={() => handleReaction(r)}
           >
             {r.emoji}
-            {r.count > 0 && <span>{r.count}</span>}
+            {hasReactionCount(r) && <span>{r.count}</span>}
           </Button>
         ))}
       </div>
 
-      {data.canClose && <ClosePanel key={item.state} nextStates={data.nextStates} run={run} />}
+      {canChangeItemState && <ClosePanel key={item.state} nextStates={data.nextStates} run={run} />}
 
       <section className="comments">
         <h3>
           コメント <Badge className="count">{thread.length}</Badge>
         </h3>
-        {thread.length === 0 ? (
+        {hasNoComments ? (
           <EmptyState className="empty">まだコメントはありません</EmptyState>
         ) : (
           <ul className="comment-list">

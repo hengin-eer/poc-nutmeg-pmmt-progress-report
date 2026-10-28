@@ -30,11 +30,13 @@ export function Shell({ me, demo, path, children }: ShellProps) {
   };
 
   const links = nav.map((n) => (
-    <Link key={n.href} href={n.href} className={`nav-link ${isActive(n.href) ? "active" : ""}`}>
+    <Link key={n.href} href={n.href} className={`nav-link ${getNavigationClass(n)}`}>
       <Icon name={n.icon} />
       <span>{n.label}</span>
     </Link>
   ));
+
+  function getNavigationClass(n: (typeof nav)[number]) { return isActive(n.href) ? "active" : ""; }
 
   return (
     <ThreadProvider>

@@ -11,6 +11,13 @@ export function Hero({ cycle, cards, unitId, now }: HeroProps) {
   const isOpen = cycle.status === "open";
   const over = new Date(cycle.deadlineAt) <= new Date(now);
 
+  const remainingClass = over ? "over" : "";
+  const isCycleClosed = !isOpen;
+  const canEditReport = myCard && isOpen;
+  const reportActionVariant = myCard?.submitted ? "" : "primary";
+  const reportActionLabel = myCard?.submitted ? "記入を直す" : "事前記入する";
+  const progressBarWidth = `${(done / Math.max(cards.length, 1)) * 100}%`;
+
   return (
     <Card as="section" className="card hero">
       <div>
@@ -23,19 +30,19 @@ export function Hero({ cycle, cards, unitId, now }: HeroProps) {
           <small>/ {cards.length} 提出</small>
         </div>
         <div className="progress-bar" aria-label={`提出 ${done} / ${cards.length}`}>
-          <span style={{ width: `${(done / Math.max(cards.length, 1)) * 100}%` }} />
+          <span style={{ width: progressBarWidth }} />
         </div>
         <div className="hero-deadline">
           <Icon name="alarm-line" />
           締切 <strong>{formatJst(cycle.deadlineAt)}</strong>
-          {isOpen && <span className={`remaining ${over ? "over" : ""}`}>{remainingLabel(cycle.deadlineAt, new Date(now))}</span>}
-          {!isOpen && <span className="muted">この回は終了しました</span>}
+          {isOpen && <span className={`remaining ${remainingClass}`}>{remainingLabel(cycle.deadlineAt, new Date(now))}</span>}
+          {isCycleClosed && <span className="muted">この回は終了しました</span>}
         </div>
       </div>
-      {myCard && isOpen && (
-        <Link href="/report" className={`button big ${myCard.submitted ? "" : "primary"}`}>
+      {canEditReport && (
+        <Link href="/report" className={`button big ${reportActionVariant}`}>
           <Icon name="edit-box-line" />
-          {myCard.submitted ? "記入を直す" : "事前記入する"}
+          {reportActionLabel}
         </Link>
       )}
     </Card>

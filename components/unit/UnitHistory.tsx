@@ -8,12 +8,17 @@ import { type Props } from "../../pages/units/[id].server";
 type UnitHistoryProps = Pick<Props, "history">;
 
 export function UnitHistory({ history }: UnitHistoryProps) {
+  const hasNoHistory = history.length === 0;
+  function hasCompletedWork(h: (typeof history)[number]) { return h.done; }
+  function hasPlannedWork(h: (typeof history)[number]) { return h.next; }
+  function hasRelatedItems(h: (typeof history)[number]) { return h.items.length > 0; }
+
   return (
     <section>
       <SectionHeader className="section-head">
         <h2>週ごとの更新</h2>
       </SectionHeader>
-      {history.length === 0 && <EmptyState className="empty">まだ提出された記入はありません</EmptyState>}
+      {hasNoHistory && <EmptyState className="empty">まだ提出された記入はありません</EmptyState>}
       <div className="stack" style={{ gap: 20 }}>
         {history.map((h) => (
           <Card as="article" key={h.cycleId} className="card">
@@ -23,19 +28,19 @@ export function UnitHistory({ history }: UnitHistoryProps) {
               <ProgressPill value={h.progress} />
               <Busy value={h.busyness} label />
             </div>
-            {h.done && (
+            {hasCompletedWork(h) && (
               <div className="report-block">
                 <h3>やったこと</h3>
                 <Markdown>{h.done}</Markdown>
               </div>
             )}
-            {h.next && (
+            {hasPlannedWork(h) && (
               <div className="report-block">
                 <h3>次にやること</h3>
                 <Markdown>{h.next}</Markdown>
               </div>
             )}
-            {h.items.length > 0 && (
+            {hasRelatedItems(h) && (
               <ul className="list" style={{ marginTop: 8, borderTop: "1px solid var(--border)", paddingTop: 8 }}>
                 {h.items.map((i) => (
                   <ItemRow key={i.id} item={i} />

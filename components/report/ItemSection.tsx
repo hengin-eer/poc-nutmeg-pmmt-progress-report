@@ -27,17 +27,27 @@ export function ItemSection({
     if (form.wasSuccessful) setAdding(false);
   }, [form.wasSuccessful]);
 
-    function handleOpenThread(i: (typeof list)[number]) { return open(i.id); }
+  function handleOpenThread(i: (typeof list)[number]) { return open(i.id); }
 
-  function handleDeleteItem(i: (typeof list)[number]) { return confirm("削除しますか？") && action("/report?deleteItem", { data: { id: i.id } }); }
+  async function handleDeleteItem(id: number) {
+    const confirmed = confirm("削除しますか？");
+    if (!confirmed) return;
+    await action("/report?deleteItem", { data: { id } });
+  }
 
   function handleBodyChange(e: ChangeEvent<HTMLTextAreaElement>) { return form.setData("body", e.target.value); }
 
-  function handleCrossBureauChange(e: ChangeEvent<HTMLInputElement>) { return form.setData("crossBureau", e.target.checked); }
+  function handleCrossBureauChange(e: ChangeEvent<HTMLInputElement>) {
+    return form.setData("crossBureau", e.target.checked);
+  }
 
   function handleCancelAdding() { return setAdding(false); }
 
   function handleStartAdding() { return setAdding(true); }
+
+  const hasItems = list.length > 0;
+  function canDeleteItem(i: (typeof list)[number]) { return i.state === "open" && isOpen; }
+  const hasBodyError = form.errors.body;
 
   return (
     <Card as="section" className="card">
@@ -52,7 +62,7 @@ export function ItemSection({
         {kindConfig.hint}
       </p>
 
-      {list.length > 0 && (
+      {hasItems && (
         <ul className="list" style={{ margin: "8px 0 16px" }}>
           {list.map((i) => (
             <li key={i.id} className="my-item">
@@ -64,13 +74,13 @@ export function ItemSection({
                 <CrossBureau on={i.crossBureau} />
                 <span className="spacer" />
                 <ThreadButton id={i.id} comments={i.comments} />
-                {i.state === "open" && isOpen && (
+                {canDeleteItem(i) && (
                   <IconButton
                     type="button"
                     className="icon-button danger"
                     title="削除"
                     aria-label="削除"
-                    onClick={() => handleDeleteItem(i)}
+                    onClick={() => handleDeleteItem(i.id)}
                   >
                     <Icon name="delete-bin-line" />
                   </IconButton>
@@ -91,7 +101,7 @@ export function ItemSection({
                 onChange={handleBodyChange}
                 placeholder={kindConfig.placeholder}
               />
-              {form.errors.body && <div className="error">{form.errors.body}</div>}
+              {hasBodyError && <div className="error">{form.errors.body}</div>}
             </div>
             <div className="row">
               {canMarkCrossBureau && (

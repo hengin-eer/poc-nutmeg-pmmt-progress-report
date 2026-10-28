@@ -12,6 +12,8 @@ type ItemListProps = {
 };
 
 export function ItemList({ title, icon, items, empty, moreHref, moreLabel }: ItemListProps) {
+  const hasNoItems = items.length === 0;
+
   return (
     <Card as="section" className="card">
       <SectionHeader className="section-head">
@@ -19,7 +21,7 @@ export function ItemList({ title, icon, items, empty, moreHref, moreLabel }: Ite
         <h2>{title}</h2>
         <Badge className="count">{items.length}</Badge>
       </SectionHeader>
-      {items.length === 0 ? (
+      {hasNoItems ? (
         <EmptyState className="empty">{empty}</EmptyState>
       ) : (
         <ul className="list">

@@ -17,22 +17,32 @@ type MarkdownEditorProps = {
 export function MarkdownEditor({ id, label, hint, value, onChange, placeholder, error }: MarkdownEditorProps) {
   const [preview, setPreview] = useState(false);
   const tabs = useRef<(HTMLButtonElement | null)[]>([]);
-    function handleTabRef(index: number, node: HTMLButtonElement | null) { tabs.current[index] = node; }
+  function handleTabRef(index: number, node: HTMLButtonElement | null) { tabs.current[index] = node; }
 
   function handleSelectEditorMode(isPreview: boolean) { return setPreview(isPreview); }
 
   function handleTabKeyDown(index: number, event: KeyboardEvent<HTMLButtonElement>) {
-                let target: number;
-                if (event.key === "ArrowLeft" || event.key === "ArrowRight") target = 1 - index;
-                else if (event.key === "Home") target = 0;
-                else if (event.key === "End") target = 1;
-                else return;
-                event.preventDefault();
-                setPreview(target === 1);
-                tabs.current[target]?.focus();
-              }
+    let target: number;
+    if (event.key === "ArrowLeft" || event.key === "ArrowRight") target = 1 - index;
+    else if (event.key === "Home") target = 0;
+    else if (event.key === "End") target = 1;
+    else return;
+    event.preventDefault();
+    setPreview(target === 1);
+    tabs.current[target]?.focus();
+  }
 
   function handleInputChange(e: ChangeEvent<HTMLTextAreaElement>) { return onChange(e.target.value); }
+
+  function isEditorTabSelected(isPreview: boolean) { return preview === isPreview; }
+  function getTabIndex(isPreview: boolean) { return preview === isPreview ? 0 : -1; }
+  function getControlledPanelId(isPreview: boolean) { return isPreview ? `${id}-preview` : `${id}-write`; }
+  function getEditorTabIcon(isPreview: boolean) { return isPreview ? "eye-line" : "edit-line"; }
+  function getEditorTabLabel(isPreview: boolean) { return isPreview ? "プレビュー" : "書く"; }
+  const errorDescriptionSuffix = error ? ` ${id}-error` : "";
+  const hasValidationError = !!error;
+  const isWriteMode = !preview;
+  const hasPreviewContent = value.trim();
 
   return (
     <Field className="field">
@@ -46,23 +56,23 @@ export function MarkdownEditor({ id, label, hint, value, onChange, placeholder, 
             <Button
               key={String(isPreview)} ref={node => handleTabRef(index, node)}
               type="button" role="tab" id={`${id}-tab-${index}`}
-              aria-selected={preview === isPreview} tabIndex={preview === isPreview ? 0 : -1}
-              aria-controls={isPreview ? `${id}-preview` : `${id}-write`}
+              aria-selected={isEditorTabSelected(isPreview)} tabIndex={getTabIndex(isPreview)}
+              aria-controls={getControlledPanelId(isPreview)}
               onClick={() => handleSelectEditorMode(isPreview)}
               onKeyDown={event => handleTabKeyDown(index, event)}
             >
-              <Icon name={isPreview ? "eye-line" : "edit-line"} />
-              {isPreview ? "プレビュー" : "書く"}
+              <Icon name={getEditorTabIcon(isPreview)} />
+              {getEditorTabLabel(isPreview)}
             </Button>
           ))}
         </div>
         <div id={`${id}-write`} role="tabpanel" aria-labelledby={`${id}-tab-0`} hidden={preview}>
           <textarea id={id} value={value} onChange={handleInputChange} placeholder={placeholder}
-            aria-describedby={`${id}-hint${error ? ` ${id}-error` : ""}`} aria-invalid={!!error} />
+            aria-describedby={`${id}-hint${errorDescriptionSuffix}`} aria-invalid={hasValidationError} />
         </div>
-        <div id={`${id}-preview`} hidden={!preview} className="markdown-preview" role="tabpanel"
+        <div id={`${id}-preview`} hidden={isWriteMode} className="markdown-preview" role="tabpanel"
           aria-labelledby={`${id}-tab-1`} tabIndex={0}>
-          {preview && (value.trim() ? <Markdown>{value}</Markdown> : <EmptyState className="empty">まだ記入されていません</EmptyState>)}
+          {preview && (hasPreviewContent ? <Markdown>{value}</Markdown> : <EmptyState className="empty">まだ記入されていません</EmptyState>)}
         </div>
       </div>
       {error && <div id={`${id}-error`} className="error">{error}</div>}

@@ -51,12 +51,17 @@ type BusyProps = { value: number | null; label?: boolean };
 export function Busy({ value, label = false }: BusyProps) {
   const b = getBusyOption(value);
   if (!b || !value) return null;
+  const currentBusyness = b.value;
+  function getBusyLevelClass(level: (typeof BUSY_OPTIONS)[number]["value"]) {
+    return level <= currentBusyness ? "on" : "";
+  }
+
   return (
     <span className={`busy busy-${value}`} title={`忙しさ：${b.label}`}>
       {label && <Icon name={b.icon} />}
       <span className="busy-meter" aria-hidden="true">
         {BUSY_OPTIONS.map(({ value: level }) => (
-          <span key={level} className={level <= value ? "on" : ""} />
+          <span key={level} className={getBusyLevelClass(level)} />
         ))}
       </span>
       {label ? <span>{b.label}</span> : <span className="sr-only">忙しさ：{b.label}</span>}
@@ -141,15 +146,18 @@ type CountsProps = { comments: number; reactions: number };
 
 export function Counts({ comments, reactions }: CountsProps) {
   if (!comments && !reactions) return null;
+  const hasComments = comments > 0;
+  const hasReactions = reactions > 0;
+
   return (
     <span className="counts">
-      {comments > 0 && (
+      {hasComments && (
         <span title={`コメント ${comments} 件`}>
           <Icon name="chat-3-line" />
           {comments}
         </span>
       )}
-      {reactions > 0 && (
+      {hasReactions && (
         <span title={`リアクション ${reactions} 件`}>
           <Icon name="emotion-line" />
           {reactions}

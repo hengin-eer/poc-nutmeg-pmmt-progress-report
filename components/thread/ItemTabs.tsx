@@ -12,10 +12,12 @@ const TABS: Record<Tab, { label: string; icon: string }> = {
 type ItemTabsProps = Pick<Props, "tab" | "counts">;
 
 export function ItemTabs({ tab, counts }: ItemTabsProps) {
+  function getTabClass(t: Tab) { return t === tab ? "active" : ""; }
+
   return (
     <Tabs className="tabs">
       {(Object.keys(TABS) as Tab[]).map((t) => (
-        <Link key={t} href={`/items?tab=${t}`} className={t === tab ? "active" : ""} preserveScroll>
+        <Link key={t} href={`/items?tab=${t}`} className={getTabClass(t)} preserveScroll>
           <Icon name={TABS[t].icon} />
           {TABS[t].label}
           <Badge className="count">{counts[t]}</Badge>

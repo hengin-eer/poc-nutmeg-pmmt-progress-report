@@ -6,6 +6,11 @@ import { type Props } from "../../pages/units/[id].server";
 type UnitRecordsProps = Pick<Props, "records">;
 
 export function UnitRecords({ records }: UnitRecordsProps) {
+  const hasNoRecords = records.length === 0;
+  function getRecordCompletionClass(r: (typeof records)[number]) {
+    return r.doneAt && r.kind !== "decision" ? "done" : "";
+  }
+
   return (
     <section>
       <SectionHeader className="section-head">
@@ -13,13 +18,13 @@ export function UnitRecords({ records }: UnitRecordsProps) {
         <Badge className="count">{records.length}</Badge>
       </SectionHeader>
       <Card className="card">
-        {records.length === 0 ? (
+        {hasNoRecords ? (
           <EmptyState className="empty">まだ記録はありません</EmptyState>
         ) : (
           <ul className="list">
             {records.map((r) => (
               <li key={r.id}>
-                <div className={`record-title ${r.doneAt && r.kind !== "decision" ? "done" : ""}`} style={{ fontSize: 15 }}>
+                <div className={`record-title ${getRecordCompletionClass(r)}`} style={{ fontSize: 15 }}>
                   {r.title}
                 </div>
                 <div className="record-meta" style={{ marginTop: 6 }}>

@@ -7,6 +7,11 @@ type ReportHeaderProps = Pick<Props, "unit" | "cycle" | "report" | "now">;
 
 export function ReportHeader({ unit, cycle, report, now }: ReportHeaderProps) {
   const isOpen = cycle.status === "open";
+  const remainingText = isOpen ? remainingLabel(cycle.deadlineAt, new Date(now)) : "終了";
+  const submittedAt = report?.submittedAt;
+  const hasSubmittedReport = Boolean(submittedAt);
+  const submittedAtLabel = submittedAt ? formatJst(submittedAt) : "";
+
   return (
     <>
       <PageHeader className="page-head">
@@ -17,14 +22,14 @@ export function ReportHeader({ unit, cycle, report, now }: ReportHeaderProps) {
         <div className="hero-deadline">
           <Icon name="alarm-line" />
           締切 <strong>{formatJst(cycle.deadlineAt)}</strong>
-          <span className="remaining">{isOpen ? remainingLabel(cycle.deadlineAt, new Date(now)) : "終了"}</span>
+          <span className="remaining">{remainingText}</span>
         </div>
       </PageHeader>
 
-      {report?.submittedAt ? (
+      {hasSubmittedReport ? (
         <Notice className="notice">
           <Icon name="checkbox-circle-fill" />
-          提出済み（{formatJst(report.submittedAt)}）。締切までは直せます
+          提出済み（{submittedAtLabel}）。締切までは直せます
         </Notice>
       ) : (
         <Notice className="warn">

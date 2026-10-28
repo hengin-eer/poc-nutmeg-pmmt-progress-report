@@ -5,7 +5,9 @@ import { auth } from "void/client";
 type GoogleLoginProps = Pick<Props, "googleReady">;
 
 export function GoogleLogin({ googleReady }: GoogleLoginProps) {
-    function handleGoogleLogin() { return auth.signIn.social({ provider: "google", callbackURL: "/" }); }
+  function handleGoogleLogin() { return auth.signIn.social({ provider: "google", callbackURL: "/" }); }
+
+  const isGoogleUnavailable = !googleReady;
 
   return (
     <Card className="card card-lg stack">
@@ -16,13 +18,13 @@ export function GoogleLogin({ googleReady }: GoogleLoginProps) {
       <p className="sub">部門長MTの事前記入・確認事項・記録をまとめるアプリ</p>
       <Button
         className="primary"
-        disabled={!googleReady}
+        disabled={isGoogleUnavailable}
         onClick={handleGoogleLogin}
       >
         <Icon name="google-fill" />
         NUTMEG の Google アカウントでログイン
       </Button>
-      {!googleReady && <p className="hint">Google ログインはまだ設定されていません（AUTH_GOOGLE_CLIENT_ID）</p>}
+      {isGoogleUnavailable && <p className="hint">Google ログインはまだ設定されていません（AUTH_GOOGLE_CLIENT_ID）</p>}
       <p className="hint">
         <code>xx.x.xxxx.nutfes@gmail.com</code> の形式で、管理画面に登録されたアカウントだけが使えます。
       </p>

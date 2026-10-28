@@ -10,28 +10,45 @@ type MinutesCandidatesProps = Props & { state: ImportState };
 
 export function MinutesCandidates({ cycles, units, state }: MinutesCandidatesProps) {
   const { rows, form, summary, setSummary, update, selected } = state;
-    function handleSummaryChange() {
-            form.setData("summary", summary);
-            form.setData(
-              "entries",
-              selected.map(({ kind, title, body, unitId }) => ({ kind, title, body, unitId })),
-            );
-          }
+  function handleSummaryChange() {
+    form.setData("summary", summary);
+    form.setData(
+      "entries",
+      selected.map(({ kind, title, body, unitId }) => ({ kind, title, body, unitId })),
+    );
+  }
 
-  function handleCycleIdChange(e: ChangeEvent<HTMLSelectElement>) { return form.setData("cycleId", Number(e.target.value)); }
+  function handleCycleIdChange(e: ChangeEvent<HTMLSelectElement>) {
+    return form.setData("cycleId", Number(e.target.value));
+  }
 
-  function handleCandidateSelectionChange(i: number, e: ChangeEvent<HTMLInputElement>) { return update(i, { checked: e.target.checked }); }
+  function handleCandidateSelectionChange(i: number, e: ChangeEvent<HTMLInputElement>) {
+    return update(i, { checked: e.target.checked });
+  }
 
-  function handleCandidateUnitChange(i: number, e: ChangeEvent<HTMLSelectElement>) { return update(i, { unitId: e.target.value ? Number(e.target.value) : null }); }
+  function handleCandidateUnitChange(i: number, e: ChangeEvent<HTMLSelectElement>) {
+    return update(i, { unitId: e.target.value ? Number(e.target.value) : null });
+  }
 
-  function handleCandidateTitleChange(i: number, e: ChangeEvent<HTMLInputElement>) { return update(i, { title: e.target.value }); }
+  function handleCandidateTitleChange(i: number, e: ChangeEvent<HTMLInputElement>) {
+    return update(i, { title: e.target.value });
+  }
 
   function handleSummaryChange6(e: ChangeEvent<HTMLTextAreaElement>) { return setSummary(e.target.value); }
+
+  const hasNoCandidates = rows.length === 0;
+  function getCycleStatusSuffix(cy: (typeof cycles)[number]) { return cy.status === "open" ? "（受付中）" : ""; }
+  const hasCycleIdError = form.errors.cycleId;
+  function getCandidateUnitValue(r: (typeof rows)[number]) { return r.unitId ?? ""; }
+  function hasUnknownUnit(r: (typeof rows)[number]) { return r.unitName && r.unitId === null; }
+  function hasRecordDetails(r: (typeof rows)[number]) { return r.body; }
+  const hasEntriesError = form.errors.entries;
+  const isImportDisabled = form.pending || selected.length === 0;
 
   return (
     <Card as="section" className="card card-lg">
       <SectionHeader className="section-head"><span className="step">2</span><h2>確認して登録する</h2></SectionHeader>
-      {rows.length === 0 ? (
+      {hasNoCandidates ? (
         <EmptyState className="empty">左に貼り付けて「候補に分ける」を押してください</EmptyState>
       ) : (
         <Form
@@ -45,11 +62,11 @@ export function MinutesCandidates({ cycles, units, state }: MinutesCandidatesPro
               {cycles.map((cy) => (
                 <option key={cy.id} value={cy.id}>
                   {formatJst(cy.meetingAt)}
-                  {cy.status === "open" ? "（受付中）" : ""}
+                  {getCycleStatusSuffix(cy)}
                 </option>
               ))}
             </select>
-            {form.errors.cycleId && <div className="error">{form.errors.cycleId}</div>}
+            {hasCycleIdError && <div className="error">{form.errors.cycleId}</div>}
           </Field>
 
           <ul className="list" style={{ marginBottom: 12 }}>
@@ -58,7 +75,7 @@ export function MinutesCandidates({ cycles, units, state }: MinutesCandidatesPro
                 <div className="row">
                   <input type="checkbox" checked={r.checked} onChange={e => handleCandidateSelectionChange(i, e)} aria-label="登録する" />
                   <RecordPill kind={r.kind} />
-                  <select value={r.unitId ?? ""} onChange={e => handleCandidateUnitChange(i, e)} style={{ width: "auto", padding: "2px 6px", fontSize: 13 }}>
+                  <select value={getCandidateUnitValue(r)} onChange={e => handleCandidateUnitChange(i, e)} style={{ width: "auto", padding: "2px 6px", fontSize: 13 }}>
                     <option value="">ユニットなし</option>
                     {units.map((u) => (
                       <option key={u.id} value={u.id}>
@@ -66,10 +83,10 @@ export function MinutesCandidates({ cycles, units, state }: MinutesCandidatesPro
                       </option>
                     ))}
                   </select>
-                  {r.unitName && r.unitId === null && <span className="error">「{r.unitName}」が見つかりません</span>}
+                  {hasUnknownUnit(r) && <span className="error">「{r.unitName}」が見つかりません</span>}
                 </div>
                 <input type="text" value={r.title} onChange={e => handleCandidateTitleChange(i, e)} />
-                {r.body && <div className="meta body">{r.body}</div>}
+                {hasRecordDetails(r) && <div className="meta body">{r.body}</div>}
               </li>
             ))}
           </ul>
@@ -80,8 +97,8 @@ export function MinutesCandidates({ cycles, units, state }: MinutesCandidatesPro
               <textarea value={summary} onChange={handleSummaryChange6} />
             </Field>
           )}
-          {form.errors.entries && <div className="error">{form.errors.entries}</div>}
-          <Button type="submit" className="primary" disabled={form.pending || selected.length === 0}>
+          {hasEntriesError && <div className="error">{form.errors.entries}</div>}
+          <Button type="submit" className="primary" disabled={isImportDisabled}>
             {selected.length} 件を登録する
           </Button>
         </Form>

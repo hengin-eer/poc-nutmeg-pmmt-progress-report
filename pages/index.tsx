@@ -7,11 +7,12 @@ import { Card, SectionHeader } from "../components/ui";
 import type { Props } from "./index.server";
 
 export default function Dashboard({ me, cycle, cards, liveItems, openItems, pending, now }: Props) {
+  const canCreateCycle = me.isAdmin;
   if (!cycle) {
     return (
       <Card className="card card-lg narrow">
         <h1>まだ回がありません</h1>
-        <p className="lead">{me.isAdmin ? <Link href="/admin">管理画面</Link> : "局長・副局長が管理画面"}から PMMT の回を作ってください。</p>
+        <p className="lead">{canCreateCycle ? <Link href="/admin">管理画面</Link> : "局長・副局長が管理画面"}から PMMT の回を作ってください。</p>
       </Card>
     );
   }

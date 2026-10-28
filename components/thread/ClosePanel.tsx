@@ -29,17 +29,28 @@ export function ClosePanel({ nextStates, run }: ClosePanelProps) {
     if (!res.ok) setError(Object.values(res.errors)[0] ?? "");
   };
 
-    function handleSelectResolution(s: (typeof nextStates)[number]) {
-              setChosen(chosen === s ? null : s);
-              setError("");
-            }
+  function handleSelectResolution(s: (typeof nextStates)[number]) {
+    setChosen(chosen === s ? null : s);
+    setError("");
+  }
 
   function handleSubmitResolution(e: FormEvent<HTMLFormElement>) {
-            e.preventDefault();
-            submit();
-          }
+    e.preventDefault();
+    submit();
+  }
 
   function handleResolutionNoteChange(e: ChangeEvent<HTMLInputElement>) { return setNote(e.target.value); }
+
+  function getResolutionChoiceClass(s: (typeof nextStates)[number]) { return chosen === s ? "selected" : ""; }
+  function getResolutionChoiceIcon(s: (typeof nextStates)[number]) {
+    return s === "open" ? "arrow-go-back-line" : STATE_ICON(s);
+  }
+  function getResolutionChoiceLabel(s: (typeof nextStates)[number]) {
+    return s === "open" ? "未解決に戻す" : ITEM_STATE_LABEL[s];
+  }
+  const resolutionPlaceholder = chosen === "decided" ? "例: 1 週間後ろにずらす。新しい期限は 11/20" : "任意";
+  const selectedStateLabel = chosen ? ITEM_STATE_LABEL[chosen] : "";
+  const resolutionSubmitLabel = chosen === "open" ? "未解決に戻す" : `「${selectedStateLabel}」にする`;
 
   return (
     <section className="close-panel">
@@ -48,11 +59,11 @@ export function ClosePanel({ nextStates, run }: ClosePanelProps) {
           <Button
             key={s}
             type="button"
-            className={chosen === s ? "selected" : ""}
+            className={getResolutionChoiceClass(s)}
             onClick={() => handleSelectResolution(s)}
           >
-            <Icon name={s === "open" ? "arrow-go-back-line" : STATE_ICON(s)} />
-            {s === "open" ? "未解決に戻す" : ITEM_STATE_LABEL[s]}
+            <Icon name={getResolutionChoiceIcon(s)} />
+            {getResolutionChoiceLabel(s)}
           </Button>
         ))}
       </Segmented>
@@ -68,14 +79,14 @@ export function ClosePanel({ nextStates, run }: ClosePanelProps) {
               autoFocus
               value={note}
               onChange={handleResolutionNoteChange}
-              placeholder={chosen === "decided" ? "例: 1 週間後ろにずらす。新しい期限は 11/20" : "任意"}
+              placeholder={resolutionPlaceholder}
             />
           )}
           {error && <div className="error">{error}</div>}
           <div className="row">
             <span className="spacer" />
             <Button type="submit" className="primary" disabled={pending}>
-              {chosen === "open" ? "未解決に戻す" : `「${ITEM_STATE_LABEL[chosen]}」にする`}
+              {resolutionSubmitLabel}
             </Button>
           </div>
         </form>

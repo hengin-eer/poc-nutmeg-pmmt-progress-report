@@ -13,7 +13,7 @@ export function UnitPurpose({ unit, canEdit }: UnitPurposeProps) {
     if (form.wasSuccessful) setEditing(false);
   }, [form.wasSuccessful]);
 
-    function handleStartEditing() { return setEditing(true); }
+  function handleStartEditing() { return setEditing(true); }
 
   function handlePurposeChange(e: ChangeEvent<HTMLInputElement>) { return form.setData("purpose", e.target.value); }
 
@@ -21,13 +21,18 @@ export function UnitPurpose({ unit, canEdit }: UnitPurposeProps) {
 
   function handleCancelEditing() { return setEditing(false); }
 
+  const canStartEditing = canEdit && !editing;
+  const purposeText = unit.purpose;
+  const hasPurpose = Boolean(purposeText);
+  const hasUnitSummary = unit.summary;
+
   return (
     <Card as="section" className="card card-lg">
       <SectionHeader className="section-head">
         <Icon name="flag-line" className="muted" />
         <h2>何のためにやっているか</h2>
         <span className="spacer" />
-        {canEdit && !editing && (
+        {canStartEditing && (
           <IconButton className="icon-button" onClick={handleStartEditing} title="編集" aria-label="編集">
             <Icon name="pencil-line" />
           </IconButton>
@@ -60,8 +65,8 @@ export function UnitPurpose({ unit, canEdit }: UnitPurposeProps) {
         </Form>
       ) : (
         <>
-          <p className="purpose">{unit.purpose || <span className="muted">（まだ書かれていません）</span>}</p>
-          {unit.summary && <p className="md" style={{ margin: 0 }}>{unit.summary}</p>}
+          <p className="purpose">{hasPurpose ? purposeText : <span className="muted">（まだ書かれていません）</span>}</p>
+          {hasUnitSummary && <p className="md" style={{ margin: 0 }}>{unit.summary}</p>}
         </>
       )}
     </Card>

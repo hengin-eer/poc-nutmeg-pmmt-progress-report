@@ -21,16 +21,18 @@ export function CommentForm({ run }: CommentFormProps) {
     } else setError(Object.values(res.errors)[0] ?? "");
   };
 
-    function handleSubmitComment(e: FormEvent<HTMLFormElement>) {
-        e.preventDefault();
-        submit();
-      }
+  function handleSubmitComment(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    submit();
+  }
 
   function handleCommentChange(e: ChangeEvent<HTMLTextAreaElement>) { return setBody(e.target.value); }
 
   function handleCommentKeyDown(e: KeyboardEvent<HTMLTextAreaElement>) {
-          if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) submit();
-        }
+    if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) submit();
+  }
+
+  const isCommentSubmissionDisabled = pending || !body.trim();
 
   return (
     <form
@@ -44,7 +46,7 @@ export function CommentForm({ run }: CommentFormProps) {
         placeholder="コメントする（Ctrl + Enter で送信）"
         rows={2}
       />
-      <Button type="submit" className="primary icon-only" disabled={pending || !body.trim()} aria-label="送信" title="送信">
+      <Button type="submit" className="primary icon-only" disabled={isCommentSubmissionDisabled} aria-label="送信" title="送信">
         <Icon name="send-plane-2-fill" />
       </Button>
       {error && <div className="error">{error}</div>}

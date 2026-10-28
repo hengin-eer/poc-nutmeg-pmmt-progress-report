@@ -36,10 +36,10 @@ export function ThreadDrawer({ id, onClose }: ThreadDrawerProps) {
     };
   }, [close]);
 
-    function handleThreadChange(d: ThreadData) {
-                changed.current = true;
-                setData(d);
-              }
+  function handleThreadChange(d: ThreadData) {
+    changed.current = true;
+    setData(d);
+  }
 
   return (
     <div className="drawer-root" role="dialog" aria-modal="true" aria-label="スレッド">
