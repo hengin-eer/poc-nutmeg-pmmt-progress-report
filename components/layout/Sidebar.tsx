@@ -1,31 +1,31 @@
-import { Link } from "@void/react";
+
 import type { ReactNode } from "react";
 import type { Me } from "../../lib/server";
-import { Icon, IconButton } from "../ui";
+import { Avatar, BrandMark, Icon, IconButton, Link } from "../ui";
 
 export function Sidebar({ me, demo, logout, children }: { me: Me; demo: boolean; logout: () => void; children: ReactNode }) {
   return (
-        <aside className="sidebar">
-          <Link href="/" className="brand">
-            <span className="brand-mark">N</span>
+        <aside className="sticky top-0 flex h-screen flex-col gap-6 border-r border-border bg-surface px-4 pt-6 pb-6 max-md:hidden">
+          <Link href="/"  className="flex items-center gap-2 px-2 text-body tracking-wide text-text hover:no-underline [&_b]:text-accent">
+            <BrandMark>N</BrandMark>
             <span>
               NUTMEG <b>PMMT</b>
             </span>
           </Link>
-          <nav className="nav">{children}</nav>
-          <div className="sidebar-foot">
-            <div className="me">
-              <div className="avatar" aria-hidden="true">
+          <nav className="flex flex-col gap-1">{children}</nav>
+          <div className="mt-auto">
+            <div className="flex items-center gap-2 rounded-xl bg-surface-2 p-2">
+              <Avatar aria-hidden="true">
                 {me.name.slice(0, 1)}
-              </div>
-              <div className="me-text">
-                <div className="me-name">{me.name}</div>
-                <div className="meta">
+              </Avatar>
+              <div className="min-w-0 flex-1 leading-snug">
+                <div className="truncate text-meta font-bold">{me.name}</div>
+                <div className="text-caption text-muted">
                   {me.unitName ?? "ユニットなし"}
-                  {demo && <span className="demo-badge">デモ</span>}
+                  {demo && <span className="ml-2 rounded-full bg-yellow-soft px-2 py-px text-caption font-bold text-yellow">デモ</span>}
                 </div>
               </div>
-              <IconButton type="button" className="icon-button" onClick={logout} title="ログアウト" aria-label="ログアウト">
+              <IconButton type="button"  onClick={logout} title="ログアウト" aria-label="ログアウト">
                 <Icon name="logout-box-r-line" />
               </IconButton>
             </div>
