@@ -94,7 +94,6 @@ table { width: 100%; border-collapse: collapse; font-size: 14px; }
 th, td { text-align: left; padding: 12px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
 th { color: var(--muted); font-weight: 700; font-size: 12px; }
 tr:last-child td { border-bottom: 0; }
-.table-wrap { overflow-x: auto; }
 
 .login { max-width: 460px; margin: 10vh auto; padding: 0 16px; }
 
@@ -111,7 +110,6 @@ tr:last-child td { border-bottom: 0; }
 /* ---------- 記録 ---------- */
 
 /* ---------- ユニット ---------- */
-.step { width: 26px; height: 26px; border-radius: 50%; background: var(--text); color: var(--bg); display: grid; place-items: center; font-weight: 800; font-size: 13px; flex: none; }
 
 /* ---------- Markdown ---------- */
 .markdown { font-size: 14.5px; line-height: 1.7; overflow-wrap: anywhere; min-width: 0; }

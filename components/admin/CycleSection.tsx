@@ -1,6 +1,6 @@
 import { action, Form, useForm } from "@void/react";
 import { useState } from "react";
-import { Button, Card, Icon, Pill, SectionHeader } from "../ui";
+import { Button, Card, Icon, Input, Label, Pill, Row, SectionHeader, Table } from "../ui";
 import { formatJst, toJstInput } from "../../lib/domain";
 import { type Props } from "../../pages/admin/index.server";
 
@@ -10,31 +10,31 @@ export function CycleSection({ cycles, defaults, unitCount }: Pick<Props, "cycle
   const [deadline, setDeadline] = useState("");
 
   return (
-    <Card as="section" className="card card-lg">
-      <SectionHeader className="section-head">
-        <Icon name="calendar-event-line" className="muted" />
-        <h2>PMMT の回</h2>
+    <Card as="section" size="large">
+      <SectionHeader>
+        <Icon name="calendar-event-line" className="text-muted" />
+        <h2 className="text-heading font-bold text-text">PMMT の回</h2>
       </SectionHeader>
-      <Form form={form} className="row" style={{ alignItems: "flex-end", marginBottom: 12, gap: 16 }}>
-        <div style={{ flex: 1, minWidth: 200 }}>
-          <label htmlFor="meetingAt">PMMT の日時</label>
-          <input id="meetingAt" type="datetime-local" value={form.data.meetingAt} onChange={(e) => form.setData("meetingAt", e.target.value)} />
+      <Form form={form} className="flex flex-wrap items-center gap-2 items-end mb-3 gap-4">
+        <div className="flex-1 min-w-[200px]">
+          <Label htmlFor="meetingAt">PMMT の日時</Label>
+          <Input id="meetingAt" type="datetime-local" value={form.data.meetingAt} onChange={(e) => form.setData("meetingAt", e.target.value)} />
         </div>
-        <div style={{ flex: 1, minWidth: 200 }}>
-          <label htmlFor="deadlineAt">
-            事前記入の締切 <span className="hint">二枚看板の打ち合わせの前</span>
-          </label>
-          <input id="deadlineAt" type="datetime-local" value={form.data.deadlineAt} onChange={(e) => form.setData("deadlineAt", e.target.value)} />
+        <div className="flex-1 min-w-[200px]">
+          <Label htmlFor="deadlineAt">
+            事前記入の締切 <span className="text-caption font-normal text-muted">二枚看板の打ち合わせの前</span>
+          </Label>
+          <Input id="deadlineAt" type="datetime-local" value={form.data.deadlineAt} onChange={(e) => form.setData("deadlineAt", e.target.value)} />
         </div>
-        <Button type="submit" className="primary" disabled={form.pending}>
+        <Button type="submit"  variant="primary" disabled={form.pending}>
           回を作る
         </Button>
       </Form>
-      {form.errors.deadlineAt && <p className="error">{form.errors.deadlineAt}</p>}
-      <p className="hint" style={{ marginBottom: 24 }}>新しい回を作ると、開いている回は自動で閉じます（「当日に話す」の残りは先送りとして記録）。過去の日付で作ると、取り込み用の「閉じた回」になります。</p>
+      {form.errors.deadlineAt && <p className="mt-2 text-caption text-red">{form.errors.deadlineAt}</p>}
+      <p className="text-caption font-normal text-muted mb-6">新しい回を作ると、開いている回は自動で閉じます（「当日に話す」の残りは先送りとして記録）。過去の日付で作ると、取り込み用の「閉じた回」になります。</p>
 
-      <div className="table-wrap">
-        <table>
+      <div className="overflow-x-auto">
+        <Table>
           <thead>
             <tr>
               <th>PMMT</th>
@@ -50,10 +50,10 @@ export function CycleSection({ cycles, defaults, unitCount }: Pick<Props, "cycle
                 <td>{formatJst(cy.meetingAt)}</td>
                 <td>
                   {editing === cy.id ? (
-                    <div className="row">
-                      <input type="datetime-local" value={deadline} onChange={(e) => setDeadline(e.target.value)} style={{ width: "auto" }} />
+                    <Row>
+                      <Input type="datetime-local" value={deadline} onChange={(e) => setDeadline(e.target.value)} data-tw="w-auto" />
                       <Button
-                        className="small primary"
+                         variant="primary" size="small"
                         onClick={async () => {
                           await action("/admin?updateDeadline", { data: { id: cy.id, deadlineAt: deadline } });
                           setEditing(null);
@@ -61,13 +61,13 @@ export function CycleSection({ cycles, defaults, unitCount }: Pick<Props, "cycle
                       >
                         保存
                       </Button>
-                    </div>
+                    </Row>
                   ) : (
-                    <span className="row">
+                    <span className="flex flex-wrap items-center gap-2">
                       {formatJst(cy.deadlineAt)}
                       {cy.status === "open" && (
                         <Button
-                          className="ghost small"
+                           variant="ghost" size="small"
                           onClick={() => {
                             setEditing(cy.id);
                             setDeadline(toJstInput(cy.deadlineAt));
@@ -82,10 +82,10 @@ export function CycleSection({ cycles, defaults, unitCount }: Pick<Props, "cycle
                 <td>
                   {cy.submitted} / {unitCount}
                 </td>
-                <td>{cy.status === "open" ? <Pill className="pill green">受付中</Pill> : <Pill className="pill">終了</Pill>}</td>
+                <td>{cy.status === "open" ? <Pill className="green">受付中</Pill> : <Pill>終了</Pill>}</td>
                 <td>
                   {cy.status === "open" && (
-                    <Button className="small" onClick={() => confirm("この回を閉じますか？") && action("/admin?closeCycle", { data: { id: cy.id } })}>
+                    <Button  size="small" onClick={() => confirm("この回を閉じますか？") && action("/admin?closeCycle", { data: { id: cy.id } })}>
                       閉じる
                     </Button>
                   )}
@@ -93,7 +93,7 @@ export function CycleSection({ cycles, defaults, unitCount }: Pick<Props, "cycle
               </tr>
             ))}
           </tbody>
-        </table>
+        </Table>
       </div>
     </Card>
   );
