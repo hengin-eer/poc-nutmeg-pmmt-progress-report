@@ -443,10 +443,16 @@ button.source { font: inherit; font-size: 12px; font-weight: 700; padding: 2px 8
 .markdown a { text-decoration: underline; }
 .markdown blockquote { margin: 8px 0; padding-left: 12px; border-left: 3px solid var(--border); color: var(--text-2); }
 .markdown img { max-width: 100%; height: auto; }
-.markdown-switch { margin-bottom: 8px; align-items: center; }
-.markdown-switch button:focus-visible { outline: 3px solid var(--accent-soft); outline-offset: 2px; }
-.markdown-preview { min-height: 96px; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; background: var(--surface); }
-.markdown-preview[hidden] { display: none; }
+.markdown-editor { border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); transition: border-color 0.15s, background-color 0.15s, outline-color 0.15s; outline: 3px solid transparent; }
+.markdown-editor:focus-within { outline-color: var(--accent-soft); border-color: var(--accent); }
+.markdown-editor-header { display: flex; gap: 4px; padding: 8px 8px 0; border-bottom: 1px solid var(--border); border-radius: var(--radius-sm) var(--radius-sm) 0 0; background: var(--surface-2); }
+.markdown-editor-header [role="tab"] { margin-bottom: -1px; padding: 8px 12px; border: 1px solid transparent; border-radius: 8px 8px 0 0; background: transparent; color: var(--muted); transition: color 0.15s, background-color 0.15s, border-color 0.15s; }
+.markdown-editor-header [role="tab"][aria-selected="true"] { background: var(--surface); color: var(--text); border-color: var(--border); border-bottom-color: var(--surface); }
+.markdown-editor-header [role="tab"]:focus-visible { outline: 2px solid var(--accent); outline-offset: -4px; }
+.markdown-editor textarea, .markdown-preview { min-height: 160px; width: 100%; padding: 12px; border: 0; border-radius: 0 0 var(--radius-sm) var(--radius-sm); background: var(--surface); line-height: 1.7; transition: background-color 0.15s, color 0.15s; }
+.markdown-editor textarea { display: block; }
+.markdown-editor textarea:focus, .markdown-preview:focus { outline: none; }
+.markdown-editor [role="tabpanel"][hidden] { display: none; }
 .unit-card .name { color: var(--text); }
 .unit-card .markdown.excerpt { white-space: normal; max-height: 4.95em; }
 .unit-card .excerpt :is(h1, h2, h3, h4, h5, h6) { font-size: 1em; margin: 0; line-height: inherit; }

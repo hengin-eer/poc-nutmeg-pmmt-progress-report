@@ -116,12 +116,12 @@ export default function ReportPage({ unit, cycle, report, myItems, pending, now 
               {form.errors.busyness && <div className="error">{form.errors.busyness}</div>}
             </div>
 
-            <MarkdownEditor id="done" label="今週やったこと" hint="1〜3 行。当日は話さないので、読めばわかるように"
+            <MarkdownEditor id="done" label="今週やったこと" hint="やったこと・結果・遅れを箇条書きで。数字やリンク、関わった局も添えると、当日聞かなくても伝わります"
               value={form.data.done ?? ""} onChange={(value) => form.setData("done", value)}
-              placeholder={"- ○○の画面を作った\n- △△局と打ち合わせ"} error={form.errors.done} />
-            <MarkdownEditor id="next" label="次にやること" hint="次の回の確認に使います"
+              placeholder={"- ○○の画面を作った（PR #12）\n- △△局と打ち合わせ → 11/10 までに仕様を確定\n- 遅れ：□□（理由と、いつまでに戻すか）"} error={form.errors.done} />
+            <MarkdownEditor id="next" label="次にやること" hint="次の回までにやること。担当と期限があれば添えて"
               value={form.data.next ?? ""} onChange={(value) => form.setData("next", value)}
-              placeholder="- ○○のレビュー" error={form.errors.next} />
+              placeholder="- ○○のレビュー（佐藤・11/6）" error={form.errors.next} />
 
             {form.error && <p className="error">{form.error.message}</p>}
             <div className="row" style={{ marginTop: 8 }}>

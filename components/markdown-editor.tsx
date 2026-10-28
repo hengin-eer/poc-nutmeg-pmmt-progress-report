@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Markdown } from "./markdown";
 import { Icon } from "./ui";
 
@@ -12,25 +12,46 @@ export function MarkdownEditor({ id, label, hint, value, onChange, placeholder, 
   error?: string;
 }) {
   const [preview, setPreview] = useState(false);
+  const tabs = useRef<(HTMLButtonElement | null)[]>([]);
   return (
     <div className="field">
       <div className="field-label">
         <label id={`${id}-label`} htmlFor={id}>{label}</label>
         <span id={`${id}-hint`} className="hint">{hint}</span>
       </div>
-      <div className="segmented markdown-switch" role="group" aria-label={`${label}の表示切り替え`}>
-        <button type="button" className={!preview ? "selected" : ""} aria-pressed={!preview} aria-controls={id} onClick={() => setPreview(false)}>
-          <Icon name="edit-line" />書く
-        </button>
-        <button type="button" className={preview ? "selected" : ""} aria-pressed={preview} aria-controls={`${id}-preview`} onClick={() => setPreview(true)}>
-          <Icon name="eye-line" />プレビュー
-        </button>
-        <span className="hint">Markdown で書けます</span>
-      </div>
-      <textarea id={id} hidden={preview} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder}
-        aria-describedby={`${id}-hint${error ? ` ${id}-error` : ""}`} aria-invalid={!!error} />
-      <div id={`${id}-preview`} hidden={!preview} className="markdown-preview" role="region" aria-labelledby={`${id}-label`}>
-        {preview && (value.trim() ? <Markdown>{value}</Markdown> : <p className="empty">まだ記入されていません</p>)}
+      <div className="markdown-editor">
+        <div className="markdown-editor-header" role="tablist" aria-label={`${label}の表示切り替え`}>
+          {([false, true] as const).map((isPreview, index) => (
+            <button
+              key={String(isPreview)} ref={(node) => { tabs.current[index] = node; }}
+              type="button" role="tab" id={`${id}-tab-${index}`}
+              aria-selected={preview === isPreview} tabIndex={preview === isPreview ? 0 : -1}
+              aria-controls={isPreview ? `${id}-preview` : `${id}-write`}
+              onClick={() => setPreview(isPreview)}
+              onKeyDown={(event) => {
+                let target: number;
+                if (event.key === "ArrowLeft" || event.key === "ArrowRight") target = 1 - index;
+                else if (event.key === "Home") target = 0;
+                else if (event.key === "End") target = 1;
+                else return;
+                event.preventDefault();
+                setPreview(target === 1);
+                tabs.current[target]?.focus();
+              }}
+            >
+              <Icon name={isPreview ? "eye-line" : "edit-line"} />
+              {isPreview ? "プレビュー" : "書く"}
+            </button>
+          ))}
+        </div>
+        <div id={`${id}-write`} role="tabpanel" aria-labelledby={`${id}-tab-0`} hidden={preview}>
+          <textarea id={id} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder}
+            aria-describedby={`${id}-hint${error ? ` ${id}-error` : ""}`} aria-invalid={!!error} />
+        </div>
+        <div id={`${id}-preview`} hidden={!preview} className="markdown-preview" role="tabpanel"
+          aria-labelledby={`${id}-tab-1`} tabIndex={0}>
+          {preview && (value.trim() ? <Markdown>{value}</Markdown> : <p className="empty">まだ記入されていません</p>)}
+        </div>
       </div>
       {error && <div id={`${id}-error`} className="error">{error}</div>}
     </div>
