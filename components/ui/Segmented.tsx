@@ -1,8 +1,8 @@
 import type { ComponentProps } from "react";
-import { withBase } from "./classes";
+import { twMerge } from "./styles";
 
 type SegmentedProps = ComponentProps<"div">;
 
 export function Segmented({ className, ...props }: SegmentedProps) {
-  return <div {...props} className={withBase("segmented", className)} />;
+  return <div {...props} data-slot="segmented" className={twMerge("flex flex-wrap gap-2", className)} />;
 }

@@ -84,8 +84,7 @@ crons/notify.ts         毎時：締切前のリマインドと締切の通知
 pages/                  画面（*.server.ts がデータの読み込みと操作）
 routes/api/records.md.ts 記録の Markdown 書き出し
 routes/api/items/[id].ts スレッドの JSON API（ページ遷移なしで開くパネル用）
-pages/app.css           Tailwind CSS v4 の入口（テーマ・ユーティリティ）
-pages/style.css         既存スタイル（PR A では維持）
+pages/app.css           Tailwind CSS v4 の入口・テーマ・最小限の base
 components/ui/          Button・Card・Pill・ヘッダー・フォーム枠などの汎用 UI
 components/domain.tsx   進捗・忙しさ・確認事項の状態・記録の種別などのドメイン部品
 components/layout/     Shell・Sidebar・MobileMenu
@@ -99,13 +98,15 @@ components/login/      Google ログイン・デモ用ログイン
 components/markdown.tsx, markdown-editor.tsx  Markdown 表示・入力
 ```
 
-## スタイルの移行（Issue #4）
+## スタイルとトークン（Issue #4）
 
-PR A では `@tailwindcss/vite` を導入し、既存の HTML 要素・クラス名・`pages/style.css` を維持してコンポーネントを分割しています。汎用 UI はドメインの状態を知らず、`components/domain.tsx` が `Pill` などを組み合わせます。ボタンのバリアントは `tailwind-variants`、クラスの結合は `tailwind-merge` を使います。
+`pages/app.css` から Tailwind CSS v4 と Preflight を読み込みます。`pages/style.css` は削除し、表示はコンポーネントのユーティリティと `tailwind-variants` のバリアント・slots で定義しています。ダークモードは `prefers-color-scheme` で切り替わります。
 
-`pages/app.css` は `@import "tailwindcss"` のテーマ・ユーティリティ部分だけを読み込みます。[Preflight を外す公式手順](https://tailwindcss.com/docs/preflight#disabling-preflight)に従い、ブラウザー標準の見出し・リスト・フォームなどの表示を変えるリセットを避けています。既存スタイルはその後に読み込みます。また、ログイン画面の既存クラス `container` への幅制限を防ぐため、同名の Tailwind ユーティリティの生成を除外しています。
+色は既存の `:root` の CSS 変数を `@theme inline` で参照します。使う色は `bg`・`surface`・`surface-2`・`border`・`text`・`text-2`・`muted`・`accent` / `accent-soft` と、`green`・`yellow`・`red`・`purple`（各 `-soft` を含む）です。標準パレットは外し、白とオーバーレイ色だけを補っています。
 
-PR B で CSS 変数を `@theme inline` のトークンに対応付け、各コンポーネントと Markdown 要素を Tailwind クラスへ移植し、`pages/style.css` を削除します。ダークモードの `prefers-color-scheme` と 900px・600px の切り替えは維持します。
+文字は `display`（2.6rem / 1.1）・`title`（1.75rem / 1.35）・`heading`（1.15rem / 1.35）・`subheading`（1rem / 1.35）・`body`（15px / 1.7）・`meta`（14px / 1.6）・`caption`（13px / 1.5）。角丸は `card` / `control`、影は `card` / `panel`、サイドバー幅は `sidebar` です。ブレークポイントは `sm=600px`・`md=900px` とし、旧 max-width 条件は `max-sm:` / `max-md:` で記述します。余白は主に 1・2・3・4・6・8・10・12 の 4px 刻みを使い、浮動メニューと重ならない本文末尾には大きい余白を確保しています。
+
+`components/ui/styles.ts` では独自トークンをクラス結合処理へ登録し、文字サイズと文字色の衝突を防ぎます。UI 部品はドメインを知らず、進捗・忙しさ・記録の種別などは `components/domain.tsx` が扱います。Markdown は `react-markdown` の `components` で要素別に装飾し、typography プラグインは使いません。
 
 ## 議事録スキル
 

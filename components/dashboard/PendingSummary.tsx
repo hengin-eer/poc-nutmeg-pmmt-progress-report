@@ -1,11 +1,11 @@
-import { Link } from "@void/react";
-import type { Props } from "../../pages/index.server";
+import { type Props } from "../../pages/index.server";
 import { RecordPill } from "../domain";
-import { Badge, Card, EmptyState, Icon, SectionHeader } from "../ui";
-
-type PendingRecord = Props["pending"][number];
+import { Badge, Card, EmptyState, Icon, Link, List, SectionHeader } from "../ui";
+import { headingStyles, textStyles } from "../ui/styles";
 
 type PendingSummaryProps = Pick<Props, "pending">;
+
+type PendingRecord = Props["pending"][number];
 
 export function PendingSummary({ pending }: PendingSummaryProps) {
   const hasNoPendingRecords = pending.length === 0;
@@ -15,26 +15,26 @@ export function PendingSummary({ pending }: PendingSummaryProps) {
   }
 
   return (
-    <Card as="section" className="card section">
-      <SectionHeader className="section-head">
-        <Icon name="arrow-go-forward-line" className="muted" />
-        <h2>持ち越し中</h2>
-        <Badge className="count">{pending.length}</Badge>
+    <Card as="section" className="mt-10">
+      <SectionHeader>
+        <Icon name="arrow-go-forward-line" className="text-muted" />
+        <h2 className={headingStyles({ level: "heading" })}>持ち越し中</h2>
+        <Badge>{pending.length}</Badge>
       </SectionHeader>
       {hasNoPendingRecords ? (
-        <EmptyState className="empty">持ち越しているものはありません</EmptyState>
+        <EmptyState>持ち越しているものはありません</EmptyState>
       ) : (
-        <ul className="list">
+        <List>
           {pending.map((p) => (
-            <li key={p.id} className="row" style={{ gap: 12 }}>
+            <li key={p.id} className="flex flex-wrap items-center gap-3">
               <RecordPill kind={p.kind} />
-              <span style={{ flex: 1, minWidth: 0 }}>{p.title}</span>
-              {hasUnitName(p) && <span className="meta">{p.unitName}</span>}
+              <span className="flex-1 min-w-0">{p.title}</span>
+              {hasUnitName(p) && <span className={textStyles({ role: "meta" })}>{p.unitName}</span>}
             </li>
           ))}
-        </ul>
+        </List>
       )}
-      <Link href="/records?status=pending" className="more">
+      <Link href="/records?status=pending" className="mt-4 inline-flex items-center gap-1 text-meta font-semibold text-accent hover:underline">
         記録を見る <Icon name="arrow-right-line" />
       </Link>
     </Card>

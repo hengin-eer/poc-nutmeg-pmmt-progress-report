@@ -1,6 +1,6 @@
-import { Link } from "@void/react";
 import { ItemRow, type ItemSummary } from "../thread";
-import { Badge, Card, EmptyState, Icon, SectionHeader } from "../ui";
+import { Badge, Card, EmptyState, Icon, Link, List, SectionHeader } from "../ui";
+import { headingStyles } from "../ui/styles";
 
 type ItemListProps = {
   title: string;
@@ -15,20 +15,20 @@ export function ItemList({ title, icon, items, empty, moreHref, moreLabel }: Ite
   const hasNoItems = items.length === 0;
 
   return (
-    <Card as="section" className="card">
-      <SectionHeader className="section-head">
-        <Icon name={icon} className="muted" />
-        <h2>{title}</h2>
-        <Badge className="count">{items.length}</Badge>
+    <Card as="section">
+      <SectionHeader>
+        <Icon name={icon} className="text-muted" />
+        <h2 className={headingStyles({ level: "heading" })}>{title}</h2>
+        <Badge>{items.length}</Badge>
       </SectionHeader>
       {hasNoItems ? (
-        <EmptyState className="empty">{empty}</EmptyState>
+        <EmptyState>{empty}</EmptyState>
       ) : (
-        <ul className="list">
+        <List>
           {items.map((i) => <ItemRow key={i.id} item={i} showState={false} />)}
-        </ul>
+        </List>
       )}
-      {moreHref && <Link href={moreHref} className="more">{moreLabel} <Icon name="arrow-right-line" /></Link>}
+      {moreHref && <Link href={moreHref} className="mt-4 inline-flex items-center gap-1 text-meta font-semibold text-accent hover:underline">{moreLabel} <Icon name="arrow-right-line" /></Link>}
     </Card>
   );
 }

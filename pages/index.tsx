@@ -1,18 +1,18 @@
-import { Link } from "@void/react";
 import { Hero } from "../components/dashboard/Hero";
 import { ItemList } from "../components/dashboard/ItemList";
 import { PendingSummary } from "../components/dashboard/PendingSummary";
 import { UnitCard } from "../components/dashboard/UnitCard";
-import { Card, SectionHeader } from "../components/ui";
-import type { Props } from "./index.server";
+import { Card, Grid, Link, SectionHeader } from "../components/ui";
+import { headingStyles, textStyles } from "../components/ui/styles";
+import { type Props } from "./index.server";
 
 export default function Dashboard({ me, cycle, cards, liveItems, openItems, pending, now }: Props) {
   const canCreateCycle = me.isAdmin;
   if (!cycle) {
     return (
-      <Card className="card card-lg narrow">
-        <h1>まだ回がありません</h1>
-        <p className="lead">{canCreateCycle ? <Link href="/admin">管理画面</Link> : "局長・副局長が管理画面"}から PMMT の回を作ってください。</p>
+      <Card size="large" className="max-w-[820px]">
+        <h1 className={headingStyles({ level: "title" })}>まだ回がありません</h1>
+        <p className={textStyles({ className: "mb-3", role: "lead" })}>{canCreateCycle ? <Link href="/admin">管理画面</Link> : "局長・副局長が管理画面"}から PMMT の回を作ってください。</p>
       </Card>
     );
   }
@@ -20,16 +20,16 @@ export default function Dashboard({ me, cycle, cards, liveItems, openItems, pend
   return (
     <>
       <Hero cycle={cycle} cards={cards} unitId={me.unitId} now={now} />
-      <section className="section">
-        <SectionHeader className="section-head"><h2>各ユニット</h2></SectionHeader>
-        <div className="grid grid-cards">
+      <section className="mt-10">
+        <SectionHeader><h2 className={headingStyles({ level: "heading" })}>各ユニット</h2></SectionHeader>
+        <Grid columns="cards">
           {cards.map((card) => <UnitCard key={card.id} card={card} />)}
-        </div>
+        </Grid>
       </section>
-      <div className="grid grid-2 section">
+      <Grid columns="two" className="mt-10">
         <ItemList title="当日に話すこと" icon="mic-line" items={liveItems} empty="今のところ、当日の議題はありません" />
         <ItemList title="未解決の確認事項" icon="question-answer-line" items={openItems} empty="未解決の確認事項はありません" moreHref="/items" moreLabel="すべての確認事項" />
-      </div>
+      </Grid>
       <PendingSummary pending={pending} />
     </>
   );

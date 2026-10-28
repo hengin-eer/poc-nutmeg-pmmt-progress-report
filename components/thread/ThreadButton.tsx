@@ -13,7 +13,7 @@ export function ThreadButton({ id, comments = 0 }: ThreadButtonProps) {
   }
 
   return (
-    <IconButton type="button" className="icon-button" onClick={handleOpenThread} title="スレッドを開く" aria-label="スレッドを開く">
+    <IconButton type="button" onClick={handleOpenThread} title="スレッドを開く" aria-label="スレッドを開く">
       <Icon name="chat-3-line" />
       {hasComments && <span>{comments}</span>}
     </IconButton>

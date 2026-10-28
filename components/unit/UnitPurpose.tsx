@@ -1,8 +1,8 @@
 import { Form, useForm } from "@void/react";
-import type { ChangeEvent } from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ChangeEvent } from "react";
 import { type Props } from "../../pages/units/[id].server";
-import { Button, Card, Field, Icon, IconButton, SectionHeader } from "../ui";
+import { Button, Card, Field, FieldLabel, Icon, IconButton, Input, Label, Row, SectionHeader, Textarea } from "../ui";
+import { headingStyles, textStyles } from "../ui/styles";
 
 type UnitPurposeProps = Pick<Props, "unit" | "canEdit">;
 
@@ -13,6 +13,7 @@ export function UnitPurpose({ unit, canEdit }: UnitPurposeProps) {
   useEffect(() => {
     if (form.wasSuccessful) setEditing(false);
   }, [form.wasSuccessful]);
+
   const canStartEditing = canEdit && !editing;
   const purposeText = unit.purpose;
   const hasPurpose = Boolean(purposeText);
@@ -35,46 +36,46 @@ export function UnitPurpose({ unit, canEdit }: UnitPurposeProps) {
   }
 
   return (
-    <Card as="section" className="card card-lg">
-      <SectionHeader className="section-head">
-        <Icon name="flag-line" className="muted" />
-        <h2>何のためにやっているか</h2>
-        <span className="spacer" />
+    <Card as="section" size="large">
+      <SectionHeader>
+        <Icon name="flag-line" className="text-muted" />
+        <h2 className={headingStyles({ level: "heading" })}>何のためにやっているか</h2>
+        <span className="flex-1" />
         {canStartEditing && (
-          <IconButton className="icon-button" onClick={handleStartEditing} title="編集" aria-label="編集">
+          <IconButton onClick={handleStartEditing} title="編集" aria-label="編集">
             <Icon name="pencil-line" />
           </IconButton>
         )}
       </SectionHeader>
       {editing ? (
         <Form form={form}>
-          <Field className="field">
-            <div className="field-label">
-              <label htmlFor="purpose">目的</label>
-              <span className="hint">一文で。新入生が読んでもわかるように</span>
-            </div>
-            <input id="purpose" type="text" value={form.data.purpose} onChange={handlePurposeChange} />
+          <Field>
+            <FieldLabel>
+              <Label htmlFor="purpose">目的</Label>
+              <span className={textStyles({ role: "hint" })}>一文で。新入生が読んでもわかるように</span>
+            </FieldLabel>
+            <Input id="purpose" type="text" value={form.data.purpose} onChange={handlePurposeChange} />
           </Field>
-          <Field className="field">
-            <div className="field-label">
-              <label htmlFor="summary">概要</label>
-            </div>
-            <textarea id="summary" value={form.data.summary} onChange={handleSummaryChange} />
+          <Field>
+            <FieldLabel>
+              <Label htmlFor="summary">概要</Label>
+            </FieldLabel>
+            <Textarea id="summary" value={form.data.summary} onChange={handleSummaryChange} />
           </Field>
-          <div className="row">
-            <span className="spacer" />
-            <Button type="button" className="ghost" onClick={handleCancelEditing}>
+          <Row>
+            <span className="flex-1" />
+            <Button type="button" variant="ghost" onClick={handleCancelEditing}>
               やめる
             </Button>
-            <Button type="submit" className="primary" disabled={form.pending}>
+            <Button type="submit" variant="primary" disabled={form.pending}>
               保存
             </Button>
-          </div>
+          </Row>
         </Form>
       ) : (
         <>
-          <p className="purpose">{hasPurpose ? purposeText : <span className="muted">（まだ書かれていません）</span>}</p>
-          {hasUnitSummary && <p className="md" style={{ margin: 0 }}>{unit.summary}</p>}
+          <p className="mb-2 text-heading leading-relaxed font-bold">{hasPurpose ? purposeText : <span className="text-muted">（まだ書かれていません）</span>}</p>
+          {hasUnitSummary && <p className="whitespace-pre-wrap text-meta text-text-2 m-0">{unit.summary}</p>}
         </>
       )}
     </Card>

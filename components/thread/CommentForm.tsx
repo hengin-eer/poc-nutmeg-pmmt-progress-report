@@ -1,7 +1,7 @@
-import type { ChangeEvent, FormEvent, KeyboardEvent } from "react";
-import { useState } from "react";
-import { Button, Icon } from "../ui";
-import type { Result } from "./request";
+import { useState, type ChangeEvent, type FormEvent, type KeyboardEvent } from "react";
+import { Button, Icon, Textarea } from "../ui";
+import { textStyles } from "../ui/styles";
+import { type Result } from "./request";
 
 type CommentFormProps = { run: (p: Record<string, unknown>) => Promise<Result> };
 
@@ -37,20 +37,20 @@ export function CommentForm({ run }: CommentFormProps) {
 
   return (
     <form
-      className="comment-form"
+      className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-2 [&_textarea]:min-h-12 [&_[role=alert]]:col-span-full"
       onSubmit={handleSubmitComment}
     >
-      <textarea
+      <Textarea
         value={body}
         onChange={handleCommentChange}
         onKeyDown={handleCommentKeyDown}
         placeholder="コメントする（Ctrl + Enter で送信）"
         rows={2}
       />
-      <Button type="submit" className="primary icon-only" disabled={isCommentSubmissionDisabled} aria-label="送信" title="送信">
+      <Button type="submit" variant="primary" size="icon" disabled={isCommentSubmissionDisabled} aria-label="送信" title="送信">
         <Icon name="send-plane-2-fill" />
       </Button>
-      {error && <div className="error">{error}</div>}
+      {error && <div className={textStyles({ role: "error" })}>{error}</div>}
     </form>
   );
 }

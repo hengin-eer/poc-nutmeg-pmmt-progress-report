@@ -2,7 +2,6 @@ import { useShared } from "@void/react";
 import "remixicon/fonts/remixicon.css";
 import { Shell } from "../components/layout/Shell";
 import "./app.css";
-import "./style.css";
 
 type LayoutProps = { children: React.ReactNode };
 

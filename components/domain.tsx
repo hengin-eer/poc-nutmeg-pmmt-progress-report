@@ -1,5 +1,6 @@
 import { ITEM_STATE_LABEL, RECORD_KIND_LABEL, type ItemKind, type ItemState, type RecordKind } from "../lib/domain";
-import { Icon, Pill, Badge } from "./ui";
+import { Badge, Dot, Icon, Pill } from "./ui";
+import { tv } from "./ui/styles";
 
 export type Progress = ProgressValue | null;
 export type UnitKind = "project" | "team" | "chief" | "vice";
@@ -28,8 +29,8 @@ export function ProgressPill({ value }: ProgressPillProps) {
   const option = getProgressOption(value);
   if (!option) return null;
   return (
-    <Pill className={`pill ${value}`}>
-      <span className={`dot ${value}`} />
+    <Pill tone={option.value}>
+      <Dot tone={option.value} />
       {option.label}
     </Pill>
   );
@@ -45,40 +46,51 @@ export const BUSY_OPTIONS = [
 export type BusyValue = (typeof BUSY_OPTIONS)[number]["value"];
 export const getBusyOption = (value: number | null) => BUSY_OPTIONS.find((option) => option.value === value);
 
-/** 3 段のメーター。label を付けるとアイコンと文字も出す */
+const busy = tv({
+  slots: {
+    root: "inline-flex items-center gap-2 text-caption font-semibold text-text-2 [&_i]:text-base",
+    meter: "inline-flex h-[14px] items-end gap-[2px]",
+    bar: "w-[5px] rounded-[2px] bg-border nth-1:h-[6px] nth-2:h-[10px] nth-3:h-[14px]",
+  },
+  variants: {
+    level: { 1: { bar: "data-[on=true]:bg-green" }, 2: { bar: "data-[on=true]:bg-yellow" }, 3: { root: "text-red", bar: "data-[on=true]:bg-red" } },
+  },
+});
+
+/** 3 段のメーター。label を付けるとアイコンと文字も出す。 */
 type BusyProps = { value: number | null; label?: boolean };
 
 export function Busy({ value, label = false }: BusyProps) {
-  const b = getBusyOption(value);
+  const option = getBusyOption(value);
+  if (!option) return null;
+  const currentBusyness = option.value;
+  const styles = busy({ level: currentBusyness });
 
-  if (!b || !value) return null;
-  const currentBusyness = b.value;
-
-  function getBusyLevelClass(level: BusyValue) {
-    return level <= currentBusyness ? "on" : "";
+  function isBusyLevelOn(level: BusyValue) {
+    return level <= currentBusyness;
   }
 
   return (
-    <span className={`busy busy-${value}`} title={`忙しさ：${b.label}`}>
-      {label && <Icon name={b.icon} />}
-      <span className="busy-meter" aria-hidden="true">
+    <span className={styles.root()} title={`忙しさ：${option.label}`}>
+      {label && <Icon name={option.icon} />}
+      <span className={styles.meter()} aria-hidden="true">
         {BUSY_OPTIONS.map(({ value: level }) => (
-          <span key={level} className={getBusyLevelClass(level)} />
+          <span key={level} className={styles.bar()} data-on={isBusyLevelOn(level)} />
         ))}
       </span>
-      {label ? <span>{b.label}</span> : <span className="sr-only">忙しさ：{b.label}</span>}
+      {label ? <span>{option.label}</span> : <span className="sr-only">忙しさ：{option.label}</span>}
     </span>
   );
 }
 
 // ---------- 確認事項 ----------
 
-const STATE_STYLE: Record<ItemState, { cls: string; icon: string }> = {
-  open: { cls: "yellow", icon: "time-line" },
-  live: { cls: "purple", icon: "mic-line" },
-  decided: { cls: "green", icon: "check-double-line" },
-  resolved: { cls: "", icon: "check-line" },
-  deferred: { cls: "red", icon: "skip-forward-line" },
+const STATE_STYLE: Record<ItemState, { tone: "neutral" | "yellow" | "purple" | "green" | "red" | "accent"; icon: string }> = {
+  open: { tone: "yellow", icon: "time-line" },
+  live: { tone: "purple", icon: "mic-line" },
+  decided: { tone: "green", icon: "check-double-line" },
+  resolved: { tone: "neutral", icon: "check-line" },
+  deferred: { tone: "red", icon: "skip-forward-line" },
 };
 
 type StatePillProps = { state: ItemState };
@@ -86,7 +98,7 @@ type StatePillProps = { state: ItemState };
 export function StatePill({ state }: StatePillProps) {
   const s = STATE_STYLE[state];
   return (
-    <Pill className={`pill ${s.cls}`}>
+    <Pill tone={s.tone}>
       <Icon name={s.icon} />
       {ITEM_STATE_LABEL[state]}
     </Pill>
@@ -100,7 +112,7 @@ type CrossBureauProps = { on: boolean };
 
 export function CrossBureau({ on }: CrossBureauProps) {
   return on ? (
-    <Pill className="pill accent" title="他局・実行委員全体に関わる">
+    <Pill tone="accent" title="他局・実行委員全体に関わる">
       <Icon name="community-line" />
       他局
     </Pill>
@@ -132,12 +144,17 @@ export const ITEM_KIND_CONFIG: Record<ItemKind, ItemKindConfig> = {
   },
 };
 
+const kindIcon = tv({
+  base: "inline-grid size-6 shrink-0 place-items-center rounded-lg text-body",
+  variants: { kind: { confirm: "bg-accent-soft text-accent", talk: "bg-purple-soft text-purple" } },
+});
+
 /** 確認したいこと / 話したいこと。文字は出さず、アイコンだけ */
 type KindIconProps = { kind: ItemKind };
 
 export function KindIcon({ kind }: KindIconProps) {
   return (
-    <span className={`kind-icon ${kind}`} title={ITEM_KIND_CONFIG[kind].label}>
+    <span className={kindIcon({ kind })} title={ITEM_KIND_CONFIG[kind].label}>
       <Icon name={ITEM_KIND_CONFIG[kind].icon} label={ITEM_KIND_CONFIG[kind].label} />
     </span>
   );
@@ -147,20 +164,19 @@ export function KindIcon({ kind }: KindIconProps) {
 type CountsProps = { comments: number; reactions: number };
 
 export function Counts({ comments, reactions }: CountsProps) {
-  if (!comments && !reactions) return null;
   const hasComments = comments > 0;
   const hasReactions = reactions > 0;
-
+  if (!hasComments && !hasReactions) return null;
   return (
-    <span className="counts">
+    <span className="inline-flex gap-3 text-caption font-semibold text-muted">
       {hasComments && (
-        <span title={`コメント ${comments} 件`}>
+        <span className="inline-flex items-center gap-1" title={`コメント ${comments} 件`}>
           <Icon name="chat-3-line" />
           {comments}
         </span>
       )}
       {hasReactions && (
-        <span title={`リアクション ${reactions} 件`}>
+        <span className="inline-flex items-center gap-1" title={`リアクション ${reactions} 件`}>
           <Icon name="emotion-line" />
           {reactions}
         </span>
@@ -171,10 +187,10 @@ export function Counts({ comments, reactions }: CountsProps) {
 
 // ---------- 記録 ----------
 
-const RECORD_STYLE: Record<RecordKind, { cls: string; icon: string }> = {
-  decision: { cls: "green", icon: "checkbox-circle-line" },
-  todo: { cls: "accent", icon: "task-line" },
-  carryover: { cls: "red", icon: "arrow-go-forward-line" },
+const RECORD_STYLE: Record<RecordKind, { tone: "neutral" | "yellow" | "purple" | "green" | "red" | "accent"; icon: string }> = {
+  decision: { tone: "green", icon: "checkbox-circle-line" },
+  todo: { tone: "accent", icon: "task-line" },
+  carryover: { tone: "red", icon: "arrow-go-forward-line" },
 };
 
 type RecordPillProps = { kind: RecordKind };
@@ -182,7 +198,7 @@ type RecordPillProps = { kind: RecordKind };
 export function RecordPill({ kind }: RecordPillProps) {
   const s = RECORD_STYLE[kind];
   return (
-    <Pill className={`pill ${s.cls}`}>
+    <Pill tone={s.tone}>
       <Icon name={s.icon} />
       {RECORD_KIND_LABEL[kind]}
     </Pill>
@@ -201,9 +217,15 @@ type SourceBadgeProps = { source: keyof typeof SOURCE_STYLE };
 export function SourceBadge({ source }: SourceBadgeProps) {
   const s = SOURCE_STYLE[source];
   return (
-    <Badge className={`source source-${source}`}>
+    <Badge source={source}>
       <Icon name={s.icon} />
       {s.label}
     </Badge>
   );
 }
+
+/** ユニット詳細と横断一覧で共有する記録のタイトル。 */
+export const recordTitle = tv({
+  base: "text-body leading-relaxed font-bold",
+  variants: { done: { true: "text-muted line-through" } },
+});

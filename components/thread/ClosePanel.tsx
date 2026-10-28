@@ -1,9 +1,11 @@
-import type { ChangeEvent, FormEvent } from "react";
-import { useState } from "react";
+import { useState, type ChangeEvent, type FormEvent } from "react";
 import { ITEM_STATE_LABEL, type ItemState } from "../../lib/domain";
 import { STATE_ICON } from "../domain";
-import { Button, Icon, Segmented } from "../ui";
-import type { Result } from "./request";
+import { Button, Icon, Input, Row, Segmented, SegmentedButton } from "../ui";
+import { textStyles } from "../ui/styles";
+import { type Result } from "./request";
+
+type ClosePanelProps = { nextStates: ItemState[]; run: (p: Record<string, unknown>) => Promise<Result> };
 
 const CLOSE_HINT: Partial<Record<ItemState, string>> = {
   decided: "決まった内容を一言で。「決まったこと」の記録に残ります",
@@ -12,8 +14,6 @@ const CLOSE_HINT: Partial<Record<ItemState, string>> = {
   deferred: "持ち越す理由など（任意）。「先送りした議題」の記録に残ります",
   open: "もう一度、未解決に戻します",
 };
-
-type ClosePanelProps = { nextStates: ItemState[]; run: (p: Record<string, unknown>) => Promise<Result> };
 
 export function ClosePanel({ nextStates, run }: ClosePanelProps) {
   const [chosen, setChosen] = useState<ItemState | null>(null);
@@ -25,8 +25,8 @@ export function ClosePanel({ nextStates, run }: ClosePanelProps) {
   const selectedStateLabel = chosen ? ITEM_STATE_LABEL[chosen] : "";
   const resolutionSubmitLabel = chosen === "open" ? "未解決に戻す" : `「${selectedStateLabel}」にする`;
 
-  function getResolutionChoiceClass(s: ItemState) {
-    return chosen === s ? "selected" : "";
+  function isResolutionSelected(state: ItemState) {
+    return chosen === state;
   }
 
   function getResolutionChoiceIcon(s: ItemState) {
@@ -59,28 +59,28 @@ export function ClosePanel({ nextStates, run }: ClosePanelProps) {
   }
 
   return (
-    <section className="close-panel">
-      <Segmented className="segmented" role="group" aria-label="状態を変える">
+    <section data-slot="close-panel" className="rounded-card border border-border p-3">
+      <Segmented role="group" aria-label="状態を変える">
         {nextStates.map((s) => (
-          <Button
+          <SegmentedButton
             key={s}
             type="button"
-            className={getResolutionChoiceClass(s)}
+            selected={isResolutionSelected(s)}
             onClick={() => handleSelectResolution(s)}
           >
             <Icon name={getResolutionChoiceIcon(s)} />
             {getResolutionChoiceLabel(s)}
-          </Button>
+          </SegmentedButton>
         ))}
       </Segmented>
       {chosen && (
         <form
-          className="close-form"
+          data-slot="close-form" className="mt-3 flex flex-col gap-2 [&_p]:m-0"
           onSubmit={handleSubmitResolution}
         >
-          <p className="hint">{CLOSE_HINT[chosen]}</p>
+          <p className={textStyles({ className: "mb-3", role: "hint" })}>{CLOSE_HINT[chosen]}</p>
           {needsNote && (
-            <input
+            <Input
               type="text"
               autoFocus
               value={note}
@@ -88,13 +88,13 @@ export function ClosePanel({ nextStates, run }: ClosePanelProps) {
               placeholder={resolutionPlaceholder}
             />
           )}
-          {error && <div className="error">{error}</div>}
-          <div className="row">
-            <span className="spacer" />
-            <Button type="submit" className="primary" disabled={pending}>
+          {error && <div className={textStyles({ role: "error" })}>{error}</div>}
+          <Row>
+            <span className="flex-1" />
+            <Button type="submit" variant="primary" disabled={pending}>
               {resolutionSubmitLabel}
             </Button>
-          </div>
+          </Row>
         </form>
       )}
     </section>
