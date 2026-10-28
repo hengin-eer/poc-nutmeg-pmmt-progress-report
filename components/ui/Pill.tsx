@@ -14,5 +14,5 @@ const pill = tv({
   defaultVariants: { tone: "neutral" },
 });
 export function Pill({ className, tone, ...props }: ComponentProps<"span"> & VariantProps<typeof pill>) {
-  return <span {...props} className={pill({ tone, className })} />;
+  return <span {...props} data-slot="pill" className={pill({ tone, className })} />;
 }

@@ -1,7 +1,7 @@
 import ReactMarkdown from "react-markdown";
 
 /** Raw HTML is discarded; keep react-markdown's default safe URL transform. */
-export function Markdown({ children, className = "" }: { children: string; className?: string }) {
+export function Markdown({ children, className = "", compact = false }: { children: string; className?: string; compact?: boolean }) {
   return (
     <div className={`markdown ${className}`}>
       <ReactMarkdown
