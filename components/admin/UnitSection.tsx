@@ -3,7 +3,9 @@ import { Badge, Button, Card, Icon, SectionHeader } from "../ui";
 import { UNIT_KIND_LABEL, type UnitKind } from "../domain";
 import { type Props } from "../../pages/admin/index.server";
 
-export function UnitSection({ units }: Pick<Props, "units">) {
+type UnitSectionProps = Pick<Props, "units">;
+
+export function UnitSection({ units }: UnitSectionProps) {
   const form = useForm("/admin?addUnit", { name: "", kind: "project" as UnitKind }, { resetOnSuccess: true });
   return (
     <Card as="section" className="card card-lg section">

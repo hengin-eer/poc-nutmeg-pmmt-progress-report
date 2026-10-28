@@ -2,7 +2,9 @@ import { Card, EmptyState } from "../ui";
 import { type Props } from "../../pages/records/index.server";
 import { RecordRow } from "./RecordRow";
 
-export function RecordList({ me, list }: Pick<Props, "me" | "list">) {
+type RecordListProps = Pick<Props, "me" | "list">;
+
+export function RecordList({ me, list }: RecordListProps) {
   return (
     <Card className="card section">
       {list.length === 0 ? (

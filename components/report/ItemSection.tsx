@@ -6,15 +6,17 @@ import { CrossBureau, ITEM_KIND_CONFIG, StatePill } from "../domain";
 import { ThreadButton, useThread } from "../thread";
 import { Badge, Button, Card, Icon, IconButton, SectionHeader } from "../ui";
 
+type ItemSectionProps = {
+  kind: ItemKind;
+  list: Props["myItems"];
+  isOpen: boolean;
+};
+
 export function ItemSection({
   kind,
   list,
   isOpen,
-}: {
-  kind: ItemKind;
-  list: Props["myItems"];
-  isOpen: boolean;
-}) {
+}: ItemSectionProps) {
   const kindConfig = ITEM_KIND_CONFIG[kind];
   const canMarkCrossBureau = kindConfig.allowsCrossBureau;
   const form = useForm("/report?addItem", { kind, body: "", crossBureau: false }, { resetOnSuccess: true });

@@ -4,7 +4,9 @@ import { Busy, ProgressPill, UNIT_KIND_SHORT } from "../domain";
 import { Markdown } from "../markdown";
 import { Card, Icon, Pill } from "../ui";
 
-export function UnitCard({ card }: { card: Props["cards"][number] }) {
+type UnitCardProps = { card: Props["cards"][number] };
+
+export function UnitCard({ card }: UnitCardProps) {
   return (
     <Card as="article" className={`card unit-card ${card.submitted ? "" : "missing"}`}>
       <div className="row" style={{ alignItems: "flex-start" }}>

@@ -3,7 +3,9 @@ import type { Props } from "../../pages/index.server";
 import { formatJst, remainingLabel } from "../../lib/domain";
 import { Card, Icon } from "../ui";
 
-export function Hero({ cycle, cards, unitId, now }: { cycle: NonNullable<Props["cycle"]>; cards: Props["cards"]; unitId: number | null; now: string }) {
+type HeroProps = { cycle: NonNullable<Props["cycle"]>; cards: Props["cards"]; unitId: number | null; now: string };
+
+export function Hero({ cycle, cards, unitId, now }: HeroProps) {
   const done = cards.filter((c) => c.submitted).length;
   const myCard = cards.find((c) => c.id === unitId);
   const isOpen = cycle.status === "open";

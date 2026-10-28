@@ -3,7 +3,9 @@ import { useEffect, useState } from "react";
 import { Button, Card, Field, Icon, IconButton, SectionHeader } from "../ui";
 import { type Props } from "../../pages/units/[id].server";
 
-export function UnitPurpose({ unit, canEdit }: Pick<Props, "unit" | "canEdit">) {
+type UnitPurposeProps = Pick<Props, "unit" | "canEdit">;
+
+export function UnitPurpose({ unit, canEdit }: UnitPurposeProps) {
   const [editing, setEditing] = useState(false);
   const form = useForm("/units/:id", { purpose: unit.purpose, summary: unit.summary }, { params: { id: String(unit.id) } });
   useEffect(() => {

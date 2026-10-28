@@ -2,7 +2,9 @@ import { Icon, PageHeader } from "../ui";
 import { UNIT_KIND_LABEL } from "../domain";
 import { type Props } from "../../pages/units/[id].server";
 
-export function UnitHeader({ unit, people }: Pick<Props, "unit" | "people">) {
+type UnitHeaderProps = Pick<Props, "unit" | "people">;
+
+export function UnitHeader({ unit, people }: UnitHeaderProps) {
   return (
     <PageHeader className="page-head">
       <div>

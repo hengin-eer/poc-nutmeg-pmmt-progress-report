@@ -2,7 +2,9 @@ import { Card, Button, Icon } from "../ui";
 import { type Props } from "../../pages/login.server";
 import { auth } from "void/client";
 
-export function GoogleLogin({ googleReady }: Pick<Props, "googleReady">) {
+type GoogleLoginProps = Pick<Props, "googleReady">;
+
+export function GoogleLogin({ googleReady }: GoogleLoginProps) {
   return (
     <Card className="card card-lg stack">
       <div className="row" style={{ gap: 12 }}>

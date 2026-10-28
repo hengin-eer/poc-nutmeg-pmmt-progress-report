@@ -3,7 +3,9 @@ import type { ReactNode } from "react";
 import type { Me } from "../../lib/server";
 import { Icon, IconButton } from "../ui";
 
-export function Sidebar({ me, demo, logout, children }: { me: Me; demo: boolean; logout: () => void; children: ReactNode }) {
+type SidebarProps = { me: Me; demo: boolean; logout: () => void; children: ReactNode };
+
+export function Sidebar({ me, demo, logout, children }: SidebarProps) {
   return (
         <aside className="sidebar">
           <Link href="/" className="brand">

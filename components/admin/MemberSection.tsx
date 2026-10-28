@@ -5,7 +5,9 @@ import { type Props } from "../../pages/admin/index.server";
 import { ROLE_LABEL } from "./labels";
 import { MemberEditRow } from "./MemberEditRow";
 
-export function MemberSection({ members, units }: Pick<Props, "members" | "units">) {
+type MemberSectionProps = Pick<Props, "members" | "units">;
+
+export function MemberSection({ members, units }: MemberSectionProps) {
   const { me } = useShared();
   const [editing, setEditing] = useState<number | null>(null);
   const form = useForm("/admin?addMember", { name: "", email: "", role: "lead" as const, unitId: units[0]?.id ?? 0, slackUserId: "" }, { resetOnSuccess: true });

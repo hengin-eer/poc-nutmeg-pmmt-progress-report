@@ -15,7 +15,9 @@ const NAV = [
 ];
 const ADMIN = { href: "/admin", label: "管理", icon: "settings-3-line" };
 
-export function Shell({ me, demo, path, children }: { me: Me; demo: boolean; path: string; children: ReactNode }) {
+type ShellProps = { me: Me; demo: boolean; path: string; children: ReactNode };
+
+export function Shell({ me, demo, path, children }: ShellProps) {
 
   const nav = me.isAdmin ? [...NAV, ADMIN] : NAV;
   const isActive = (href: string) => (href === "/" ? path === "/" : path.startsWith(href));

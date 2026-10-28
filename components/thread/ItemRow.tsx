@@ -15,7 +15,9 @@ export type ItemSummary = {
   reactions?: number;
 };
 
-export function ItemRow({ item, showState = true }: { item: ItemSummary; showState?: boolean }) {
+type ItemRowProps = { item: ItemSummary; showState?: boolean };
+
+export function ItemRow({ item, showState = true }: ItemRowProps) {
   const { open } = useThread();
   return (
     <li className="item-li">

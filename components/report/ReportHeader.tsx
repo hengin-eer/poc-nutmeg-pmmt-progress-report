@@ -3,7 +3,9 @@ import { formatJst, remainingLabel } from "../../lib/domain";
 import { UNIT_KIND_LABEL } from "../domain";
 import { Icon, Notice, PageHeader } from "../ui";
 
-export function ReportHeader({ unit, cycle, report, now }: Pick<Props, "unit" | "cycle" | "report" | "now">) {
+type ReportHeaderProps = Pick<Props, "unit" | "cycle" | "report" | "now">;
+
+export function ReportHeader({ unit, cycle, report, now }: ReportHeaderProps) {
   const isOpen = cycle.status === "open";
   return (
     <>

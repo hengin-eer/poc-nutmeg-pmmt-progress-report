@@ -3,7 +3,9 @@ import type { Props } from "../../pages/index.server";
 import { RecordPill } from "../domain";
 import { Badge, Card, EmptyState, Icon, SectionHeader } from "../ui";
 
-export function PendingSummary({ pending }: Pick<Props, "pending">) {
+type PendingSummaryProps = Pick<Props, "pending">;
+
+export function PendingSummary({ pending }: PendingSummaryProps) {
   return (
     <Card as="section" className="card section">
       <SectionHeader className="section-head">

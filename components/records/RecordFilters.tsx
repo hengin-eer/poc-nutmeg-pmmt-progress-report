@@ -4,7 +4,9 @@ import { Badge, Card, Icon } from "../ui";
 import { RECORD_KIND_LABEL, type RecordKind } from "../../lib/domain";
 import { type Props } from "../../pages/records/index.server";
 
-export function RecordFilters({ filter, list, unitList }: Pick<Props, "filter" | "list" | "unitList">) {
+type RecordFiltersProps = Pick<Props, "filter" | "list" | "unitList">;
+
+export function RecordFilters({ filter, list, unitList }: RecordFiltersProps) {
   const router = useRouter();
   const [q, setQ] = useState(filter.q);
 

@@ -5,7 +5,9 @@ import { RecordPill, SourceBadge } from "../domain";
 import { formatJstDate } from "../../lib/domain";
 import { type Props } from "../../pages/records/index.server";
 
-export function RecordRow({ record: r, me }: { record: Props["list"][number]; me: Props["me"] }) {
+type RecordRowProps = { record: Props["list"][number]; me: Props["me"] };
+
+export function RecordRow({ record: r, me }: RecordRowProps) {
   const { open } = useThread();
   const toggleable = r.kind !== "decision" && (me.isAdmin || r.unitId === me.unitId);
   const done = Boolean(r.doneAt) && r.kind !== "decision";

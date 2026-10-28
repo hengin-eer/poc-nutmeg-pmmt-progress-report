@@ -1,10 +1,13 @@
+import { REPORT_COPY } from "./copy";
 import { Form, useForm } from "@void/react";
 import type { Props } from "../../pages/report.server";
 import { BUSY_OPTIONS, Busy, PROGRESS_OPTIONS, type ProgressValue } from "../domain";
 import { MarkdownEditor } from "../markdown-editor";
 import { Button, Card, Field, Icon, SectionHeader } from "../ui";
 
-export function ProgressForm({ unit, cycle, report }: Pick<Props, "unit" | "cycle" | "report">) {
+type ProgressFormProps = Pick<Props, "unit" | "cycle" | "report">;
+
+export function ProgressForm({ unit, cycle, report }: ProgressFormProps) {
   const isOpen = cycle.status === "open";
   const form = useForm("/report?save", {
     progress: (report?.progress ?? "") as "" | ProgressValue,
@@ -63,12 +66,12 @@ export function ProgressForm({ unit, cycle, report }: Pick<Props, "unit" | "cycl
           {form.errors.busyness && <div className="error">{form.errors.busyness}</div>}
         </Field>
 
-        <MarkdownEditor id="done" label="今週やったこと" hint="やったこと・結果・遅れを箇条書きで。数字やリンク、関わった局も添えると、当日聞かなくても伝わります"
+        <MarkdownEditor id="done" label={REPORT_COPY.done.label} hint={REPORT_COPY.done.hint}
           value={form.data.done ?? ""} onChange={(value) => form.setData("done", value)}
-          placeholder={"- ○○の画面を作った（PR #12）\n- △△局と打ち合わせ → 11/10 までに仕様を確定\n- 遅れ：□□（理由と、いつまでに戻すか）"} error={form.errors.done} />
-        <MarkdownEditor id="next" label="次にやること" hint="次の回までにやること。担当と期限があれば添えて"
+          placeholder={REPORT_COPY.done.placeholder} error={form.errors.done} />
+        <MarkdownEditor id="next" label={REPORT_COPY.next.label} hint={REPORT_COPY.next.hint}
           value={form.data.next ?? ""} onChange={(value) => form.setData("next", value)}
-          placeholder="- ○○のレビュー（佐藤・11/6）" error={form.errors.next} />
+          placeholder={REPORT_COPY.next.placeholder} error={form.errors.next} />
 
         {form.error && <p className="error">{form.error.message}</p>}
         <div className="row" style={{ marginTop: 8 }}>

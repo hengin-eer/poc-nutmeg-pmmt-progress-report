@@ -1,6 +1,8 @@
 import type { ComponentProps } from "react";
 import { withBase } from "./classes";
 
-export function SectionHeader({ className, ...props }: ComponentProps<"div">) {
+type SectionHeaderProps = ComponentProps<"div">;
+
+export function SectionHeader({ className, ...props }: SectionHeaderProps) {
   return <div {...props} className={withBase("section-head", className)} />;
 }

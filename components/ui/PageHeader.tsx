@@ -1,6 +1,8 @@
 import type { ComponentProps } from "react";
 import { withBase } from "./classes";
 
-export function PageHeader({ className, ...props }: ComponentProps<"div">) {
+type PageHeaderProps = ComponentProps<"div">;
+
+export function PageHeader({ className, ...props }: PageHeaderProps) {
   return <div {...props} className={withBase("page-head", className)} />;
 }

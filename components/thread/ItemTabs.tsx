@@ -9,7 +9,9 @@ const TABS: Record<Tab, { label: string; icon: string }> = {
   all: { label: "すべて", icon: "list-check" },
 };
 
-export function ItemTabs({ tab, counts }: Pick<Props, "tab" | "counts">) {
+type ItemTabsProps = Pick<Props, "tab" | "counts">;
+
+export function ItemTabs({ tab, counts }: ItemTabsProps) {
   return (
     <Tabs className="tabs">
       {(Object.keys(TABS) as Tab[]).map((t) => (

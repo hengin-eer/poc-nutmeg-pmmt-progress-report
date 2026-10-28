@@ -12,7 +12,9 @@ const CLOSE_HINT: Partial<Record<ItemState, string>> = {
   open: "もう一度、未解決に戻します",
 };
 
-export function ClosePanel({ nextStates, run }: { nextStates: ItemState[]; run: (p: Record<string, unknown>) => Promise<Result> }) {
+type ClosePanelProps = { nextStates: ItemState[]; run: (p: Record<string, unknown>) => Promise<Result> };
+
+export function ClosePanel({ nextStates, run }: ClosePanelProps) {
   const [chosen, setChosen] = useState<ItemState | null>(null);
   const [note, setNote] = useState("");
   const [error, setError] = useState("");

@@ -5,7 +5,9 @@ import { Busy, ProgressPill } from "../domain";
 import { formatJstDate } from "../../lib/domain";
 import { type Props } from "../../pages/units/[id].server";
 
-export function UnitHistory({ history }: Pick<Props, "history">) {
+type UnitHistoryProps = Pick<Props, "history">;
+
+export function UnitHistory({ history }: UnitHistoryProps) {
   return (
     <section>
       <SectionHeader className="section-head">

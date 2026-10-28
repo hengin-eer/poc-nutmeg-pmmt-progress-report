@@ -1,6 +1,8 @@
 import type { ComponentProps } from "react";
 import { withBase } from "./classes";
 
-export function Pill({ className, ...props }: ComponentProps<"span">) {
+type PillProps = ComponentProps<"span">;
+
+export function Pill({ className, ...props }: PillProps) {
   return <span {...props} className={withBase("pill", className)} />;
 }

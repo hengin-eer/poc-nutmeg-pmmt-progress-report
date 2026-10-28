@@ -2,7 +2,9 @@ import { PageHeader } from "../ui";
 import { formatJst } from "../../lib/domain";
 import { type Props } from "../../pages/items/index.server";
 
-export function ItemsHeader({ cycle }: Pick<Props, "cycle">) {
+type ItemsHeaderProps = Pick<Props, "cycle">;
+
+export function ItemsHeader({ cycle }: ItemsHeaderProps) {
   return (
     <PageHeader className="page-head">
       <div>

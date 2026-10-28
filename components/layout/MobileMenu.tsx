@@ -2,17 +2,19 @@ import { useEffect, useState } from "react";
 import { Button, Icon } from "../ui";
 
 /** モバイル：画面下に浮かぶメニュー。押した位置からメニューが広がる */
+type MobileMenuProps = {
+  current: { label: string; icon: string };
+  path: string;
+  logout: () => void;
+  children: React.ReactNode;
+};
+
 export function MobileMenu({
   current,
   path,
   logout,
   children,
-}: {
-  current: { label: string; icon: string };
-  path: string;
-  logout: () => void;
-  children: React.ReactNode;
-}) {
+}: MobileMenuProps) {
   const [open, setOpen] = useState(false);
   useEffect(() => setOpen(false), [path]);
 

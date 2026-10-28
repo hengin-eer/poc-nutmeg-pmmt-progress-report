@@ -2,7 +2,9 @@ import { useState } from "react";
 import { Button, Icon } from "../ui";
 import type { Result } from "./request";
 
-export function CommentForm({ run }: { run: (p: Record<string, unknown>) => Promise<Result> }) {
+type CommentFormProps = { run: (p: Record<string, unknown>) => Promise<Result> };
+
+export function CommentForm({ run }: CommentFormProps) {
   const [body, setBody] = useState("");
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);

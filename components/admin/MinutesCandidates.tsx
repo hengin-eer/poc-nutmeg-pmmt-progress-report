@@ -5,7 +5,9 @@ import { formatJst } from "../../lib/domain";
 import { type Props } from "../../pages/admin/import.server";
 import { type ImportState } from "./useMinutesImport";
 
-export function MinutesCandidates({ cycles, units, state }: Props & { state: ImportState }) {
+type MinutesCandidatesProps = Props & { state: ImportState };
+
+export function MinutesCandidates({ cycles, units, state }: MinutesCandidatesProps) {
   const { rows, form, summary, setSummary, update, selected } = state;
   return (
     <Card as="section" className="card card-lg">

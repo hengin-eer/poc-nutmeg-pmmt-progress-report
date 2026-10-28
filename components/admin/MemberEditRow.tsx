@@ -4,12 +4,14 @@ import { Button, Icon, IconButton } from "../ui";
 import { type Props } from "../../pages/admin/index.server";
 import { ROLE_LABEL } from "./labels";
 
-export function MemberEditRow({ member, units, isSelf, onDone }: {
+type MemberEditRowProps = {
   member: Props["members"][number];
   units: Props["units"];
   isSelf: boolean;
   onDone: () => void;
-}) {
+};
+
+export function MemberEditRow({ member, units, isSelf, onDone }: MemberEditRowProps) {
   const form = useForm("/admin?updateMember", {
     id: member.id,
     name: member.name,

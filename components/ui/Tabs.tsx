@@ -1,6 +1,8 @@
 import type { ComponentProps } from "react";
 import { withBase } from "./classes";
 
-export function Tabs({ className, ...props }: ComponentProps<"nav">) {
+type TabsProps = ComponentProps<"nav">;
+
+export function Tabs({ className, ...props }: TabsProps) {
   return <nav {...props} className={withBase("tabs", className)} />;
 }

@@ -2,7 +2,9 @@ import { action } from "@void/react";
 import { Card, Button, Icon } from "../ui";
 import { type Props } from "../../pages/login.server";
 
-export function DemoLogin({ demoMembers }: Pick<Props, "demoMembers">) {
+type DemoLoginProps = Pick<Props, "demoMembers">;
+
+export function DemoLogin({ demoMembers }: DemoLoginProps) {
   const loginAs = (memberId: number) => action("/login?login", { data: { memberId } }).then(() => (location.href = "/"));
 
   return (

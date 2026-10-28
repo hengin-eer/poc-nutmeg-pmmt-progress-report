@@ -1,5 +1,7 @@
 import type { ComponentProps } from "react";
 
-export function Badge({ className, ...props }: ComponentProps<"span">) {
+type BadgeProps = ComponentProps<"span">;
+
+export function Badge({ className, ...props }: BadgeProps) {
   return <span {...props} className={className ?? "count"} />;
 }

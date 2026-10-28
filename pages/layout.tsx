@@ -4,7 +4,9 @@ import { Shell } from "../components/layout/Shell";
 import "./app.css";
 import "./style.css";
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+type LayoutProps = { children: React.ReactNode };
+
+export default function Layout({ children }: LayoutProps) {
   const { me, demo, path } = useShared();
   if (!me) return <>{children}</>;
   return <Shell me={me} demo={demo} path={path}>{children}</Shell>;

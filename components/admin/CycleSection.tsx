@@ -4,7 +4,9 @@ import { Button, Card, Icon, Pill, SectionHeader } from "../ui";
 import { formatJst, toJstInput } from "../../lib/domain";
 import { type Props } from "../../pages/admin/index.server";
 
-export function CycleSection({ cycles, defaults, unitCount }: Pick<Props, "cycles" | "defaults"> & { unitCount: number }) {
+type CycleSectionProps = Pick<Props, "cycles" | "defaults"> & { unitCount: number };
+
+export function CycleSection({ cycles, defaults, unitCount }: CycleSectionProps) {
   const form = useForm("/admin?createCycle", { meetingAt: toJstInput(defaults.meetingAt), deadlineAt: toJstInput(defaults.deadlineAt) });
   const [editing, setEditing] = useState<number | null>(null);
   const [deadline, setDeadline] = useState("");

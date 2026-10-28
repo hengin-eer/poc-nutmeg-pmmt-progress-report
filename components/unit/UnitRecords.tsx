@@ -3,7 +3,9 @@ import { RecordPill } from "../domain";
 import { formatJstDate } from "../../lib/domain";
 import { type Props } from "../../pages/units/[id].server";
 
-export function UnitRecords({ records }: Pick<Props, "records">) {
+type UnitRecordsProps = Pick<Props, "records">;
+
+export function UnitRecords({ records }: UnitRecordsProps) {
   return (
     <section>
       <SectionHeader className="section-head">

@@ -7,7 +7,9 @@ import { ClosePanel } from "./ClosePanel";
 import { CommentForm } from "./CommentForm";
 import { post } from "./request";
 
-export function ThreadView({ data, onChange }: { data: ThreadData; onChange: (d: ThreadData) => void }) {
+type ThreadViewProps = { data: ThreadData; onChange: (d: ThreadData) => void };
+
+export function ThreadView({ data, onChange }: ThreadViewProps) {
   const { item, unit, cycle, thread, reactionSummary } = data;
 
   const run = async (payload: Record<string, unknown>) => {

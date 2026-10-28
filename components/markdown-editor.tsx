@@ -3,7 +3,7 @@ import { Markdown } from "./markdown";
 import { Button, EmptyState, Field, Icon } from "./ui";
 
 
-export function MarkdownEditor({ id, label, hint, value, onChange, placeholder, error }: {
+type MarkdownEditorProps = {
   id: string;
   label: string;
   hint: string;
@@ -11,7 +11,9 @@ export function MarkdownEditor({ id, label, hint, value, onChange, placeholder, 
   onChange: (value: string) => void;
   placeholder: string;
   error?: string;
-}) {
+};
+
+export function MarkdownEditor({ id, label, hint, value, onChange, placeholder, error }: MarkdownEditorProps) {
   const [preview, setPreview] = useState(false);
   const tabs = useRef<(HTMLButtonElement | null)[]>([]);
   return (

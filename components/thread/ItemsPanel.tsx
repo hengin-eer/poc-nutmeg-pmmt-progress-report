@@ -2,7 +2,9 @@ import { Card, EmptyState, Icon, Notice } from "../ui";
 import { type Props } from "../../pages/items/index.server";
 import { ItemRow } from "./ItemRow";
 
-export function ItemsPanel({ tab, list }: Pick<Props, "tab" | "list">) {
+type ItemsPanelProps = Pick<Props, "tab" | "list">;
+
+export function ItemsPanel({ tab, list }: ItemsPanelProps) {
   return (
     <>
       {tab === "live" && (

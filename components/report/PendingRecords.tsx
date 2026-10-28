@@ -3,7 +3,9 @@ import type { Props } from "../../pages/report.server";
 import { RecordPill } from "../domain";
 import { Card, Icon, SectionHeader } from "../ui";
 
-export function PendingRecords({ pending, isOpen }: Pick<Props, "pending"> & { isOpen: boolean }) {
+type PendingRecordsProps = Pick<Props, "pending"> & { isOpen: boolean };
+
+export function PendingRecords({ pending, isOpen }: PendingRecordsProps) {
   if (pending.length === 0) return null;
   return (
     <Card as="section" className="card section">

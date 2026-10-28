@@ -16,7 +16,9 @@ const SAMPLE = `# PMMT 2026-10-26 議事録
 ## 要約
 （議事録の要約）`;
 
-export function MinutesInput({ state }: { state: ImportState }) {
+type MinutesInputProps = { state: ImportState };
+
+export function MinutesInput({ state }: MinutesInputProps) {
   const { text, setText, parse } = state;
   return (
     <Card as="section" className="card card-lg">

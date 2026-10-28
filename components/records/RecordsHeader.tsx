@@ -1,7 +1,9 @@
 import { Icon, PageHeader } from "../ui";
 import { type Props } from "../../pages/records/index.server";
 
-export function RecordsHeader({ filter }: Pick<Props, "filter">) {
+type RecordsHeaderProps = Pick<Props, "filter">;
+
+export function RecordsHeader({ filter }: RecordsHeaderProps) {
   const exportQs = new URLSearchParams(
     Object.entries({ q: filter.q, kind: filter.kind, unit: filter.unitId ? String(filter.unitId) : "", status: filter.status }).filter(([, v]) => v),
   ).toString();

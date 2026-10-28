@@ -22,7 +22,9 @@ export const UNIT_KIND_LABEL: Record<UnitKind, string> = {
 /** カードなどに出す短い呼び方 */
 export const UNIT_KIND_SHORT: Record<UnitKind, string> = { project: "PJ", team: "チーム", chief: "局長", vice: "副局長" };
 
-export function ProgressPill({ value }: { value: Progress }) {
+type ProgressPillProps = { value: Progress };
+
+export function ProgressPill({ value }: ProgressPillProps) {
   const option = getProgressOption(value);
   if (!option) return null;
   return (
@@ -44,7 +46,9 @@ export type BusyValue = (typeof BUSY_OPTIONS)[number]["value"];
 export const getBusyOption = (value: number | null) => BUSY_OPTIONS.find((option) => option.value === value);
 
 /** 3 段のメーター。label を付けるとアイコンと文字も出す */
-export function Busy({ value, label = false }: { value: number | null; label?: boolean }) {
+type BusyProps = { value: number | null; label?: boolean };
+
+export function Busy({ value, label = false }: BusyProps) {
   const b = getBusyOption(value);
   if (!b || !value) return null;
   return (
@@ -70,7 +74,9 @@ const STATE_STYLE: Record<ItemState, { cls: string; icon: string }> = {
   deferred: { cls: "red", icon: "skip-forward-line" },
 };
 
-export function StatePill({ state }: { state: ItemState }) {
+type StatePillProps = { state: ItemState };
+
+export function StatePill({ state }: StatePillProps) {
   const s = STATE_STYLE[state];
   return (
     <Pill className={`pill ${s.cls}`}>
@@ -83,7 +89,9 @@ export function StatePill({ state }: { state: ItemState }) {
 export const STATE_ICON = (state: ItemState) => STATE_STYLE[state].icon;
 
 /** 他局・実行委員全体に関わる */
-export function CrossBureau({ on }: { on: boolean }) {
+type CrossBureauProps = { on: boolean };
+
+export function CrossBureau({ on }: CrossBureauProps) {
   return on ? (
     <Pill className="pill accent" title="他局・実行委員全体に関わる">
       <Icon name="community-line" />
@@ -118,7 +126,9 @@ export const ITEM_KIND_CONFIG: Record<ItemKind, ItemKindConfig> = {
 };
 
 /** 確認したいこと / 話したいこと。文字は出さず、アイコンだけ */
-export function KindIcon({ kind }: { kind: ItemKind }) {
+type KindIconProps = { kind: ItemKind };
+
+export function KindIcon({ kind }: KindIconProps) {
   return (
     <span className={`kind-icon ${kind}`} title={ITEM_KIND_CONFIG[kind].label}>
       <Icon name={ITEM_KIND_CONFIG[kind].icon} label={ITEM_KIND_CONFIG[kind].label} />
@@ -127,7 +137,9 @@ export function KindIcon({ kind }: { kind: ItemKind }) {
 }
 
 /** コメント数・リアクション数。0 のものは出さない */
-export function Counts({ comments, reactions }: { comments: number; reactions: number }) {
+type CountsProps = { comments: number; reactions: number };
+
+export function Counts({ comments, reactions }: CountsProps) {
   if (!comments && !reactions) return null;
   return (
     <span className="counts">
@@ -155,7 +167,9 @@ const RECORD_STYLE: Record<RecordKind, { cls: string; icon: string }> = {
   carryover: { cls: "red", icon: "arrow-go-forward-line" },
 };
 
-export function RecordPill({ kind }: { kind: RecordKind }) {
+type RecordPillProps = { kind: RecordKind };
+
+export function RecordPill({ kind }: RecordPillProps) {
   const s = RECORD_STYLE[kind];
   return (
     <Pill className={`pill ${s.cls}`}>
@@ -172,7 +186,9 @@ const SOURCE_STYLE = {
 } as const;
 
 /** 記録がどこから来たか */
-export function SourceBadge({ source }: { source: keyof typeof SOURCE_STYLE }) {
+type SourceBadgeProps = { source: keyof typeof SOURCE_STYLE };
+
+export function SourceBadge({ source }: SourceBadgeProps) {
   const s = SOURCE_STYLE[source];
   return (
     <Badge className={`source source-${source}`}>

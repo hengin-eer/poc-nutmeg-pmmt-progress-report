@@ -1,6 +1,8 @@
 import type { ComponentProps } from "react";
 import { withBase } from "./classes";
 
-export function Field({ className, ...props }: ComponentProps<"div">) {
+type FieldProps = ComponentProps<"div">;
+
+export function Field({ className, ...props }: FieldProps) {
   return <div {...props} className={withBase("field", className)} />;
 }

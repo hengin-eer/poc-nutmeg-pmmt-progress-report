@@ -5,7 +5,9 @@ import { ITEM_KIND_CONFIG } from "../domain";
 import { EmptyState, Icon, IconButton } from "../ui";
 import { ThreadView } from "./ThreadView";
 
-export function ThreadDrawer({ id, onClose }: { id: number; onClose: () => void }) {
+type ThreadDrawerProps = { id: number; onClose: () => void };
+
+export function ThreadDrawer({ id, onClose }: ThreadDrawerProps) {
   const router = useRouter();
   const [data, setData] = useState<ThreadData | null>(null);
   const [failed, setFailed] = useState(false);

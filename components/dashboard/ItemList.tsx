@@ -2,14 +2,16 @@ import { Link } from "@void/react";
 import { ItemRow, type ItemSummary } from "../thread";
 import { Badge, Card, EmptyState, Icon, SectionHeader } from "../ui";
 
-export function ItemList({ title, icon, items, empty, moreHref, moreLabel }: {
+type ItemListProps = {
   title: string;
   icon: string;
   items: ItemSummary[];
   empty: string;
   moreHref?: string;
   moreLabel?: string;
-}) {
+};
+
+export function ItemList({ title, icon, items, empty, moreHref, moreLabel }: ItemListProps) {
   return (
     <Card as="section" className="card">
       <SectionHeader className="section-head">
