@@ -1,3 +1,4 @@
+import { Stack } from "../components/ui";
 import { ItemSection } from "../components/report/ItemSection";
 import { PendingRecords } from "../components/report/PendingRecords";
 import { ProgressForm } from "../components/report/ProgressForm";
@@ -10,9 +11,9 @@ export default function ReportPage({ unit, cycle, report, myItems, pending, now 
     <>
       <ReportHeader unit={unit} cycle={cycle} report={report} now={now} />
       <PendingRecords pending={pending} isOpen={isOpen} />
-      <div className="grid grid-2 section">
+      <div className="grid gap-6 grid-cols-[repeat(auto-fit,minmax(min(100%,24rem),1fr))] items-start max-sm:grid-cols-1 mt-10">
         <ProgressForm unit={unit} cycle={cycle} report={report} />
-        <div className="stack" style={{ gap: 24 }}>
+        <Stack className="gap-6">
           <ItemSection
             title="確認したいこと"
             kind="confirm"
@@ -27,7 +28,7 @@ export default function ReportPage({ unit, cycle, report, myItems, pending, now 
             list={myItems.filter((i) => i.kind === "talk")}
             isOpen={isOpen}
           />
-        </div>
+        </Stack>
       </div>
     </>
   );

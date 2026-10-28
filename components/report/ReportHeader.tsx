@@ -7,25 +7,25 @@ export function ReportHeader({ unit, cycle, report, now }: Pick<Props, "unit" | 
   const isOpen = cycle.status === "open";
   return (
     <>
-      <PageHeader className="page-head">
+      <PageHeader>
         <div>
-          <div className="eyebrow">{UNIT_KIND_LABEL[unit.kind]}</div>
-          <h1>{unit.name} の事前記入</h1>
+          <div className="mb-1 text-caption font-semibold text-muted">{UNIT_KIND_LABEL[unit.kind]}</div>
+          <h1 className="text-title font-extrabold tracking-[.01em] text-text">{unit.name} の事前記入</h1>
         </div>
-        <div className="hero-deadline">
+        <div className="flex flex-wrap items-center gap-2 text-meta text-text-2 [&_strong]:text-text">
           <Icon name="alarm-line" />
           締切 <strong>{formatJst(cycle.deadlineAt)}</strong>
-          <span className="remaining">{isOpen ? remainingLabel(cycle.deadlineAt, new Date(now)) : "終了"}</span>
+          <span data-slot="remaining" className="font-bold text-accent">{isOpen ? remainingLabel(cycle.deadlineAt, new Date(now)) : "終了"}</span>
         </div>
       </PageHeader>
 
       {report?.submittedAt ? (
-        <Notice className="notice">
+        <Notice>
           <Icon name="checkbox-circle-fill" />
           提出済み（{formatJst(report.submittedAt)}）。締切までは直せます
         </Notice>
       ) : (
-        <Notice className="warn">
+        <Notice tone="warn">
           <Icon name="error-warning-line" />
           まだ提出していません
         </Notice>

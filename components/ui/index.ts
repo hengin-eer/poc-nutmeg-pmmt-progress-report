@@ -28,3 +28,4 @@ export { iconButtonStyles } from "./IconButton";
 export { badgeStyles } from "./Badge";
 export { Dot } from "./Dot";
 export { SegmentedButton } from "./SegmentedButton";
+export { Choice } from "./Choice";

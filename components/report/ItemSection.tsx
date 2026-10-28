@@ -1,9 +1,9 @@
 import { action, Form, useForm } from "@void/react";
 import { useEffect, useState } from "react";
 import type { Props } from "../../pages/report.server";
-import { CrossBureau, KIND_ICON, StatePill } from "../domain";
+import { CrossBureau, KindIcon, StatePill } from "../domain";
 import { ThreadButton, useThread } from "../thread";
-import { Badge, Button, Card, Icon, IconButton, SectionHeader } from "../ui";
+import { Badge, Button, Card, Checkbox, Icon, IconButton, Label, List, Row, SectionHeader, Textarea } from "../ui";
 
 export function ItemSection({
   title,
@@ -26,34 +26,32 @@ export function ItemSection({
   }, [form.wasSuccessful]);
 
   return (
-    <Card as="section" className="card">
-      <SectionHeader className="section-head">
-        <span className={`kind-icon ${kind}`}>
-          <Icon name={KIND_ICON[kind]} />
-        </span>
-        <h2>{title}</h2>
-        <Badge className="count">{list.length}</Badge>
+    <Card as="section">
+      <SectionHeader>
+        <KindIcon kind={kind} />
+        <h2 className="text-heading font-bold text-text">{title}</h2>
+        <Badge>{list.length}</Badge>
       </SectionHeader>
-      <p className="hint" style={{ marginTop: -8 }}>
+      <p className="text-caption font-normal text-muted -mt-2">
         {hint}
       </p>
 
       {list.length > 0 && (
-        <ul className="list" style={{ margin: "8px 0 16px" }}>
+        <List className="mt-2 mb-4">
           {list.map((i) => (
-            <li key={i.id} className="my-item">
-              <Button type="button" className="my-item-body" onClick={() => open(i.id)} title="スレッドを開く">
+            <li key={i.id} className="flex flex-col gap-2">
+              <Button variant="plain" type="button" className="-mx-2 cursor-pointer rounded-lg px-2 py-1 text-left whitespace-pre-wrap leading-relaxed font-medium hover:bg-surface-2 focus-visible:outline-3 focus-visible:outline-accent-soft" onClick={() => open(i.id)} title="スレッドを開く">
                 {i.body}
               </Button>
-              <div className="row">
+              <Row>
                 <StatePill state={i.state} />
                 <CrossBureau on={i.crossBureau} />
-                <span className="spacer" />
+                <span className="flex-1" />
                 <ThreadButton id={i.id} comments={i.comments} />
                 {i.state === "open" && isOpen && (
                   <IconButton
                     type="button"
-                    className="icon-button danger"
+                     danger
                     title="削除"
                     aria-label="削除"
                     onClick={() => confirm("削除しますか？") && action("/report?deleteItem", { data: { id: i.id } })}
@@ -61,42 +59,42 @@ export function ItemSection({
                     <Icon name="delete-bin-line" />
                   </IconButton>
                 )}
-              </div>
+              </Row>
             </li>
           ))}
-        </ul>
+        </List>
       )}
 
       {isOpen &&
         (adding ? (
-          <Form form={form} className="stack" style={{ gap: 10 }}>
+          <Form form={form} className="flex flex-col gap-4 gap-2">
             <div>
-              <textarea
+              <Textarea
                 autoFocus
                 value={form.data.body}
                 onChange={(e) => form.setData("body", e.target.value)}
                 placeholder={kind === "confirm" ? "例: ○○を△△にしてもいい？" : "例: こんな勉強会をやってみたい"}
               />
-              {form.errors.body && <div className="error">{form.errors.body}</div>}
+              {form.errors.body && <div className="mt-2 text-caption text-red">{form.errors.body}</div>}
             </div>
-            <div className="row">
+            <Row>
               {kind === "confirm" && (
-                <label className="row" style={{ fontWeight: 500, margin: 0, cursor: "pointer" }}>
-                  <input type="checkbox" checked={form.data.crossBureau} onChange={(e) => form.setData("crossBureau", e.target.checked)} />
+                <Label className="flex flex-wrap items-center gap-2 font-medium m-0 cursor-pointer">
+                  <Checkbox checked={form.data.crossBureau} onChange={(e) => form.setData("crossBureau", e.target.checked)} />
                   他局・実行委員全体に関わる
-                </label>
+                </Label>
               )}
-              <span className="spacer" />
-              <Button type="button" className="ghost small" onClick={() => setAdding(false)}>
+              <span className="flex-1" />
+              <Button type="button"  variant="ghost" size="small" onClick={() => setAdding(false)}>
                 やめる
               </Button>
-              <Button type="submit" className="primary small" disabled={form.pending}>
+              <Button type="submit"  variant="primary" size="small" disabled={form.pending}>
                 追加
               </Button>
-            </div>
+            </Row>
           </Form>
         ) : (
-          <Button type="button" className="ghost add-button" onClick={() => setAdding(true)}>
+          <Button type="button"  variant="ghost" className="w-full border border-dashed border-border text-muted hover:border-accent hover:bg-accent-soft hover:text-accent" onClick={() => setAdding(true)}>
             <Icon name="add-line" />
             追加
           </Button>

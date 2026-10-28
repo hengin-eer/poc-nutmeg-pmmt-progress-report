@@ -2,7 +2,7 @@ import { Form, useForm } from "@void/react";
 import type { Props } from "../../pages/report.server";
 import { BUSY, Busy, PROGRESS_LABEL } from "../domain";
 import { MarkdownEditor } from "../markdown-editor";
-import { Button, Card, Field, Icon, SectionHeader } from "../ui";
+import { Button, Choice, Dot, Card, Field, Icon, Label, Row, SectionHeader } from "../ui";
 
 export function ProgressForm({ unit, cycle, report }: Pick<Props, "unit" | "cycle" | "report">) {
   const isOpen = cycle.status === "open";
@@ -16,51 +16,51 @@ export function ProgressForm({ unit, cycle, report }: Pick<Props, "unit" | "cycl
   const showProgress = unit.kind === "project";
 
   return (
-    <Card as="section" className="card card-lg">
-      <SectionHeader className="section-head">
-        <h2>今週の進捗</h2>
+    <Card as="section" size="large">
+      <SectionHeader>
+        <h2 className="text-heading font-bold text-text">今週の進捗</h2>
       </SectionHeader>
       <Form form={form}>
         {showProgress && (
-          <Field className="field">
-            <div className="field-label">
-              <label>進み具合</label>
+          <Field>
+            <div className="mb-2 flex flex-wrap items-baseline gap-x-2 gap-y-1 [&_label]:m-0 [&_label]:whitespace-nowrap">
+              <Label>進み具合</Label>
             </div>
-            <div className="choices">
+            <div className="flex flex-wrap gap-2">
               {(["green", "yellow", "red"] as const).map((v) => (
-                <Button
+                <Choice
                   type="button"
                   key={v}
-                  className={`choice ${form.data.progress === v ? "selected" : ""}`}
+                  selected={form.data.progress === v}
                   onClick={() => form.setData("progress", form.data.progress === v ? "" : v)}
                 >
-                  <span className={`dot ${v}`} />
+                  <Dot tone={v} />
                   {PROGRESS_LABEL[v]}
-                </Button>
+                </Choice>
               ))}
             </div>
           </Field>
         )}
 
-        <Field className="field">
-          <div className="field-label">
-            <label>忙しさ</label>
+        <Field>
+          <div className="mb-2 flex flex-wrap items-baseline gap-x-2 gap-y-1 [&_label]:m-0 [&_label]:whitespace-nowrap">
+            <Label>忙しさ</Label>
           </div>
-          <div className="choices">
+          <div className="flex flex-wrap gap-2">
             {([1, 2, 3] as const).map((v) => (
-              <Button
+              <Choice
                 type="button"
                 key={v}
-                className={`choice busy-${v} ${form.data.busyness === v ? "selected" : ""}`}
+                selected={form.data.busyness === v}
                 onClick={() => form.setData("busyness", v)}
               >
                 <Icon name={BUSY[v].icon} />
                 {BUSY[v].label}
                 <Busy value={v} />
-              </Button>
+              </Choice>
             ))}
           </div>
-          {form.errors.busyness && <div className="error">{form.errors.busyness}</div>}
+          {form.errors.busyness && <div className="mt-2 text-caption text-red">{form.errors.busyness}</div>}
         </Field>
 
         <MarkdownEditor id="done" label="今週やったこと" hint="やったこと・結果・遅れを箇条書きで。数字やリンク、関わった局も添えると、当日聞かなくても伝わります"
@@ -70,23 +70,23 @@ export function ProgressForm({ unit, cycle, report }: Pick<Props, "unit" | "cycl
           value={form.data.next ?? ""} onChange={(value) => form.setData("next", value)}
           placeholder="- ○○のレビュー（佐藤・11/6）" error={form.errors.next} />
 
-        {form.error && <p className="error">{form.error.message}</p>}
-        <div className="row" style={{ marginTop: 8 }}>
-          <Button type="submit" className="ghost" disabled={!isOpen || form.pending} onClick={() => form.setData("submit", false)}>
+        {form.error && <p className="mt-2 text-caption text-red">{form.error.message}</p>}
+        <Row className="mt-2">
+          <Button type="submit"  variant="ghost" disabled={!isOpen || form.pending} onClick={() => form.setData("submit", false)}>
             <Icon name="save-3-line" />
             下書き保存
           </Button>
           {form.recentlySuccessful && (
-            <span className="sub">
+            <span className="text-caption text-muted">
               <Icon name="check-line" /> 保存しました
             </span>
           )}
-          <span className="spacer" />
-          <Button type="submit" className="primary" disabled={!isOpen || form.pending} onClick={() => form.setData("submit", true)}>
+          <span className="flex-1" />
+          <Button type="submit"  variant="primary" disabled={!isOpen || form.pending} onClick={() => form.setData("submit", true)}>
             <Icon name="send-plane-2-line" />
             {report?.submittedAt ? "更新する" : "提出する"}
           </Button>
-        </div>
+        </Row>
       </Form>
     </Card>
   );
