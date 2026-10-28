@@ -230,7 +230,7 @@ code { background: var(--surface-2); padding: 0.1em 0.4em; border-radius: 6px; f
 .source-thread:hover { background: var(--accent-soft); text-decoration: none; }
 
 /* ---------- ユニットのカード ---------- */
-.unit-card { display: flex; flex-direction: column; gap: 10px; min-height: 160px; padding: 20px; }
+.unit-card { position: relative; transition: border-color 0.15s, translate 0.15s; display: flex; flex-direction: column; gap: 10px; min-height: 160px; padding: 20px; }
 .unit-card .name { font-weight: 800; font-size: 16px; line-height: 1.3; }
 .unit-card .kind { font-size: 12px; color: var(--muted); font-weight: 600; }
 .unit-card .excerpt { font-size: 13.5px; color: var(--text-2); white-space: pre-line; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; line-height: 1.65; }
@@ -448,5 +448,12 @@ button.source { font: inherit; font-size: 12px; font-weight: 700; padding: 2px 8
 .markdown-preview { min-height: 96px; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; background: var(--surface); }
 .markdown-preview[hidden] { display: none; }
 .unit-card .name { color: var(--text); }
-.unit-card .markdown.excerpt { white-space: normal; max-height: 6em; }
-.unit-card .excerpt :is(h1, h2, h3, h4, h5, h6) { font-size: 1em; margin: 4px 0; }
+.unit-card .markdown.excerpt { white-space: normal; max-height: 4.95em; }
+.unit-card .excerpt :is(h1, h2, h3, h4, h5, h6) { font-size: 1em; margin: 0; line-height: inherit; }
+.unit-card .excerpt :is(p, ul, ol, pre, blockquote) { margin-top: 0; margin-bottom: 0; }
+.unit-card .excerpt li + li { margin-top: 0; }
+.unit-card .excerpt pre { padding: 0; }
+.unit-card .name::after { content: ""; position: absolute; inset: 0; border-radius: var(--radius); }
+.unit-card .excerpt a, .unit-card .foot .pill { position: relative; z-index: 1; }
+.unit-card:hover { border-color: color-mix(in srgb, var(--accent) 50%, var(--border)); translate: 0 -1px; }
+.unit-card .name:focus-visible::after { outline: 3px solid var(--accent); outline-offset: 2px; }
