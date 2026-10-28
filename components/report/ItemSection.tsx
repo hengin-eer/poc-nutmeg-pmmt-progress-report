@@ -1,23 +1,22 @@
+import type { ItemKind } from "../../lib/domain";
 import { action, Form, useForm } from "@void/react";
 import { useEffect, useState } from "react";
 import type { Props } from "../../pages/report.server";
-import { CrossBureau, KIND_ICON, StatePill } from "../domain";
+import { CrossBureau, ITEM_KIND_CONFIG, StatePill } from "../domain";
 import { ThreadButton, useThread } from "../thread";
 import { Badge, Button, Card, Icon, IconButton, SectionHeader } from "../ui";
 
 export function ItemSection({
-  title,
   kind,
-  hint,
   list,
   isOpen,
 }: {
-  title: string;
-  kind: "confirm" | "talk";
-  hint: string;
+  kind: ItemKind;
   list: Props["myItems"];
   isOpen: boolean;
 }) {
+  const kindConfig = ITEM_KIND_CONFIG[kind];
+  const canMarkCrossBureau = kindConfig.allowsCrossBureau;
   const form = useForm("/report?addItem", { kind, body: "", crossBureau: false }, { resetOnSuccess: true });
   const [adding, setAdding] = useState(false);
   const { open } = useThread();
@@ -29,13 +28,13 @@ export function ItemSection({
     <Card as="section" className="card">
       <SectionHeader className="section-head">
         <span className={`kind-icon ${kind}`}>
-          <Icon name={KIND_ICON[kind]} />
+          <Icon name={kindConfig.icon} />
         </span>
-        <h2>{title}</h2>
+        <h2>{kindConfig.label}</h2>
         <Badge className="count">{list.length}</Badge>
       </SectionHeader>
       <p className="hint" style={{ marginTop: -8 }}>
-        {hint}
+        {kindConfig.hint}
       </p>
 
       {list.length > 0 && (
@@ -75,12 +74,12 @@ export function ItemSection({
                 autoFocus
                 value={form.data.body}
                 onChange={(e) => form.setData("body", e.target.value)}
-                placeholder={kind === "confirm" ? "例: ○○を△△にしてもいい？" : "例: こんな勉強会をやってみたい"}
+                placeholder={kindConfig.placeholder}
               />
               {form.errors.body && <div className="error">{form.errors.body}</div>}
             </div>
             <div className="row">
-              {kind === "confirm" && (
+              {canMarkCrossBureau && (
                 <label className="row" style={{ fontWeight: 500, margin: 0, cursor: "pointer" }}>
                   <input type="checkbox" checked={form.data.crossBureau} onChange={(e) => form.setData("crossBureau", e.target.checked)} />
                   他局・実行委員全体に関わる

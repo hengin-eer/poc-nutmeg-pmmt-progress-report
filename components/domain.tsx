@@ -1,5 +1,5 @@
 import { Icon, Pill, Badge } from "./ui";
-import { ITEM_STATE_LABEL, RECORD_KIND_LABEL, type ItemState, type RecordKind } from "../lib/domain";
+import { ITEM_STATE_LABEL, RECORD_KIND_LABEL, type ItemKind, type ItemState, type RecordKind } from "../lib/domain";
 
 export type Progress = "green" | "yellow" | "red" | null;
 export type UnitKind = "project" | "team" | "chief" | "vice";
@@ -88,14 +88,36 @@ export function CrossBureau({ on }: { on: boolean }) {
   ) : null;
 }
 
-export const KIND_LABEL = { confirm: "確認したいこと", talk: "話したいこと" } as const;
-export const KIND_ICON = { confirm: "question-answer-line", talk: "chat-smile-2-line" } as const;
+type ItemKindConfig = {
+  label: string;
+  icon: string;
+  hint: string;
+  placeholder: string;
+  allowsCrossBureau: boolean;
+};
+
+export const ITEM_KIND_CONFIG: Record<ItemKind, ItemKindConfig> = {
+  confirm: {
+    label: "確認したいこと",
+    icon: "question-answer-line",
+    hint: "判断や返事がほしいことを 1 件ずつ",
+    placeholder: "例: ○○を△△にしてもいい？",
+    allowsCrossBureau: true,
+  },
+  talk: {
+    label: "話したいこと",
+    icon: "chat-smile-2-line",
+    hint: "小話・アイデア・耳寄りな情報（任意）",
+    placeholder: "例: こんな勉強会をやってみたい",
+    allowsCrossBureau: false,
+  },
+};
 
 /** 確認したいこと / 話したいこと。文字は出さず、アイコンだけ */
-export function KindIcon({ kind }: { kind: "confirm" | "talk" }) {
+export function KindIcon({ kind }: { kind: ItemKind }) {
   return (
-    <span className={`kind-icon ${kind}`} title={KIND_LABEL[kind]}>
-      <Icon name={KIND_ICON[kind]} label={KIND_LABEL[kind]} />
+    <span className={`kind-icon ${kind}`} title={ITEM_KIND_CONFIG[kind].label}>
+      <Icon name={ITEM_KIND_CONFIG[kind].icon} label={ITEM_KIND_CONFIG[kind].label} />
     </span>
   );
 }

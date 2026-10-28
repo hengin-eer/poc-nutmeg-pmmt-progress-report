@@ -1,7 +1,7 @@
 import { Link, useRouter } from "@void/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { ThreadData } from "../../lib/items";
-import { KIND_LABEL } from "../domain";
+import { ITEM_KIND_CONFIG } from "../domain";
 import { EmptyState, Icon, IconButton } from "../ui";
 import { ThreadView } from "./ThreadView";
 
@@ -42,8 +42,8 @@ export function ThreadDrawer({ id, onClose }: { id: number; onClose: () => void 
           <span className="drawer-title">
             {data ? (
               <>
-                <Icon name={data.item.kind === "confirm" ? "question-answer-line" : "chat-smile-2-line"} />
-                {KIND_LABEL[data.item.kind]}
+                <Icon name={ITEM_KIND_CONFIG[data.item.kind].icon} />
+                {ITEM_KIND_CONFIG[data.item.kind].label}
               </>
             ) : (
               "スレッド"

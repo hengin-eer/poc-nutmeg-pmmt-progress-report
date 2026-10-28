@@ -1,11 +1,11 @@
-import type { ItemState } from "../../lib/domain";
+import type { ItemKind, ItemState } from "../../lib/domain";
 import { Counts, CrossBureau, KindIcon, StatePill } from "../domain";
 import { Button, Icon } from "../ui";
 import { useThread } from "./context";
 
 export type ItemSummary = {
   id: number;
-  kind: "confirm" | "talk";
+  kind: ItemKind;
   state: ItemState;
   body: string;
   crossBureau: boolean;
