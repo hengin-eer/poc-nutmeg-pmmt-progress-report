@@ -1,5 +1,5 @@
-import { action, Form, Link, useForm } from "@void/react";
-import { useState } from "react";
+import { action, Form, Link, useForm, useShared } from "@void/react";
+import { useEffect, useState } from "react";
 import { Icon, UNIT_KIND_LABEL, type UnitKind } from "../../components/ui";
 import { formatJst, toJstInput } from "../../lib/domain";
 import type { Props } from "./index.server";
@@ -123,6 +123,8 @@ function CycleSection({ cycles, defaults, unitCount }: Pick<Props, "cycles" | "d
 }
 
 function MemberSection({ members, units }: Pick<Props, "members" | "units">) {
+  const { me } = useShared();
+  const [editing, setEditing] = useState<number | null>(null);
   const form = useForm("/admin?addMember", { name: "", email: "", role: "lead" as const, unitId: units[0]?.id ?? 0, slackUserId: "" }, { resetOnSuccess: true });
   const unitName = (id: number | null) => units.find((u) => u.id === id)?.name ?? "—";
 
@@ -147,7 +149,9 @@ function MemberSection({ members, units }: Pick<Props, "members" | "units">) {
             </tr>
           </thead>
           <tbody>
-            {members.map((m) => (
+            {members.map((m) => editing === m.id ? (
+              <MemberEditRow key={m.id} member={m} units={units} isSelf={m.id === me?.id} onDone={() => setEditing(null)} />
+            ) : (
               <tr key={m.id}>
                 <td>{m.name}</td>
                 <td className="meta">{m.email}</td>
@@ -155,6 +159,15 @@ function MemberSection({ members, units }: Pick<Props, "members" | "units">) {
                 <td>{unitName(m.unitId)}</td>
                 <td className="meta">{m.slackUserId ?? "—"}</td>
                 <td>
+                  <button
+                    type="button"
+                    className="icon-button"
+                    title="編集"
+                    aria-label={`${m.name} さんを編集`}
+                    onClick={() => setEditing(m.id)}
+                  >
+                    <Icon name="pencil-line" />
+                  </button>
                   <button
                     className="icon-button danger"
                     title="削除"
@@ -216,6 +229,66 @@ function MemberSection({ members, units }: Pick<Props, "members" | "units">) {
         </button>
       </Form>
     </section>
+  );
+}
+
+function MemberEditRow({ member, units, isSelf, onDone }: {
+  member: Props["members"][number];
+  units: Props["units"];
+  isSelf: boolean;
+  onDone: () => void;
+}) {
+  const form = useForm("/admin?updateMember", {
+    id: member.id,
+    name: member.name,
+    role: member.role,
+    unitId: member.unitId ?? 0,
+    slackUserId: member.slackUserId ?? "",
+  });
+  const formId = `edit-member-${member.id}`;
+  useEffect(() => {
+    if (form.wasSuccessful) onDone();
+  }, [form.wasSuccessful, onDone]);
+
+  return (
+    <tr>
+      <td>
+        <input form={formId} aria-label="名前" aria-invalid={Boolean(form.errors.name)} value={form.data.name} onChange={(e) => form.setData("name", e.target.value)} />
+        {form.errors.name && <div className="error" role="alert">{form.errors.name}</div>}
+      </td>
+      <td className="meta">{member.email}</td>
+      <td>
+        <select form={formId} aria-label="役割" aria-invalid={Boolean(form.errors.role)} value={form.data.role} disabled={isSelf} onChange={(e) => form.setData("role", e.target.value as typeof form.data.role)}>
+          {Object.entries(ROLE_LABEL).map(([key, label]) => <option key={key} value={key}>{label}</option>)}
+        </select>
+        {isSelf && <div className="hint">自分の役割は変更できません</div>}
+        {form.errors.role && <div className="error" role="alert">{form.errors.role}</div>}
+      </td>
+      <td>
+        <select form={formId} aria-label="ユニット" aria-invalid={Boolean(form.errors.unitId)} value={form.data.unitId} onChange={(e) => form.setData("unitId", Number(e.target.value))}>
+          <option value={0}>なし</option>
+          {units.map((unit) => <option key={unit.id} value={unit.id}>{unit.name}</option>)}
+        </select>
+        {form.errors.unitId && <div className="error" role="alert">{form.errors.unitId}</div>}
+      </td>
+      <td>
+        <input form={formId} aria-label="Slack ID" aria-invalid={Boolean(form.errors.slackUserId)} value={form.data.slackUserId} placeholder="U0123ABCD" onChange={(e) => form.setData("slackUserId", e.target.value)} />
+        {form.errors.slackUserId && <div className="error" role="alert">{form.errors.slackUserId}</div>}
+      </td>
+      <td>
+        <Form id={formId} form={form} className="stack" style={{ gap: 8 }}>
+          <div className="row" style={{ gap: 4, flexWrap: "nowrap" }}>
+            <button type="submit" className="small primary" disabled={form.pending}>
+              <Icon name="check-line" />保存
+            </button>
+            <button type="button" className="icon-button" title="キャンセル" aria-label="編集をキャンセル" disabled={form.pending} onClick={onDone}>
+              <Icon name="close-line" />
+            </button>
+          </div>
+          {form.errors.id && <div className="error" role="alert">{form.errors.id}</div>}
+        </Form>
+      </td>
+    </tr>
   );
 }
 

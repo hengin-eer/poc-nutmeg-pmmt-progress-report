@@ -103,6 +103,29 @@ export const actions = {
     await db.insert(members).values({ ...body, unitId: body.unitId || null, slackUserId: body.slackUserId || null });
   }),
 
+  updateMember: defineHandler.withValidator({
+    body: memberSchema.omit({ email: true }).extend({
+      id: z.number().int().positive(),
+      unitId: z.number().int().nonnegative(),
+      slackUserId: z.string().trim().regex(/^$|^[UW][A-Z0-9]{6,}$/, "Slack ID は U または W で始まる英大文字・数字で入れてください（7 文字以上）"),
+    }),
+  })(async (c, { body }) => {
+    const me = requireAdmin(c);
+    const [member] = await db.select({ id: members.id }).from(members).where(eq(members.id, body.id));
+    if (!member) throw new ValidationError({ id: "メンバーが見つかりません" });
+    if (body.id === me.id && body.role !== me.role) throw new ValidationError({ role: "自分自身の役割は変更できません" });
+    if (body.unitId) {
+      const [unit] = await db.select({ id: units.id }).from(units).where(eq(units.id, body.unitId));
+      if (!unit) throw new ValidationError({ unitId: "ユニットが見つかりません" });
+    }
+    await db.update(members).set({
+      name: body.name,
+      role: body.role,
+      unitId: body.unitId || null,
+      slackUserId: body.slackUserId || null,
+    }).where(eq(members.id, body.id));
+  }),
+
   deleteMember: defineHandler.withValidator({ body: z.object({ id: z.number().int() }) })(async (c, { body }) => {
     const me = requireAdmin(c);
     if (body.id === me.id) throw new ValidationError({ id: "自分自身は削除できません" });
