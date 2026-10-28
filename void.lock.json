@@ -16,7 +16,13 @@
         "database_id": "c66dedbd-b977-4071-b7a0-72ddfda16f61",
         "migrations_dir": "./db/migrations"
       }
+    ],
+    "routes": [
+      {
+        "pattern": "nutmeg-pmmt-progress.hiro-to.moda",
+        "custom_domain": true
+      }
     ]
   },
-  "text": "{\n  \"name\": \"nutmeg-pmmt-progress\",\n  \"workers_dev\": true,\n  \"account_id\": \"8a63703958657b8e68b9e2465932ed36\",\n  \"compatibility_date\": \"2026-02-24\",\n  \"d1_databases\": [\n    {\n      \"binding\": \"DB\",\n      \"database_name\": \"nutmeg-pmmt-progress-db\",\n      \"database_id\": \"c66dedbd-b977-4071-b7a0-72ddfda16f61\",\n      \"migrations_dir\": \"./db/migrations\"\n    }\n  ]\n}\n"
+  "text": "// void:published-traffic:v1:eyJ3b3JrZXJzX2RldiI6dHJ1ZSwicHJldmlld191cmxzIjp0cnVlLCJyb3V0ZXMiOlt7InBhdHRlcm4iOiJudXRtZWctcG1tdC1wcm9ncmVzcy5oaXJvLXRvLm1vZGEiLCJjdXN0b21fZG9tYWluIjp0cnVlfV19\n{\n  \"name\": \"nutmeg-pmmt-progress\",\n  \"workers_dev\": true,\n  \"account_id\": \"8a63703958657b8e68b9e2465932ed36\",\n  \"compatibility_date\": \"2026-02-24\",\n  \"d1_databases\": [\n    {\n      \"binding\": \"DB\",\n      \"database_name\": \"nutmeg-pmmt-progress-db\",\n      \"database_id\": \"c66dedbd-b977-4071-b7a0-72ddfda16f61\",\n      \"migrations_dir\": \"./db/migrations\"\n    }\n  ],\n  \"routes\": [\n    {\n      \"pattern\": \"nutmeg-pmmt-progress.hiro-to.moda\",\n      \"custom_domain\": true\n    }\n  ]\n}\n"
 }
