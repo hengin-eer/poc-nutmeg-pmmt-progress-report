@@ -1,6 +1,6 @@
 import { Link } from "@void/react";
-import { Badge, Icon, Tabs } from "../ui";
 import { type Props, type Tab } from "../../pages/items/index.server";
+import { Badge, Icon, Tabs } from "../ui";
 
 const TABS: Record<Tab, { label: string; icon: string }> = {
   open: { label: "未解決", icon: "time-line" },
@@ -12,7 +12,9 @@ const TABS: Record<Tab, { label: string; icon: string }> = {
 type ItemTabsProps = Pick<Props, "tab" | "counts">;
 
 export function ItemTabs({ tab, counts }: ItemTabsProps) {
-  function getTabClass(t: Tab) { return t === tab ? "active" : ""; }
+  function getTabClass(t: Tab) {
+    return t === tab ? "active" : "";
+  }
 
   return (
     <Tabs className="tabs">

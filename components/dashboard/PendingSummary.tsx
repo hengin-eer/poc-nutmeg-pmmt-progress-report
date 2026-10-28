@@ -3,11 +3,16 @@ import type { Props } from "../../pages/index.server";
 import { RecordPill } from "../domain";
 import { Badge, Card, EmptyState, Icon, SectionHeader } from "../ui";
 
+type PendingRecord = Props["pending"][number];
+
 type PendingSummaryProps = Pick<Props, "pending">;
 
 export function PendingSummary({ pending }: PendingSummaryProps) {
   const hasNoPendingRecords = pending.length === 0;
-  function hasUnitName(p: (typeof pending)[number]) { return p.unitName; }
+
+  function hasUnitName(p: PendingRecord) {
+    return Boolean(p.unitName);
+  }
 
   return (
     <Card as="section" className="card section">

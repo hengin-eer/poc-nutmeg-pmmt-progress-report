@@ -1,17 +1,18 @@
-import type { ChangeEvent, FormEvent } from "react";
 import { useRouter } from "@void/react";
+import type { ChangeEvent, FormEvent } from "react";
 import { useState } from "react";
-import { Badge, Card, Icon } from "../ui";
 import { RECORD_KIND_LABEL, type RecordKind } from "../../lib/domain";
 import { type Props } from "../../pages/records/index.server";
+import { Badge, Card, Icon } from "../ui";
 
 type RecordFiltersProps = Pick<Props, "filter" | "list" | "unitList">;
 
 export function RecordFilters({ filter, list, unitList }: RecordFiltersProps) {
   const router = useRouter();
   const [q, setQ] = useState(filter.q);
+  const selectedUnitValue = filter.unitId ?? "";
 
-  const go = (patch: Partial<Record<"q" | "kind" | "unit" | "status", string>>) => {
+  function go(patch: Partial<Record<"q" | "kind" | "unit" | "status", string>>) {
     const next = {
       q: filter.q,
       kind: filter.kind,
@@ -21,21 +22,28 @@ export function RecordFilters({ filter, list, unitList }: RecordFiltersProps) {
     };
     const qs = new URLSearchParams(Object.entries(next).filter(([, v]) => v)).toString();
     router.visit(`/records${qs ? `?${qs}` : ""}`, { preserveScroll: true });
-  };
+  }
+
   function handleSearch(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     go({ q });
   }
 
-  function handleQueryChange(e: ChangeEvent<HTMLInputElement>) { return setQ(e.target.value); }
+  function handleQueryChange(e: ChangeEvent<HTMLInputElement>) {
+    setQ(e.target.value);
+  }
 
-  function handleKindFilterChange(e: ChangeEvent<HTMLSelectElement>) { return go({ kind: e.target.value }); }
+  function handleKindFilterChange(e: ChangeEvent<HTMLSelectElement>) {
+    go({ kind: e.target.value });
+  }
 
-  function handleUnitFilterChange(e: ChangeEvent<HTMLSelectElement>) { return go({ unit: e.target.value }); }
+  function handleUnitFilterChange(e: ChangeEvent<HTMLSelectElement>) {
+    go({ unit: e.target.value });
+  }
 
-  function handleStatusFilterChange(e: ChangeEvent<HTMLSelectElement>) { return go({ status: e.target.value }); }
-
-  const selectedUnitValue = filter.unitId ?? "";
+  function handleStatusFilterChange(e: ChangeEvent<HTMLSelectElement>) {
+    go({ status: e.target.value });
+  }
 
   return (
     <Card className="card stack" style={{ gap: 14 }}>

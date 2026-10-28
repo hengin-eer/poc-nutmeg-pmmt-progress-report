@@ -16,16 +16,20 @@ export function MobileMenu({
   children,
 }: MobileMenuProps) {
   const [open, setOpen] = useState(false);
+
   useEffect(() => setOpen(false), [path]);
-
-  function handleCloseMenu() { return setOpen(false); }
-
-  function handleToggleMenu() { return setOpen(!open); }
-
   const menuOpenClass = open ? "open" : "";
   const isMenuClosed = !open;
   const menuTriggerIcon = open ? "close-line" : current.icon;
   const menuTriggerLabel = open ? "閉じる" : current.label;
+
+  function handleCloseMenu() {
+    setOpen(false);
+  }
+
+  function handleToggleMenu() {
+    setOpen(!open);
+  }
 
   return (
     <div className={`mobile-menu ${menuOpenClass}`}>

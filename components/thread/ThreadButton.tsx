@@ -6,9 +6,11 @@ type ThreadButtonProps = { id: number; comments?: number };
 
 export function ThreadButton({ id, comments = 0 }: ThreadButtonProps) {
   const { open } = useThread();
-  function handleOpenThread() { return open(id); }
-
   const hasComments = comments > 0;
+
+  function handleOpenThread() {
+    open(id);
+  }
 
   return (
     <IconButton type="button" className="icon-button" onClick={handleOpenThread} title="スレッドを開く" aria-label="スレッドを開く">

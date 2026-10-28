@@ -1,5 +1,5 @@
-import { Card, EmptyState } from "../ui";
 import { type Props } from "../../pages/records/index.server";
+import { Card, EmptyState } from "../ui";
 import { RecordRow } from "./RecordRow";
 
 type RecordListProps = Pick<Props, "me" | "list">;

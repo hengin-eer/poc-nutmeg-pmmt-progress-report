@@ -1,8 +1,8 @@
 import { Link } from "@void/react";
-import { Icon, PageHeader } from "../../components/ui";
-import { MinutesInput } from "../../components/admin/MinutesInput";
 import { MinutesCandidates } from "../../components/admin/MinutesCandidates";
+import { MinutesInput } from "../../components/admin/MinutesInput";
 import { useMinutesImport } from "../../components/admin/useMinutesImport";
+import { Icon, PageHeader } from "../../components/ui";
 import { type Props } from "./import.server";
 
 export default function ImportPage({ cycles, units }: Props) {

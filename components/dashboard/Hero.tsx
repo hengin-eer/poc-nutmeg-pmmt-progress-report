@@ -1,6 +1,6 @@
 import { Link } from "@void/react";
-import type { Props } from "../../pages/index.server";
 import { formatJst, remainingLabel } from "../../lib/domain";
+import type { Props } from "../../pages/index.server";
 import { Card, Icon } from "../ui";
 
 type HeroProps = { cycle: NonNullable<Props["cycle"]>; cards: Props["cards"]; unitId: number | null; now: string };
@@ -10,10 +10,9 @@ export function Hero({ cycle, cards, unitId, now }: HeroProps) {
   const myCard = cards.find((c) => c.id === unitId);
   const isOpen = cycle.status === "open";
   const over = new Date(cycle.deadlineAt) <= new Date(now);
-
   const remainingClass = over ? "over" : "";
   const isCycleClosed = !isOpen;
-  const canEditReport = myCard && isOpen;
+  const canEditReport = Boolean(myCard) && isOpen;
   const reportActionVariant = myCard?.submitted ? "" : "primary";
   const reportActionLabel = myCard?.submitted ? "記入を直す" : "事前記入する";
   const progressBarWidth = `${(done / Math.max(cards.length, 1)) * 100}%`;

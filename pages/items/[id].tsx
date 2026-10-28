@@ -8,7 +8,6 @@ import type { Props } from "./[id].server";
 export default function ItemPage({ data: initial, cycleOpen }: Props) {
   const [data, setData] = useState(initial);
   useEffect(() => setData(initial), [initial]);
-
   const canReturnToReport = data.isMine && cycleOpen;
 
   return (

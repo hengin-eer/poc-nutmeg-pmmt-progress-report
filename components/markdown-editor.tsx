@@ -17,9 +17,38 @@ type MarkdownEditorProps = {
 export function MarkdownEditor({ id, label, hint, value, onChange, placeholder, error }: MarkdownEditorProps) {
   const [preview, setPreview] = useState(false);
   const tabs = useRef<(HTMLButtonElement | null)[]>([]);
-  function handleTabRef(index: number, node: HTMLButtonElement | null) { tabs.current[index] = node; }
+  const errorDescriptionSuffix = error ? ` ${id}-error` : "";
+  const hasValidationError = !!error;
+  const isWriteMode = !preview;
+  const hasPreviewContent = Boolean(value.trim());
 
-  function handleSelectEditorMode(isPreview: boolean) { return setPreview(isPreview); }
+  function isEditorTabSelected(isPreview: boolean) {
+    return preview === isPreview;
+  }
+
+  function getTabIndex(isPreview: boolean) {
+    return preview === isPreview ? 0 : -1;
+  }
+
+  function getControlledPanelId(isPreview: boolean) {
+    return isPreview ? `${id}-preview` : `${id}-write`;
+  }
+
+  function getEditorTabIcon(isPreview: boolean) {
+    return isPreview ? "eye-line" : "edit-line";
+  }
+
+  function getEditorTabLabel(isPreview: boolean) {
+    return isPreview ? "プレビュー" : "書く";
+  }
+
+  function handleTabRef(index: number, node: HTMLButtonElement | null) {
+    tabs.current[index] = node;
+  }
+
+  function handleSelectEditorMode(isPreview: boolean) {
+    setPreview(isPreview);
+  }
 
   function handleTabKeyDown(index: number, event: KeyboardEvent<HTMLButtonElement>) {
     let target: number;
@@ -32,17 +61,9 @@ export function MarkdownEditor({ id, label, hint, value, onChange, placeholder, 
     tabs.current[target]?.focus();
   }
 
-  function handleInputChange(e: ChangeEvent<HTMLTextAreaElement>) { return onChange(e.target.value); }
-
-  function isEditorTabSelected(isPreview: boolean) { return preview === isPreview; }
-  function getTabIndex(isPreview: boolean) { return preview === isPreview ? 0 : -1; }
-  function getControlledPanelId(isPreview: boolean) { return isPreview ? `${id}-preview` : `${id}-write`; }
-  function getEditorTabIcon(isPreview: boolean) { return isPreview ? "eye-line" : "edit-line"; }
-  function getEditorTabLabel(isPreview: boolean) { return isPreview ? "プレビュー" : "書く"; }
-  const errorDescriptionSuffix = error ? ` ${id}-error` : "";
-  const hasValidationError = !!error;
-  const isWriteMode = !preview;
-  const hasPreviewContent = value.trim();
+  function handleInputChange(e: ChangeEvent<HTMLTextAreaElement>) {
+    onChange(e.target.value);
+  }
 
   return (
     <Field className="field">

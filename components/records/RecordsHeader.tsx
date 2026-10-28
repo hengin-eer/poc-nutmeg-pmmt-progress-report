@@ -1,5 +1,5 @@
-import { Icon, PageHeader } from "../ui";
 import { type Props } from "../../pages/records/index.server";
+import { Icon, PageHeader } from "../ui";
 
 type RecordsHeaderProps = Pick<Props, "filter">;
 
@@ -7,7 +7,6 @@ export function RecordsHeader({ filter }: RecordsHeaderProps) {
   const exportQs = new URLSearchParams(
     Object.entries({ q: filter.q, kind: filter.kind, unit: filter.unitId ? String(filter.unitId) : "", status: filter.status }).filter(([, v]) => v),
   ).toString();
-
   const exportQuerySuffix = exportQs ? `?${exportQs}` : "";
 
   return (

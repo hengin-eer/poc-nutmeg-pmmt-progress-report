@@ -1,8 +1,8 @@
 import { Link } from "@void/react";
-import { Icon, PageHeader } from "../../components/ui";
 import { CycleSection } from "../../components/admin/CycleSection";
 import { MemberSection } from "../../components/admin/MemberSection";
 import { UnitSection } from "../../components/admin/UnitSection";
+import { Icon, PageHeader } from "../../components/ui";
 import { type Props } from "./index.server";
 
 export default function AdminPage({ cycles, units, members, defaults }: Props) {

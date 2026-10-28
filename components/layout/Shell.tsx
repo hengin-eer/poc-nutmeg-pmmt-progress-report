@@ -15,19 +15,27 @@ const NAV = [
 ];
 const ADMIN = { href: "/admin", label: "管理", icon: "settings-3-line" };
 
+type NavigationItem = (typeof NAV)[number];
+
 type ShellProps = { me: Me; demo: boolean; path: string; children: ReactNode };
 
 export function Shell({ me, demo, path, children }: ShellProps) {
-
   const nav = me.isAdmin ? [...NAV, ADMIN] : NAV;
-  const isActive = (href: string) => (href === "/" ? path === "/" : path.startsWith(href));
   const current = nav.find((n) => isActive(n.href)) ?? nav[0];
 
-  const logout = async () => {
+  function getNavigationClass(n: NavigationItem) {
+    return isActive(n.href) ? "active" : "";
+  }
+
+  function isActive(href: string) {
+    return href === "/" ? path === "/" : path.startsWith(href);
+  }
+
+  async function logout() {
     if (!demo) await auth.signOut();
     await action("/login?logout");
     location.href = "/login";
-  };
+  }
 
   const links = nav.map((n) => (
     <Link key={n.href} href={n.href} className={`nav-link ${getNavigationClass(n)}`}>
@@ -35,8 +43,6 @@ export function Shell({ me, demo, path, children }: ShellProps) {
       <span>{n.label}</span>
     </Link>
   ));
-
-  function getNavigationClass(n: (typeof nav)[number]) { return isActive(n.href) ? "active" : ""; }
 
   return (
     <ThreadProvider>

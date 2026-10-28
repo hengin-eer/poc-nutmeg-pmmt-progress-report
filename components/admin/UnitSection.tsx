@@ -1,20 +1,22 @@
-import type { ChangeEvent } from "react";
 import { Form, Link, useForm } from "@void/react";
-import { Badge, Button, Card, Icon, SectionHeader } from "../ui";
-import { UNIT_KIND_LABEL, type UnitKind } from "../domain";
+import type { ChangeEvent } from "react";
 import { type Props } from "../../pages/admin/index.server";
+import { UNIT_KIND_LABEL, type UnitKind } from "../domain";
+import { Badge, Button, Card, Icon, SectionHeader } from "../ui";
 
 type UnitSectionProps = Pick<Props, "units">;
 
 export function UnitSection({ units }: UnitSectionProps) {
   const form = useForm("/admin?addUnit", { name: "", kind: "project" as UnitKind }, { resetOnSuccess: true });
-  function handleNameChange(e: ChangeEvent<HTMLInputElement>) { return form.setData("name", e.target.value); }
+  const hasNameError = Boolean(form.errors.name);
 
-  function handleKindChange(e: ChangeEvent<HTMLSelectElement>) {
-    return form.setData("kind", e.target.value as UnitKind);
+  function handleNameChange(e: ChangeEvent<HTMLInputElement>) {
+    form.setData("name", e.target.value);
   }
 
-  const hasNameError = form.errors.name;
+  function handleKindChange(e: ChangeEvent<HTMLSelectElement>) {
+    form.setData("kind", e.target.value as UnitKind);
+  }
 
   return (
     <Card as="section" className="card card-lg section">

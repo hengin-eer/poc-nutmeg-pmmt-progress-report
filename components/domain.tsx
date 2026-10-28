@@ -1,5 +1,5 @@
-import { Icon, Pill, Badge } from "./ui";
 import { ITEM_STATE_LABEL, RECORD_KIND_LABEL, type ItemKind, type ItemState, type RecordKind } from "../lib/domain";
+import { Icon, Pill, Badge } from "./ui";
 
 export type Progress = ProgressValue | null;
 export type UnitKind = "project" | "team" | "chief" | "vice";
@@ -50,9 +50,11 @@ type BusyProps = { value: number | null; label?: boolean };
 
 export function Busy({ value, label = false }: BusyProps) {
   const b = getBusyOption(value);
+
   if (!b || !value) return null;
   const currentBusyness = b.value;
-  function getBusyLevelClass(level: (typeof BUSY_OPTIONS)[number]["value"]) {
+
+  function getBusyLevelClass(level: BusyValue) {
     return level <= currentBusyness ? "on" : "";
   }
 

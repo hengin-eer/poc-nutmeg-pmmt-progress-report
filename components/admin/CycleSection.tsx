@@ -1,9 +1,11 @@
-import type { ChangeEvent } from "react";
 import { action, Form, useForm } from "@void/react";
+import type { ChangeEvent } from "react";
 import { useState } from "react";
-import { Button, Card, Icon, Pill, SectionHeader } from "../ui";
 import { formatJst, toJstInput } from "../../lib/domain";
 import { type Props } from "../../pages/admin/index.server";
+import { Button, Card, Icon, Pill, SectionHeader } from "../ui";
+
+type Cycle = Props["cycles"][number];
 
 type CycleSectionProps = Pick<Props, "cycles" | "defaults"> & { unitCount: number };
 
@@ -11,30 +13,41 @@ export function CycleSection({ cycles, defaults, unitCount }: CycleSectionProps)
   const form = useForm("/admin?createCycle", { meetingAt: toJstInput(defaults.meetingAt), deadlineAt: toJstInput(defaults.deadlineAt) });
   const [editing, setEditing] = useState<number | null>(null);
   const [deadline, setDeadline] = useState("");
+  const hasDeadlineAtError = Boolean(form.errors.deadlineAt);
 
-  function handleMeetingAtChange(e: ChangeEvent<HTMLInputElement>) { return form.setData("meetingAt", e.target.value); }
+  function isEditingCycle(cy: Cycle) {
+    return editing === cy.id;
+  }
 
-  function handleDeadlineAtChange(e: ChangeEvent<HTMLInputElement>) { return form.setData("deadlineAt", e.target.value); }
+  function isCycleOpen(cy: Cycle) {
+    return cy.status === "open";
+  }
 
-  function handleEditedDeadlineChange(e: ChangeEvent<HTMLInputElement>) { return setDeadline(e.target.value); }
+  function handleMeetingAtChange(e: ChangeEvent<HTMLInputElement>) {
+    form.setData("meetingAt", e.target.value);
+  }
 
-  async function handleUpdateDeadline(cy: (typeof cycles)[number]) {
+  function handleDeadlineAtChange(e: ChangeEvent<HTMLInputElement>) {
+    form.setData("deadlineAt", e.target.value);
+  }
+
+  function handleEditedDeadlineChange(e: ChangeEvent<HTMLInputElement>) {
+    setDeadline(e.target.value);
+  }
+
+  async function handleUpdateDeadline(cy: Cycle) {
     await action("/admin?updateDeadline", { data: { id: cy.id, deadlineAt: deadline } });
     setEditing(null);
   }
 
-  function handleEditDeadline(cy: (typeof cycles)[number]) {
+  function handleEditDeadline(cy: Cycle) {
     setEditing(cy.id);
     setDeadline(toJstInput(cy.deadlineAt));
   }
 
-  function handleCloseCycle(cy: (typeof cycles)[number]) {
+  function handleCloseCycle(cy: Cycle) {
     return confirm("この回を閉じますか？") && action("/admin?closeCycle", { data: { id: cy.id } });
   }
-
-  const hasDeadlineAtError = form.errors.deadlineAt;
-  function isEditingCycle(cy: (typeof cycles)[number]) { return editing === cy.id; }
-  function isCycleOpen(cy: (typeof cycles)[number]) { return cy.status === "open"; }
 
   return (
     <Card as="section" className="card card-lg">

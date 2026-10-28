@@ -1,11 +1,13 @@
-import type { ChangeEvent } from "react";
-import type { ItemKind } from "../../lib/domain";
 import { action, Form, useForm } from "@void/react";
+import type { ChangeEvent } from "react";
 import { useEffect, useState } from "react";
+import type { ItemKind } from "../../lib/domain";
 import type { Props } from "../../pages/report.server";
 import { CrossBureau, ITEM_KIND_CONFIG, StatePill } from "../domain";
 import { ThreadButton, useThread } from "../thread";
 import { Badge, Button, Card, Icon, IconButton, SectionHeader } from "../ui";
+
+type MyItem = Props["myItems"][number];
 
 type ItemSectionProps = {
   kind: ItemKind;
@@ -18,16 +20,26 @@ export function ItemSection({
   list,
   isOpen,
 }: ItemSectionProps) {
-  const kindConfig = ITEM_KIND_CONFIG[kind];
-  const canMarkCrossBureau = kindConfig.allowsCrossBureau;
   const form = useForm("/report?addItem", { kind, body: "", crossBureau: false }, { resetOnSuccess: true });
   const [adding, setAdding] = useState(false);
   const { open } = useThread();
+
   useEffect(() => {
     if (form.wasSuccessful) setAdding(false);
   }, [form.wasSuccessful]);
 
-  function handleOpenThread(i: (typeof list)[number]) { return open(i.id); }
+  const kindConfig = ITEM_KIND_CONFIG[kind];
+  const canMarkCrossBureau = kindConfig.allowsCrossBureau;
+  const hasItems = list.length > 0;
+  const hasBodyError = Boolean(form.errors.body);
+
+  function canDeleteItem(i: MyItem) {
+    return i.state === "open" && isOpen;
+  }
+
+  function handleOpenThread(i: MyItem) {
+    open(i.id);
+  }
 
   async function handleDeleteItem(id: number) {
     const confirmed = confirm("削除しますか？");
@@ -35,19 +47,21 @@ export function ItemSection({
     await action("/report?deleteItem", { data: { id } });
   }
 
-  function handleBodyChange(e: ChangeEvent<HTMLTextAreaElement>) { return form.setData("body", e.target.value); }
-
-  function handleCrossBureauChange(e: ChangeEvent<HTMLInputElement>) {
-    return form.setData("crossBureau", e.target.checked);
+  function handleBodyChange(e: ChangeEvent<HTMLTextAreaElement>) {
+    form.setData("body", e.target.value);
   }
 
-  function handleCancelAdding() { return setAdding(false); }
+  function handleCrossBureauChange(e: ChangeEvent<HTMLInputElement>) {
+    form.setData("crossBureau", e.target.checked);
+  }
 
-  function handleStartAdding() { return setAdding(true); }
+  function handleCancelAdding() {
+    setAdding(false);
+  }
 
-  const hasItems = list.length > 0;
-  function canDeleteItem(i: (typeof list)[number]) { return i.state === "open" && isOpen; }
-  const hasBodyError = form.errors.body;
+  function handleStartAdding() {
+    setAdding(true);
+  }
 
   return (
     <Card as="section" className="card">

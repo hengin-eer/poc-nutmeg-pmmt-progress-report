@@ -7,27 +7,42 @@ import { ClosePanel } from "./ClosePanel";
 import { CommentForm } from "./CommentForm";
 import { post } from "./request";
 
+type Reaction = ThreadData["reactionSummary"][number];
+
 type ThreadViewProps = { data: ThreadData; onChange: (d: ThreadData) => void };
 
 export function ThreadView({ data, onChange }: ThreadViewProps) {
   const { item, unit, cycle, thread, reactionSummary } = data;
+  const hasResolutionNote = Boolean(item.resolutionNote);
+  const hasClosingAuthor = Boolean(data.closedByName);
+  const canChangeItemState = data.canClose;
+  const hasNoComments = thread.length === 0;
 
-  const run = async (payload: Record<string, unknown>) => {
+  function getReactionSelectionClass(r: Reaction) {
+    return r.mine ? "mine" : "";
+  }
+
+  function getReactionCountClass(r: Reaction) {
+    return r.count ? "" : "zero";
+  }
+
+  function getReactionTitle(r: Reaction) {
+    return r.names.join("、") || "リアクションする";
+  }
+
+  function hasReactionCount(r: Reaction) {
+    return r.count > 0;
+  }
+
+  async function run(payload: Record<string, unknown>) {
     const res = await post(item.id, payload);
     if (res.ok) onChange(res.data);
     return res;
-  };
+  }
 
-  function handleReaction(r: (typeof reactionSummary)[number]) { return run({ op: "react", emoji: r.emoji }); }
-
-  const hasResolutionNote = item.resolutionNote;
-  const hasClosingAuthor = data.closedByName;
-  function getReactionSelectionClass(r: (typeof reactionSummary)[number]) { return r.mine ? "mine" : ""; }
-  function getReactionCountClass(r: (typeof reactionSummary)[number]) { return r.count ? "" : "zero"; }
-  function getReactionTitle(r: (typeof reactionSummary)[number]) { return r.names.join("、") || "リアクションする"; }
-  function hasReactionCount(r: (typeof reactionSummary)[number]) { return r.count > 0; }
-  const canChangeItemState = data.canClose;
-  const hasNoComments = thread.length === 0;
+  function handleReaction(r: Reaction) {
+    run({ op: "react", emoji: r.emoji });
+  }
 
   return (
     <article className="thread">

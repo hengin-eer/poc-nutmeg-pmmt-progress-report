@@ -1,13 +1,16 @@
-import { Badge, Card, EmptyState, SectionHeader } from "../ui";
-import { RecordPill } from "../domain";
 import { formatJstDate } from "../../lib/domain";
 import { type Props } from "../../pages/units/[id].server";
+import { RecordPill } from "../domain";
+import { Badge, Card, EmptyState, SectionHeader } from "../ui";
+
+type UnitRecord = Props["records"][number];
 
 type UnitRecordsProps = Pick<Props, "records">;
 
 export function UnitRecords({ records }: UnitRecordsProps) {
   const hasNoRecords = records.length === 0;
-  function getRecordCompletionClass(r: (typeof records)[number]) {
+
+  function getRecordCompletionClass(r: UnitRecord) {
     return r.doneAt && r.kind !== "decision" ? "done" : "";
   }
 

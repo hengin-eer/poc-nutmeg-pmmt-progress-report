@@ -21,15 +21,30 @@ export function ClosePanel({ nextStates, run }: ClosePanelProps) {
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
   const needsNote = chosen === "decided" || chosen === "deferred" || chosen === "resolved";
+  const resolutionPlaceholder = chosen === "decided" ? "例: 1 週間後ろにずらす。新しい期限は 11/20" : "任意";
+  const selectedStateLabel = chosen ? ITEM_STATE_LABEL[chosen] : "";
+  const resolutionSubmitLabel = chosen === "open" ? "未解決に戻す" : `「${selectedStateLabel}」にする`;
 
-  const submit = async () => {
+  function getResolutionChoiceClass(s: ItemState) {
+    return chosen === s ? "selected" : "";
+  }
+
+  function getResolutionChoiceIcon(s: ItemState) {
+    return s === "open" ? "arrow-go-back-line" : STATE_ICON(s);
+  }
+
+  function getResolutionChoiceLabel(s: ItemState) {
+    return s === "open" ? "未解決に戻す" : ITEM_STATE_LABEL[s];
+  }
+
+  async function submit() {
     setPending(true);
     const res = await run({ op: "close", state: chosen, note });
     setPending(false);
     if (!res.ok) setError(Object.values(res.errors)[0] ?? "");
-  };
+  }
 
-  function handleSelectResolution(s: (typeof nextStates)[number]) {
+  function handleSelectResolution(s: ItemState) {
     setChosen(chosen === s ? null : s);
     setError("");
   }
@@ -39,18 +54,9 @@ export function ClosePanel({ nextStates, run }: ClosePanelProps) {
     submit();
   }
 
-  function handleResolutionNoteChange(e: ChangeEvent<HTMLInputElement>) { return setNote(e.target.value); }
-
-  function getResolutionChoiceClass(s: (typeof nextStates)[number]) { return chosen === s ? "selected" : ""; }
-  function getResolutionChoiceIcon(s: (typeof nextStates)[number]) {
-    return s === "open" ? "arrow-go-back-line" : STATE_ICON(s);
+  function handleResolutionNoteChange(e: ChangeEvent<HTMLInputElement>) {
+    setNote(e.target.value);
   }
-  function getResolutionChoiceLabel(s: (typeof nextStates)[number]) {
-    return s === "open" ? "未解決に戻す" : ITEM_STATE_LABEL[s];
-  }
-  const resolutionPlaceholder = chosen === "decided" ? "例: 1 週間後ろにずらす。新しい期限は 11/20" : "任意";
-  const selectedStateLabel = chosen ? ITEM_STATE_LABEL[chosen] : "";
-  const resolutionSubmitLabel = chosen === "open" ? "未解決に戻す" : `「${selectedStateLabel}」にする`;
 
   return (
     <section className="close-panel">

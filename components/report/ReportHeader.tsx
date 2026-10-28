@@ -1,5 +1,5 @@
-import type { Props } from "../../pages/report.server";
 import { formatJst, remainingLabel } from "../../lib/domain";
+import type { Props } from "../../pages/report.server";
 import { UNIT_KIND_LABEL } from "../domain";
 import { Icon, Notice, PageHeader } from "../ui";
 

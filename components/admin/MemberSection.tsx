@@ -1,10 +1,12 @@
-import type { ChangeEvent } from "react";
 import { action, Form, useForm, useShared } from "@void/react";
+import type { ChangeEvent } from "react";
 import { useState } from "react";
-import { Badge, Button, Card, Icon, IconButton, SectionHeader } from "../ui";
 import { type Props } from "../../pages/admin/index.server";
+import { Badge, Button, Card, Icon, IconButton, SectionHeader } from "../ui";
 import { ROLE_LABEL } from "./labels";
 import { MemberEditRow } from "./MemberEditRow";
+
+type Member = Props["members"][number];
 
 type MemberSectionProps = Pick<Props, "members" | "units">;
 
@@ -12,39 +14,58 @@ export function MemberSection({ members, units }: MemberSectionProps) {
   const { me } = useShared();
   const [editing, setEditing] = useState<number | null>(null);
   const form = useForm("/admin?addMember", { name: "", email: "", role: "lead" as const, unitId: units[0]?.id ?? 0, slackUserId: "" }, { resetOnSuccess: true });
-  const unitName = (id: number | null) => units.find((u) => u.id === id)?.name ?? "—";
+  const hasNameError = Boolean(form.errors.name);
+  const hasEmailError = Boolean(form.errors.email);
 
-  function handleFinishEditing() { return setEditing(null); }
+  function isEditingMember(m: Member) {
+    return editing === m.id;
+  }
 
-  function handleEditMember(m: (typeof members)[number]) { return setEditing(m.id); }
+  function isCurrentMember(m: Member) {
+    return m.id === me?.id;
+  }
 
-  async function handleDeleteMember(m: (typeof members)[number]) {
+  function getMemberSlackLabel(m: Member) {
+    return m.slackUserId ?? "—";
+  }
+
+  function unitName(id: number | null) {
+    return units.find((u) => u.id === id)?.name ?? "—";
+  }
+
+  function handleFinishEditing() {
+    setEditing(null);
+  }
+
+  function handleEditMember(m: Member) {
+    setEditing(m.id);
+  }
+
+  async function handleDeleteMember(m: Member) {
     if (!confirm(`${m.name} さんを削除しますか？`)) return;
     const r = await action("/admin?deleteMember", { data: { id: m.id } });
     if (!r.ok) alert(r.error.message);
   }
 
-  function handleNameChange(e: ChangeEvent<HTMLInputElement>) { return form.setData("name", e.target.value); }
+  function handleNameChange(e: ChangeEvent<HTMLInputElement>) {
+    form.setData("name", e.target.value);
+  }
 
-  function handleEmailChange(e: ChangeEvent<HTMLInputElement>) { return form.setData("email", e.target.value); }
+  function handleEmailChange(e: ChangeEvent<HTMLInputElement>) {
+    form.setData("email", e.target.value);
+  }
 
   function handleRoleChange(e: ChangeEvent<HTMLSelectElement>) {
-    return form.setData("role", e.target.value as typeof form.data.role);
+    form.setData("role", e.target.value as typeof form.data.role);
   }
 
   function handleUnitIdChange(e: ChangeEvent<HTMLSelectElement>) {
-    return form.setData("unitId", Number(e.target.value));
+    form.setData("unitId", Number(e.target.value));
   }
 
   function handleSlackUserIdChange(e: ChangeEvent<HTMLInputElement>) {
-    return form.setData("slackUserId", e.target.value);
+    form.setData("slackUserId", e.target.value);
   }
-
-  function isEditingMember(m: (typeof members)[number]) { return editing === m.id; }
-  function isCurrentMember(m: (typeof members)[number]) { return m.id === me?.id; }
-  function getMemberSlackLabel(m: (typeof members)[number]) { return m.slackUserId ?? "—"; }
-  const hasNameError = form.errors.name;
-  const hasEmailError = form.errors.email;
 
   return (
     <Card as="section" className="card card-lg section">

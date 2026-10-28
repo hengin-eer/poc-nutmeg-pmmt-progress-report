@@ -1,30 +1,38 @@
-import type { ChangeEvent } from "react";
 import { Form, useForm } from "@void/react";
+import type { ChangeEvent } from "react";
 import { useEffect, useState } from "react";
-import { Button, Card, Field, Icon, IconButton, SectionHeader } from "../ui";
 import { type Props } from "../../pages/units/[id].server";
+import { Button, Card, Field, Icon, IconButton, SectionHeader } from "../ui";
 
 type UnitPurposeProps = Pick<Props, "unit" | "canEdit">;
 
 export function UnitPurpose({ unit, canEdit }: UnitPurposeProps) {
   const [editing, setEditing] = useState(false);
   const form = useForm("/units/:id", { purpose: unit.purpose, summary: unit.summary }, { params: { id: String(unit.id) } });
+
   useEffect(() => {
     if (form.wasSuccessful) setEditing(false);
   }, [form.wasSuccessful]);
-
-  function handleStartEditing() { return setEditing(true); }
-
-  function handlePurposeChange(e: ChangeEvent<HTMLInputElement>) { return form.setData("purpose", e.target.value); }
-
-  function handleSummaryChange(e: ChangeEvent<HTMLTextAreaElement>) { return form.setData("summary", e.target.value); }
-
-  function handleCancelEditing() { return setEditing(false); }
-
   const canStartEditing = canEdit && !editing;
   const purposeText = unit.purpose;
   const hasPurpose = Boolean(purposeText);
-  const hasUnitSummary = unit.summary;
+  const hasUnitSummary = Boolean(unit.summary);
+
+  function handleStartEditing() {
+    setEditing(true);
+  }
+
+  function handlePurposeChange(e: ChangeEvent<HTMLInputElement>) {
+    form.setData("purpose", e.target.value);
+  }
+
+  function handleSummaryChange(e: ChangeEvent<HTMLTextAreaElement>) {
+    form.setData("summary", e.target.value);
+  }
+
+  function handleCancelEditing() {
+    setEditing(false);
+  }
 
   return (
     <Card as="section" className="card card-lg">

@@ -1,5 +1,5 @@
-import type { ChangeEvent } from "react";
 import { Link } from "@void/react";
+import type { ChangeEvent } from "react";
 import { Button, Card, Icon, SectionHeader } from "../ui";
 import { type ImportState } from "./useMinutesImport";
 
@@ -21,11 +21,15 @@ type MinutesInputProps = { state: ImportState };
 
 export function MinutesInput({ state }: MinutesInputProps) {
   const { text, setText, parse } = state;
-  function handleMinutesChange(e: ChangeEvent<HTMLTextAreaElement>) { return setText(e.target.value); }
-
-  function handleLoadSample() { return setText(SAMPLE); }
-
   const isParseDisabled = !text.trim();
+
+  function handleMinutesChange(e: ChangeEvent<HTMLTextAreaElement>) {
+    setText(e.target.value);
+  }
+
+  function handleLoadSample() {
+    setText(SAMPLE);
+  }
 
   return (
     <Card as="section" className="card card-lg">

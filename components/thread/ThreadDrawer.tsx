@@ -19,7 +19,6 @@ export function ThreadDrawer({ id, onClose }: ThreadDrawerProps) {
       .then(setData)
       .catch(() => setFailed(true));
   }, [id]);
-
   const close = useCallback(() => {
     onClose();
     // 件数や状態が変わっていたら、後ろの画面も読み直す

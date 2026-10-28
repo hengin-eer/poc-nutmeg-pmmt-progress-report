@@ -19,12 +19,14 @@ type ItemRowProps = { item: ItemSummary; showState?: boolean };
 
 export function ItemRow({ item, showState = true }: ItemRowProps) {
   const { open } = useThread();
-  function handleOpenThread() { return open(item.id); }
-
-  const hasUnitName = item.unitName;
-  const hasResolutionNote = item.resolutionNote;
+  const hasUnitName = Boolean(item.unitName);
+  const hasResolutionNote = Boolean(item.resolutionNote);
   const commentCount = item.comments ?? 0;
   const reactionCount = item.reactions ?? 0;
+
+  function handleOpenThread() {
+    open(item.id);
+  }
 
   return (
     <li className="item-li">

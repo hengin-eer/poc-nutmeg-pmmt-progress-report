@@ -9,8 +9,9 @@ export function CommentForm({ run }: CommentFormProps) {
   const [body, setBody] = useState("");
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
+  const isCommentSubmissionDisabled = pending || !body.trim();
 
-  const submit = async () => {
+  async function submit() {
     if (pending) return;
     setPending(true);
     const res = await run({ op: "comment", body });
@@ -19,20 +20,20 @@ export function CommentForm({ run }: CommentFormProps) {
       setBody("");
       setError("");
     } else setError(Object.values(res.errors)[0] ?? "");
-  };
+  }
 
   function handleSubmitComment(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     submit();
   }
 
-  function handleCommentChange(e: ChangeEvent<HTMLTextAreaElement>) { return setBody(e.target.value); }
+  function handleCommentChange(e: ChangeEvent<HTMLTextAreaElement>) {
+    setBody(e.target.value);
+  }
 
   function handleCommentKeyDown(e: KeyboardEvent<HTMLTextAreaElement>) {
     if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) submit();
   }
-
-  const isCommentSubmissionDisabled = pending || !body.trim();
 
   return (
     <form

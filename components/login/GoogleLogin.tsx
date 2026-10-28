@@ -1,13 +1,15 @@
-import { Card, Button, Icon } from "../ui";
-import { type Props } from "../../pages/login.server";
 import { auth } from "void/client";
+import { type Props } from "../../pages/login.server";
+import { Card, Button, Icon } from "../ui";
 
 type GoogleLoginProps = Pick<Props, "googleReady">;
 
 export function GoogleLogin({ googleReady }: GoogleLoginProps) {
-  function handleGoogleLogin() { return auth.signIn.social({ provider: "google", callbackURL: "/" }); }
-
   const isGoogleUnavailable = !googleReady;
+
+  function handleGoogleLogin() {
+    auth.signIn.social({ provider: "google", callbackURL: "/" });
+  }
 
   return (
     <Card className="card card-lg stack">

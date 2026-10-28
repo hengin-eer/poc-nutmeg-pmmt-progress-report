@@ -8,7 +8,7 @@ type UnitCardProps = { card: Props["cards"][number] };
 
 export function UnitCard({ card }: UnitCardProps) {
   const submissionClass = card.submitted ? "" : "missing";
-  const hasSubmittedReport = card.submitted;
+  const hasSubmittedReport = Boolean(card.submitted);
   const hasOpenItems = card.openCount > 0;
   const hasCrossBureauItems = card.crossCount > 0;
 

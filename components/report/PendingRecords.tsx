@@ -7,11 +7,11 @@ type PendingRecordsProps = Pick<Props, "pending"> & { isOpen: boolean };
 
 export function PendingRecords({ pending, isOpen }: PendingRecordsProps) {
   if (pending.length === 0) return null;
-  function handleToggleRecord(id: number, checked: boolean) {
-    return action("/report?toggleRecord", { data: { id, done: checked } });
-  }
-
   const isCycleClosed = !isOpen;
+
+  function handleToggleRecord(id: number, checked: boolean) {
+    action("/report?toggleRecord", { data: { id, done: checked } });
+  }
 
   return (
     <Card as="section" className="card section">

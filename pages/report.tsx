@@ -1,8 +1,8 @@
-import { ITEM_KINDS } from "../lib/domain";
 import { ItemSection } from "../components/report/ItemSection";
 import { PendingRecords } from "../components/report/PendingRecords";
 import { ProgressForm } from "../components/report/ProgressForm";
 import { ReportHeader } from "../components/report/ReportHeader";
+import { ITEM_KINDS } from "../lib/domain";
 import type { Props } from "./report.server";
 
 export default function ReportPage({ unit, cycle, report, myItems, pending, now }: Props) {

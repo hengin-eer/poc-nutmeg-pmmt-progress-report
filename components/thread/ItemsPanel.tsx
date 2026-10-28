@@ -1,5 +1,5 @@
-import { Card, EmptyState, Icon, Notice } from "../ui";
 import { type Props } from "../../pages/items/index.server";
+import { Card, EmptyState, Icon, Notice } from "../ui";
 import { ItemRow } from "./ItemRow";
 
 type ItemsPanelProps = Pick<Props, "tab" | "list">;

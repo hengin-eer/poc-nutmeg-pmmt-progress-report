@@ -1,16 +1,40 @@
-import type { ChangeEvent } from "react";
 import { Form } from "@void/react";
-import { Button, Card, EmptyState, Field, SectionHeader } from "../ui";
-import { RecordPill } from "../domain";
+import type { ChangeEvent } from "react";
 import { formatJst } from "../../lib/domain";
 import { type Props } from "../../pages/admin/import.server";
+import { RecordPill } from "../domain";
+import { Button, Card, EmptyState, Field, SectionHeader } from "../ui";
 import { type ImportState } from "./useMinutesImport";
+
+type Cycle = Props["cycles"][number];
+type Candidate = ImportState["rows"][number];
 
 type MinutesCandidatesProps = Props & { state: ImportState };
 
 export function MinutesCandidates({ cycles, units, state }: MinutesCandidatesProps) {
   const { rows, form, summary, setSummary, update, selected } = state;
-  function handleSummaryChange() {
+  const hasNoCandidates = rows.length === 0;
+  const hasCycleIdError = Boolean(form.errors.cycleId);
+  const hasEntriesError = Boolean(form.errors.entries);
+  const isImportDisabled = form.pending || selected.length === 0;
+
+  function getCycleStatusSuffix(cy: Cycle) {
+    return cy.status === "open" ? "（受付中）" : "";
+  }
+
+  function getCandidateUnitValue(r: Candidate) {
+    return r.unitId ?? "";
+  }
+
+  function hasUnknownUnit(r: Candidate) {
+    return Boolean(r.unitName && r.unitId === null);
+  }
+
+  function hasRecordDetails(r: Candidate) {
+    return Boolean(r.body);
+  }
+
+  function handlePrepareImport() {
     form.setData("summary", summary);
     form.setData(
       "entries",
@@ -19,31 +43,24 @@ export function MinutesCandidates({ cycles, units, state }: MinutesCandidatesPro
   }
 
   function handleCycleIdChange(e: ChangeEvent<HTMLSelectElement>) {
-    return form.setData("cycleId", Number(e.target.value));
+    form.setData("cycleId", Number(e.target.value));
   }
 
   function handleCandidateSelectionChange(i: number, e: ChangeEvent<HTMLInputElement>) {
-    return update(i, { checked: e.target.checked });
+    update(i, { checked: e.target.checked });
   }
 
   function handleCandidateUnitChange(i: number, e: ChangeEvent<HTMLSelectElement>) {
-    return update(i, { unitId: e.target.value ? Number(e.target.value) : null });
+    update(i, { unitId: e.target.value ? Number(e.target.value) : null });
   }
 
   function handleCandidateTitleChange(i: number, e: ChangeEvent<HTMLInputElement>) {
-    return update(i, { title: e.target.value });
+    update(i, { title: e.target.value });
   }
 
-  function handleSummaryChange6(e: ChangeEvent<HTMLTextAreaElement>) { return setSummary(e.target.value); }
-
-  const hasNoCandidates = rows.length === 0;
-  function getCycleStatusSuffix(cy: (typeof cycles)[number]) { return cy.status === "open" ? "（受付中）" : ""; }
-  const hasCycleIdError = form.errors.cycleId;
-  function getCandidateUnitValue(r: (typeof rows)[number]) { return r.unitId ?? ""; }
-  function hasUnknownUnit(r: (typeof rows)[number]) { return r.unitName && r.unitId === null; }
-  function hasRecordDetails(r: (typeof rows)[number]) { return r.body; }
-  const hasEntriesError = form.errors.entries;
-  const isImportDisabled = form.pending || selected.length === 0;
+  function handleSummaryTextChange(e: ChangeEvent<HTMLTextAreaElement>) {
+    setSummary(e.target.value);
+  }
 
   return (
     <Card as="section" className="card card-lg">
@@ -53,7 +70,7 @@ export function MinutesCandidates({ cycles, units, state }: MinutesCandidatesPro
       ) : (
         <Form
           form={form}
-          onSubmitCapture={handleSummaryChange}
+          onSubmitCapture={handlePrepareImport}
         >
           <Field className="field">
             <label>どの回の議事録か</label>
@@ -94,7 +111,7 @@ export function MinutesCandidates({ cycles, units, state }: MinutesCandidatesPro
           {summary && (
             <Field className="field">
               <label>要約 <span className="hint">回の要約として保存されます</span></label>
-              <textarea value={summary} onChange={handleSummaryChange6} />
+              <textarea value={summary} onChange={handleSummaryTextChange} />
             </Field>
           )}
           {hasEntriesError && <div className="error">{form.errors.entries}</div>}

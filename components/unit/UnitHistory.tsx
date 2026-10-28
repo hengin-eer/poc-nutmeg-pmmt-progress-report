@@ -1,17 +1,28 @@
+import { formatJstDate } from "../../lib/domain";
+import { type Props } from "../../pages/units/[id].server";
+import { Busy, ProgressPill } from "../domain";
 import { Markdown } from "../markdown";
 import { ItemRow } from "../thread";
 import { Card, EmptyState, SectionHeader } from "../ui";
-import { Busy, ProgressPill } from "../domain";
-import { formatJstDate } from "../../lib/domain";
-import { type Props } from "../../pages/units/[id].server";
+
+type HistoryEntry = Props["history"][number];
 
 type UnitHistoryProps = Pick<Props, "history">;
 
 export function UnitHistory({ history }: UnitHistoryProps) {
   const hasNoHistory = history.length === 0;
-  function hasCompletedWork(h: (typeof history)[number]) { return h.done; }
-  function hasPlannedWork(h: (typeof history)[number]) { return h.next; }
-  function hasRelatedItems(h: (typeof history)[number]) { return h.items.length > 0; }
+
+  function hasCompletedWork(h: HistoryEntry) {
+    return Boolean(h.done);
+  }
+
+  function hasPlannedWork(h: HistoryEntry) {
+    return Boolean(h.next);
+  }
+
+  function hasRelatedItems(h: HistoryEntry) {
+    return h.items.length > 0;
+  }
 
   return (
     <section>

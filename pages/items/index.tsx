@@ -1,6 +1,6 @@
-import { ItemTabs } from "../../components/thread/ItemTabs";
 import { ItemsHeader } from "../../components/thread/ItemsHeader";
 import { ItemsPanel } from "../../components/thread/ItemsPanel";
+import { ItemTabs } from "../../components/thread/ItemTabs";
 import type { Props } from "./index.server";
 
 export default function ItemsPage({ tab, cycle, list, counts }: Props) {

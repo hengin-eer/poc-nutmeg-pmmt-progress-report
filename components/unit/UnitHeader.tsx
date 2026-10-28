@@ -1,6 +1,6 @@
-import { Icon, PageHeader } from "../ui";
-import { UNIT_KIND_LABEL } from "../domain";
 import { type Props } from "../../pages/units/[id].server";
+import { UNIT_KIND_LABEL } from "../domain";
+import { Icon, PageHeader } from "../ui";
 
 type UnitHeaderProps = Pick<Props, "unit" | "people">;
 

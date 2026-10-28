@@ -1,47 +1,64 @@
-import { REPORT_COPY } from "./copy";
 import { Form, useForm } from "@void/react";
 import type { Props } from "../../pages/report.server";
 import { BUSY_OPTIONS, Busy, PROGRESS_OPTIONS, type BusyValue, type ProgressValue } from "../domain";
 import { MarkdownEditor } from "../markdown-editor";
 import { Button, Card, Field, Icon, SectionHeader } from "../ui";
+import { REPORT_COPY } from "./copy";
 
 type ProgressFormProps = Pick<Props, "unit" | "cycle" | "report">;
 
 export function ProgressForm({ unit, cycle, report }: ProgressFormProps) {
-  const isOpen = cycle.status === "open";
+  const initialProgress: ProgressValue | "" = report?.progress ?? "";
   const form = useForm("/report?save", {
-    progress: (report?.progress ?? "") as "" | ProgressValue,
+    progress: initialProgress,
     busyness: report?.busyness ?? 0,
     done: report?.done ?? "",
     next: report?.next ?? "",
     submit: false,
   });
+
+  const isOpen = cycle.status === "open";
   const showProgress = unit.kind === "project";
-
-  function handleSelectProgress(value: ProgressValue) {
-    const isAlreadySelected = form.data.progress === value;
-    form.setData("progress", isAlreadySelected ? "" : value);
-  }
-
-  function handleSelectBusyness(value: BusyValue) { form.setData("busyness", value); }
-
-  function handleDoneChange(value: string) { return form.setData("done", value); }
-
-  function handleNextChange(value: string) { return form.setData("next", value); }
-
-  function handleSaveDraft() { return form.setData("submit", false); }
-
-  function handleSubmitReport() { return form.setData("submit", true); }
-
-  function getProgressChoiceClass(value: ProgressValue) { return form.data.progress === value ? "selected" : ""; }
-  function getBusynessChoiceClass(value: BusyValue) { return form.data.busyness === value ? "selected" : ""; }
-  const hasBusynessError = form.errors.busyness;
+  const hasBusynessError = Boolean(form.errors.busyness);
   const doneText = form.data.done ?? "";
   const nextText = form.data.next ?? "";
   const formError = form.error;
   const isSavingDisabled = !isOpen || form.pending;
   const showSavedFeedback = form.recentlySuccessful;
   const submitLabel = report?.submittedAt ? "更新する" : "提出する";
+
+  function getProgressChoiceClass(value: ProgressValue) {
+    return form.data.progress === value ? "selected" : "";
+  }
+
+  function getBusynessChoiceClass(value: BusyValue) {
+    return form.data.busyness === value ? "selected" : "";
+  }
+
+  function handleSelectProgress(value: ProgressValue) {
+    const isAlreadySelected = form.data.progress === value;
+    form.setData("progress", isAlreadySelected ? "" : value);
+  }
+
+  function handleSelectBusyness(value: BusyValue) {
+    form.setData("busyness", value);
+  }
+
+  function handleDoneChange(value: string) {
+    form.setData("done", value);
+  }
+
+  function handleNextChange(value: string) {
+    form.setData("next", value);
+  }
+
+  function handleSaveDraft() {
+    form.setData("submit", false);
+  }
+
+  function handleSubmitReport() {
+    form.setData("submit", true);
+  }
 
   return (
     <Card as="section" className="card card-lg">

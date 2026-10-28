@@ -1,10 +1,10 @@
-import type { ChangeEvent } from "react";
 import { action } from "@void/react";
-import { useThread } from "../thread";
-import { Button, Icon } from "../ui";
-import { RecordPill, SourceBadge } from "../domain";
+import type { ChangeEvent } from "react";
 import { formatJstDate } from "../../lib/domain";
 import { type Props } from "../../pages/records/index.server";
+import { RecordPill, SourceBadge } from "../domain";
+import { useThread } from "../thread";
+import { Button, Icon } from "../ui";
 
 type RecordRowProps = { record: Props["list"][number]; me: Props["me"] };
 
@@ -12,18 +12,20 @@ export function RecordRow({ record: r, me }: RecordRowProps) {
   const { open } = useThread();
   const toggleable = r.kind !== "decision" && (me.isAdmin || r.unitId === me.unitId);
   const done = Boolean(r.doneAt) && r.kind !== "decision";
-  function handleToggle(e: ChangeEvent<HTMLInputElement>) {
-    return action("/records?toggle", { data: { id: r.id, done: e.target.checked } });
-  }
-
-  function handleOpenThread() { return open(r.sourceItemId!); }
-
   const isActionableRecord = r.kind !== "decision";
   const isRecordReadOnly = !toggleable;
   const recordCompletionClass = done ? "done" : "";
-  const hasRecordDetails = r.body;
-  const hasUnitName = r.unitName;
-  const hasSourceThread = r.source === "thread" && r.sourceItemId;
+  const hasRecordDetails = Boolean(r.body);
+  const hasUnitName = Boolean(r.unitName);
+  const hasSourceThread = Boolean(r.source === "thread" && r.sourceItemId);
+
+  function handleToggle(e: ChangeEvent<HTMLInputElement>) {
+    action("/records?toggle", { data: { id: r.id, done: e.target.checked } });
+  }
+
+  function handleOpenThread() {
+    open(r.sourceItemId!);
+  }
 
   return (
     <li className="record">

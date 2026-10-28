@@ -1,8 +1,8 @@
-import type { ChangeEvent } from "react";
 import { Form, useForm } from "@void/react";
+import type { ChangeEvent } from "react";
 import { useEffect } from "react";
-import { Button, Icon, IconButton } from "../ui";
 import { type Props } from "../../pages/admin/index.server";
+import { Button, Icon, IconButton } from "../ui";
 import { ROLE_LABEL } from "./labels";
 
 type MemberEditRowProps = {
@@ -21,29 +21,31 @@ export function MemberEditRow({ member, units, isSelf, onDone }: MemberEditRowPr
     slackUserId: member.slackUserId ?? "",
   });
   const formId = `edit-member-${member.id}`;
+
   useEffect(() => {
     if (form.wasSuccessful) onDone();
   }, [form.wasSuccessful, onDone]);
+  const hasNameError = Boolean(form.errors.name);
+  const hasRoleError = Boolean(form.errors.role);
+  const hasUnitIdError = Boolean(form.errors.unitId);
+  const hasSlackUserIdError = Boolean(form.errors.slackUserId);
+  const hasIdError = Boolean(form.errors.id);
 
-  function handleNameChange(e: ChangeEvent<HTMLInputElement>) { return form.setData("name", e.target.value); }
+  function handleNameChange(e: ChangeEvent<HTMLInputElement>) {
+    form.setData("name", e.target.value);
+  }
 
   function handleRoleChange(e: ChangeEvent<HTMLSelectElement>) {
-    return form.setData("role", e.target.value as typeof form.data.role);
+    form.setData("role", e.target.value as typeof form.data.role);
   }
 
   function handleUnitIdChange(e: ChangeEvent<HTMLSelectElement>) {
-    return form.setData("unitId", Number(e.target.value));
+    form.setData("unitId", Number(e.target.value));
   }
 
   function handleSlackUserIdChange(e: ChangeEvent<HTMLInputElement>) {
-    return form.setData("slackUserId", e.target.value);
+    form.setData("slackUserId", e.target.value);
   }
-
-  const hasNameError = form.errors.name;
-  const hasRoleError = form.errors.role;
-  const hasUnitIdError = form.errors.unitId;
-  const hasSlackUserIdError = form.errors.slackUserId;
-  const hasIdError = form.errors.id;
 
   return (
     <tr>
