@@ -1,6 +1,13 @@
-import { tv } from "../ui/styles";
 import { type ReactNode, useEffect, useState } from "react";
 import { Button, Icon } from "../ui";
+import { tv } from "../ui/styles";
+
+type MobileMenuProps = {
+  current: { label: string; icon: string };
+  path: string;
+  logout: () => void;
+  children: React.ReactNode;
+};
 
 const menu = tv({
   slots: {
@@ -13,29 +20,42 @@ const menu = tv({
   variants: { open: { true: { panel: "pointer-events-auto visible scale-100 opacity-100" } } },
 });
 
-export function MobileMenu({ current, path, logout, children }: {
-  current: { label: string; icon: string };
-  path: string;
-  logout: () => void;
-  children: ReactNode;
-}) {
+export function MobileMenu({
+  current,
+  path,
+  logout,
+  children,
+}: MobileMenuProps) {
   const [open, setOpen] = useState(false);
+
   useEffect(() => setOpen(false), [path]);
   const styles = menu({ open });
+  const isMenuClosed = !open;
+  const menuTriggerIcon = open ? "close-line" : current.icon;
+  const menuTriggerLabel = open ? "閉じる" : current.label;
+
+  function handleCloseMenu() {
+    setOpen(false);
+  }
+
+  function handleToggleMenu() {
+    setOpen(!open);
+  }
+
   return (
     <div data-slot="mobile-menu" className={styles.root()}>
-      {open && <div className={styles.backdrop()} onClick={() => setOpen(false)} />}
-      <div data-slot="mobile-panel" className={styles.panel()} aria-hidden={!open}>
+      {open && <div className={styles.backdrop()} onClick={handleCloseMenu} />}
+      <div data-slot="mobile-panel" className={styles.panel()} aria-hidden={isMenuClosed}>
         <nav className={styles.nav()}>{children}</nav>
         <Button variant="plain" className="w-full gap-3 rounded-xl px-3 py-2 text-meta font-semibold text-text-2 hover:bg-surface-2" onClick={logout}>
           <Icon name="logout-box-r-line" className="text-xl text-muted" />
           <span>ログアウト</span>
         </Button>
       </div>
-      <Button variant="plain" type="button" className={styles.trigger()} onClick={() => setOpen(!open)} aria-expanded={open} aria-label="メニュー">
-        <Icon name={open ? "close-line" : current.icon} />
-        <span>{open ? "閉じる" : current.label}</span>
-        {!open && <Icon name="menu-line" className="text-muted" />}
+      <Button variant="plain" type="button" className={styles.trigger()} onClick={handleToggleMenu} aria-expanded={open} aria-label="メニュー">
+        <Icon name={menuTriggerIcon} />
+        <span>{menuTriggerLabel}</span>
+        {isMenuClosed && <Icon name="menu-line" className="text-muted" />}
       </Button>
     </div>
   );

@@ -1,5 +1,5 @@
-import { tv } from "./styles";
 import { Button, type ButtonProps } from "./Button";
+import { tv } from "./styles";
 
 export const iconButtonStyles = tv({
   base: "inline-flex items-center justify-center gap-1 rounded-control border-0 bg-transparent px-2 py-1 text-caption font-bold text-muted cursor-pointer hover:bg-surface-2 hover:text-text hover:no-underline [&_i]:text-lg",

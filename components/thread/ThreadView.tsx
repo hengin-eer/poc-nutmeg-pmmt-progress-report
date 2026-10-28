@@ -1,12 +1,16 @@
-import { flowStyles } from "../ui/Flow";
-import { headingStyles, textStyles, tv } from "../ui/styles";
 import { ITEM_STATE_LABEL, formatJst } from "../../lib/domain";
+import { type ThreadData } from "../../lib/items";
 import { CrossBureau, KindIcon, STATE_ICON, StatePill } from "../domain";
 import { Avatar, Badge, Button, EmptyState, Icon, Link, Row } from "../ui";
+import { flowStyles } from "../ui/Flow";
+import { headingStyles, textStyles, tv } from "../ui/styles";
 import { ClosePanel } from "./ClosePanel";
 import { CommentForm } from "./CommentForm";
 import { post } from "./request";
-import type { ThreadData } from "../../lib/items";
+
+type ThreadViewProps = { data: ThreadData; onChange: (d: ThreadData) => void };
+
+type Reaction = ThreadData["reactionSummary"][number];
 
 const resolution = tv({
   base: "flex gap-2 rounded-xl bg-surface-2 px-4 py-3 text-meta [&>i]:mt-1 [&>i]:text-lg",
@@ -25,14 +29,34 @@ const reaction = tv({
   },
 });
 
-export function ThreadView({ data, onChange }: { data: ThreadData; onChange: (d: ThreadData) => void }) {
+export function ThreadView({ data, onChange }: ThreadViewProps) {
   const { item, unit, cycle, thread, reactionSummary } = data;
+  const hasResolutionNote = Boolean(item.resolutionNote);
+  const hasClosingAuthor = Boolean(data.closedByName);
+  const canChangeItemState = data.canClose;
+  const hasNoComments = thread.length === 0;
 
-  const run = async (payload: Record<string, unknown>) => {
+  function getReactionTitle(r: Reaction) {
+    return r.names.join("、") || "リアクションする";
+  }
+
+  function hasReactionCount(r: Reaction) {
+    return r.count > 0;
+  }
+
+  function hasNoReactionCount(reaction: Reaction) {
+    return reaction.count === 0;
+  }
+
+  async function run(payload: Record<string, unknown>) {
     const res = await post(item.id, payload);
     if (res.ok) onChange(res.data);
     return res;
-  };
+  }
+
+  function handleReaction(r: Reaction) {
+    run({ op: "react", emoji: r.emoji });
+  }
 
   return (
     <article data-slot="thread" className="flex flex-col gap-6">
@@ -53,13 +77,13 @@ export function ThreadView({ data, onChange }: { data: ThreadData; onChange: (d:
 
       <p className="m-0 whitespace-pre-wrap text-subheading leading-[1.75] font-medium">{item.body}</p>
 
-      {item.resolutionNote && (
+      {hasResolutionNote && (
         <div className={resolution({ state: item.state })}>
           <Icon name={STATE_ICON(item.state)} />
           <div>
             <strong>{ITEM_STATE_LABEL[item.state]}</strong>
             <div>{item.resolutionNote}</div>
-            {data.closedByName && <div className={textStyles({ role: "meta" })}>{data.closedByName}</div>}
+            {hasClosingAuthor && <div className={textStyles({ role: "meta" })}>{data.closedByName}</div>}
           </div>
         </div>
       )}
@@ -69,23 +93,23 @@ export function ThreadView({ data, onChange }: { data: ThreadData; onChange: (d:
           <Button
             key={r.emoji}
             type="button"
-            variant="plain" className={reaction({ mine: r.mine, zero: !r.count })}
-            title={r.names.join("、") || "リアクションする"}
-            onClick={() => run({ op: "react", emoji: r.emoji })}
+            variant="plain" className={reaction({ mine: r.mine, zero: hasNoReactionCount(r) })}
+            title={getReactionTitle(r)}
+            onClick={() => handleReaction(r)}
           >
             {r.emoji}
-            {r.count > 0 && <span>{r.count}</span>}
+            {hasReactionCount(r) && <span>{r.count}</span>}
           </Button>
         ))}
       </div>
 
-      {data.canClose && <ClosePanel key={item.state} nextStates={data.nextStates} run={run} />}
+      {canChangeItemState && <ClosePanel key={item.state} nextStates={data.nextStates} run={run} />}
 
       <section className="border-t border-border pt-6 [&_h3]:mb-4">
         <h3 className={headingStyles({ level: "subheading" })}>
           コメント <Badge>{thread.length}</Badge>
         </h3>
-        {thread.length === 0 ? (
+        {hasNoComments ? (
           <EmptyState>まだコメントはありません</EmptyState>
         ) : (
           <ul className="mb-6 flex list-none flex-col gap-4 p-0 [&>li]:grid [&>li]:grid-cols-[32px_minmax(0,1fr)] [&>li]:gap-3">

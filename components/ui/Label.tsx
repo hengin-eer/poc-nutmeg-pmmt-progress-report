@@ -1,6 +1,8 @@
-import { twMerge } from "./styles";
 import type { ComponentProps } from "react";
+import { twMerge } from "./styles";
 
-export function Label({ className, ...props }: ComponentProps<"label">) {
+type LabelProps = ComponentProps<"label">;
+
+export function Label({ className, ...props }: LabelProps) {
   return <label {...props} className={twMerge("mb-2 block text-meta font-bold", className)} />;
 }

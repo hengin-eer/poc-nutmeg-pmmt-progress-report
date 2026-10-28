@@ -1,11 +1,19 @@
-import { headingStyles, textStyles } from "../ui/styles";
 import { action } from "@void/react";
+import { type Props } from "../../pages/report.server";
 import { RecordPill } from "../domain";
 import { Card, Checkbox, Icon, Label, List, SectionHeader } from "../ui";
-import type { Props } from "../../pages/report.server";
+import { headingStyles, textStyles } from "../ui/styles";
 
-export function PendingRecords({ pending, isOpen }: Pick<Props, "pending"> & { isOpen: boolean }) {
+type PendingRecordsProps = Pick<Props, "pending"> & { isOpen: boolean };
+
+export function PendingRecords({ pending, isOpen }: PendingRecordsProps) {
   if (pending.length === 0) return null;
+  const isCycleClosed = !isOpen;
+
+  function handleToggleRecord(id: number, checked: boolean) {
+    action("/report?toggleRecord", { data: { id, done: checked } });
+  }
+
   return (
     <Card as="section" className="mt-10">
       <SectionHeader>
@@ -19,8 +27,8 @@ export function PendingRecords({ pending, isOpen }: Pick<Props, "pending"> & { i
             <Label className="flex flex-wrap items-center m-0 font-medium gap-3 cursor-pointer">
               <Checkbox
 
-                disabled={!isOpen}
-                onChange={(e) => action("/report?toggleRecord", { data: { id: r.id, done: e.target.checked } })}
+                disabled={isCycleClosed}
+                onChange={(e) => handleToggleRecord(r.id, e.target.checked)}
               />
               <RecordPill kind={r.kind} />
               <span>{r.title}</span>

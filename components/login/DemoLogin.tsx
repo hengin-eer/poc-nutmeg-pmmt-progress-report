@@ -1,11 +1,21 @@
+import { action } from "@void/react";
+import { type Props } from "../../pages/login.server";
+import { Button, Card, Icon, List, Row } from "../ui";
 import { flowStyles } from "../ui/Flow";
 import { textStyles } from "../ui/styles";
-import { action } from "@void/react";
-import { Button, Card, Icon, List, Row } from "../ui";
-import { type Props } from "../../pages/login.server";
 
-export function DemoLogin({ demoMembers }: Pick<Props, "demoMembers">) {
-  const loginAs = (memberId: number) => action("/login?login", { data: { memberId } }).then(() => (location.href = "/"));
+type DemoLoginProps = Pick<Props, "demoMembers">;
+
+type DemoMember = Props["demoMembers"][number];
+
+export function DemoLogin({ demoMembers }: DemoLoginProps) {
+  function loginAs(memberId: number) {
+    return action("/login?login", { data: { memberId } }).then(() => (location.href = "/"));
+  }
+
+  function handleDemoLogin(m: DemoMember) {
+    loginAs(m.id);
+  }
 
   return (
     <Card size="large" className="flex flex-col gap-4">
@@ -22,7 +32,7 @@ export function DemoLogin({ demoMembers }: Pick<Props, "demoMembers">) {
             <span>{m.name}</span>
             <span className={textStyles({ role: "meta" })}>{m.unitName}</span>
             <span className="flex-1" />
-            <Button size="small" onClick={() => loginAs(m.id)}>
+            <Button size="small" onClick={() => handleDemoLogin(m)}>
               <Icon name="login-box-line" />
               入る
             </Button>

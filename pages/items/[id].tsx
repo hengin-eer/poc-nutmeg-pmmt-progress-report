@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { ThreadView } from "../../components/thread";
 import { ButtonLink, Card, Icon, Link } from "../../components/ui";
-import type { Props } from "./[id].server";
+import { type Props } from "./[id].server";
 
 export default function ItemPage({ data: initial, cycleOpen }: Props) {
   const [data, setData] = useState(initial);
   useEffect(() => setData(initial), [initial]);
+  const canReturnToReport = data.isMine && cycleOpen;
 
   return (
     <div className="max-w-[820px]">
@@ -16,7 +17,7 @@ export default function ItemPage({ data: initial, cycleOpen }: Props) {
         </Link>
         <span className="flex-1" />
         {/* 自分のユニットの確認事項なら、事前記入に戻れるように */}
-        {data.isMine && cycleOpen && (
+        {canReturnToReport && (
           <ButtonLink href="/report" >
             <Icon name="edit-box-line" />
             事前記入に戻る

@@ -1,6 +1,6 @@
-import { Stack } from "../components/ui";
 import { DemoLogin } from "../components/login/DemoLogin";
 import { GoogleLogin } from "../components/login/GoogleLogin";
+import { Stack } from "../components/ui";
 import type { Props } from "./login.server";
 
 export default function LoginPage({ demo, demoMembers, googleReady }: Props) {

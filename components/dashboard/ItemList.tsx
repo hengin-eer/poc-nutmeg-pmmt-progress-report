@@ -1,15 +1,19 @@
-import { headingStyles } from "../ui/styles";
 import { ItemRow, type ItemSummary } from "../thread";
 import { Badge, Card, EmptyState, Icon, Link, List, SectionHeader } from "../ui";
+import { headingStyles } from "../ui/styles";
 
-export function ItemList({ title, icon, items, empty, moreHref, moreLabel }: {
+type ItemListProps = {
   title: string;
   icon: string;
   items: ItemSummary[];
   empty: string;
   moreHref?: string;
   moreLabel?: string;
-}) {
+};
+
+export function ItemList({ title, icon, items, empty, moreHref, moreLabel }: ItemListProps) {
+  const hasNoItems = items.length === 0;
+
   return (
     <Card as="section">
       <SectionHeader>
@@ -17,7 +21,7 @@ export function ItemList({ title, icon, items, empty, moreHref, moreLabel }: {
         <h2 className={headingStyles({ level: "heading" })}>{title}</h2>
         <Badge>{items.length}</Badge>
       </SectionHeader>
-      {items.length === 0 ? (
+      {hasNoItems ? (
         <EmptyState>{empty}</EmptyState>
       ) : (
         <List>

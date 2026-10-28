@@ -1,12 +1,16 @@
-import { tv } from "../ui/styles";
 import { action } from "@void/react";
+import { type ReactNode } from "react";
 import { auth } from "void/client";
+import { type Me } from "../../lib/server";
 import { ThreadProvider } from "../thread";
 import { Icon, Link } from "../ui";
+import { tv } from "../ui/styles";
 import { MobileMenu } from "./MobileMenu";
 import { Sidebar } from "./Sidebar";
-import type { ReactNode } from "react";
-import type { Me } from "../../lib/server";
+
+type ShellProps = { me: Me; demo: boolean; path: string; children: ReactNode };
+
+type NavigationItem = (typeof NAV)[number];
 
 const NAV = [
   { href: "/", label: "ダッシュボード", icon: "dashboard-3-line" },
@@ -21,20 +25,26 @@ const navLink = tv({
   variants: { active: { true: "bg-accent-soft text-accent [&_i]:text-accent" } },
 });
 
-export function Shell({ me, demo, path, children }: { me: Me; demo: boolean; path: string; children: ReactNode }) {
-
+export function Shell({ me, demo, path, children }: ShellProps) {
   const nav = me.isAdmin ? [...NAV, ADMIN] : NAV;
-  const isActive = (href: string) => (href === "/" ? path === "/" : path.startsWith(href));
   const current = nav.find((n) => isActive(n.href)) ?? nav[0];
 
-  const logout = async () => {
+  function isActive(href: string) {
+    return href === "/" ? path === "/" : path.startsWith(href);
+  }
+
+  function getNavigationCurrent(item: NavigationItem) {
+    return isActive(item.href) ? "page" : undefined;
+  }
+
+  async function logout() {
     if (!demo) await auth.signOut();
     await action("/login?logout");
     location.href = "/login";
-  };
+  }
 
   const links = nav.map((n) => (
-    <Link key={n.href} href={n.href} className={navLink({ active: isActive(n.href) })} aria-current={isActive(n.href) ? "page" : undefined}>
+    <Link key={n.href} href={n.href} className={navLink({ active: isActive(n.href) })} aria-current={getNavigationCurrent(n)}>
       <Icon name={n.icon} />
       <span>{n.label}</span>
     </Link>

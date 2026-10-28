@@ -1,21 +1,66 @@
-import { flowStyles } from "../ui/Flow";
-import { Button, Card, Choice, Dot, Field, FieldLabel, Icon, Label, Row, SectionHeader } from "../ui";
-import { headingStyles, textStyles } from "../ui/styles";
 import { Form, useForm } from "@void/react";
-import { BUSY, Busy, PROGRESS_LABEL } from "../domain";
+import { type Props } from "../../pages/report.server";
+import { Busy, BUSY_OPTIONS, PROGRESS_OPTIONS, type BusyValue, type ProgressValue } from "../domain";
 import { MarkdownEditor } from "../markdown-editor";
-import type { Props } from "../../pages/report.server";
+import { Button, Card, Choice, Dot, Field, FieldLabel, Icon, Label, Row, SectionHeader } from "../ui";
+import { flowStyles } from "../ui/Flow";
+import { headingStyles, textStyles } from "../ui/styles";
+import { REPORT_COPY } from "./copy";
 
-export function ProgressForm({ unit, cycle, report }: Pick<Props, "unit" | "cycle" | "report">) {
-  const isOpen = cycle.status === "open";
+type ProgressFormProps = Pick<Props, "unit" | "cycle" | "report">;
+
+export function ProgressForm({ unit, cycle, report }: ProgressFormProps) {
+  const initialProgress: ProgressValue | "" = report?.progress ?? "";
   const form = useForm("/report?save", {
-    progress: (report?.progress ?? "") as "" | "green" | "yellow" | "red",
+    progress: initialProgress,
     busyness: report?.busyness ?? 0,
     done: report?.done ?? "",
     next: report?.next ?? "",
     submit: false,
   });
+
+  const isOpen = cycle.status === "open";
   const showProgress = unit.kind === "project";
+  const hasBusynessError = Boolean(form.errors.busyness);
+  const doneText = form.data.done ?? "";
+  const nextText = form.data.next ?? "";
+  const formError = form.error;
+  const isSavingDisabled = !isOpen || form.pending;
+  const showSavedFeedback = form.recentlySuccessful;
+  const submitLabel = report?.submittedAt ? "更新する" : "提出する";
+
+  function isProgressSelected(value: ProgressValue) {
+    return form.data.progress === value;
+  }
+
+  function isBusynessSelected(value: BusyValue) {
+    return form.data.busyness === value;
+  }
+
+  function handleSelectProgress(value: ProgressValue) {
+    const isAlreadySelected = form.data.progress === value;
+    form.setData("progress", isAlreadySelected ? "" : value);
+  }
+
+  function handleSelectBusyness(value: BusyValue) {
+    form.setData("busyness", value);
+  }
+
+  function handleDoneChange(value: string) {
+    form.setData("done", value);
+  }
+
+  function handleNextChange(value: string) {
+    form.setData("next", value);
+  }
+
+  function handleSaveDraft() {
+    form.setData("submit", false);
+  }
+
+  function handleSubmitReport() {
+    form.setData("submit", true);
+  }
 
   return (
     <Card as="section" size="large">
@@ -29,15 +74,15 @@ export function ProgressForm({ unit, cycle, report }: Pick<Props, "unit" | "cycl
               <Label>進み具合</Label>
             </FieldLabel>
             <div className={flowStyles({ direction: "wrap", gap: 2 })}>
-              {(["green", "yellow", "red"] as const).map((v) => (
+              {PROGRESS_OPTIONS.map(({ value, label }) => (
                 <Choice
                   type="button"
-                  key={v}
-                  selected={form.data.progress === v}
-                  onClick={() => form.setData("progress", form.data.progress === v ? "" : v)}
+                  key={value}
+                  selected={isProgressSelected(value)}
+                  onClick={() => handleSelectProgress(value)}
                 >
-                  <Dot tone={v} />
-                  {PROGRESS_LABEL[v]}
+                  <Dot tone={value} />
+                  {label}
                 </Choice>
               ))}
             </div>
@@ -49,44 +94,44 @@ export function ProgressForm({ unit, cycle, report }: Pick<Props, "unit" | "cycl
             <Label>忙しさ</Label>
           </FieldLabel>
           <div className={flowStyles({ direction: "wrap", gap: 2 })}>
-            {([1, 2, 3] as const).map((v) => (
+            {BUSY_OPTIONS.map(({ value, label, icon }) => (
               <Choice
                 type="button"
-                key={v}
-                selected={form.data.busyness === v}
-                onClick={() => form.setData("busyness", v)}
+                key={value}
+                selected={isBusynessSelected(value)}
+                onClick={() => handleSelectBusyness(value)}
               >
-                <Icon name={BUSY[v].icon} />
-                {BUSY[v].label}
-                <Busy value={v} />
+                <Icon name={icon} />
+                {label}
+                <Busy value={value} />
               </Choice>
             ))}
           </div>
-          {form.errors.busyness && <div className={textStyles({ role: "error" })}>{form.errors.busyness}</div>}
+          {hasBusynessError && <div className={textStyles({ role: "error" })}>{form.errors.busyness}</div>}
         </Field>
 
         <MarkdownEditor id="done" label="今週やったこと" hint="やったこと・結果・遅れを箇条書きで。数字やリンク、関わった局も添えると、当日聞かなくても伝わります"
-          value={form.data.done ?? ""} onChange={(value) => form.setData("done", value)}
-          placeholder={"- ○○の画面を作った（PR #12）\n- △△局と打ち合わせ → 11/10 までに仕様を確定\n- 遅れ：□□（理由と、いつまでに戻すか）"} error={form.errors.done} />
+          value={doneText} onChange={handleDoneChange}
+          placeholder={REPORT_COPY.done.placeholder} error={form.errors.done} />
         <MarkdownEditor id="next" label="次にやること" hint="次の回までにやること。担当と期限があれば添えて"
-          value={form.data.next ?? ""} onChange={(value) => form.setData("next", value)}
+          value={nextText} onChange={handleNextChange}
           placeholder="- ○○のレビュー（佐藤・11/6）" error={form.errors.next} />
 
-        {form.error && <p className={textStyles({ className: "mb-3", role: "error" })}>{form.error.message}</p>}
+        {formError && <p className={textStyles({ className: "mb-3", role: "error" })}>{formError.message}</p>}
         <Row className="mt-2">
-          <Button type="submit" variant="ghost" disabled={!isOpen || form.pending} onClick={() => form.setData("submit", false)}>
+          <Button type="submit" variant="ghost" disabled={isSavingDisabled} onClick={handleSaveDraft}>
             <Icon name="save-3-line" />
             下書き保存
           </Button>
-          {form.recentlySuccessful && (
+          {showSavedFeedback && (
             <span className={textStyles({ role: "meta" })}>
               <Icon name="check-line" /> 保存しました
             </span>
           )}
           <span className="flex-1" />
-          <Button type="submit" variant="primary" disabled={!isOpen || form.pending} onClick={() => form.setData("submit", true)}>
+          <Button type="submit" variant="primary" disabled={isSavingDisabled} onClick={handleSubmitReport}>
             <Icon name="send-plane-2-line" />
-            {report?.submittedAt ? "更新する" : "提出する"}
+            {submitLabel}
           </Button>
         </Row>
       </Form>

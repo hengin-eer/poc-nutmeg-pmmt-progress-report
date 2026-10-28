@@ -1,5 +1,5 @@
-import { tv } from "./ui/styles";
 import ReactMarkdown from "react-markdown";
+import { tv } from "./ui/styles";
 
 const markdown = tv({
   slots: {
@@ -25,13 +25,18 @@ const markdown = tv({
 });
 
 /** Raw HTML is discarded; keep react-markdown's default safe URL transform. */
-export function Markdown({ children, className, compact = false }: { children: string; className?: string; compact?: boolean }) {
+type MarkdownProps = { children: string; className?: string; compact?: boolean };
+
+export function Markdown({ children, className, compact = false }: MarkdownProps) {
   const styles = markdown({ compact });
+  const headingOneSize = compact ? "text-[1em]" : "text-[1.3em]";
+  const headingTwoSize = compact ? "text-[1em]" : "text-[1.15em]";
+
   return (
     <div data-slot="markdown" className={styles.root({ className })}>
       <ReactMarkdown skipHtml components={{
-        h1: ({ children }) => <h1 className={styles.heading({ className: compact ? "text-[1em]" : "text-[1.3em]" })}>{children}</h1>,
-        h2: ({ children }) => <h2 className={styles.heading({ className: compact ? "text-[1em]" : "text-[1.15em]" })}>{children}</h2>,
+        h1: ({ children }) => <h1 className={styles.heading({ className: headingOneSize })}>{children}</h1>,
+        h2: ({ children }) => <h2 className={styles.heading({ className: headingTwoSize })}>{children}</h2>,
         h3: ({ children }) => <h3 className={styles.heading({ className: "text-[1em]" })}>{children}</h3>,
         h4: ({ children }) => <h4 className={styles.heading({ className: "text-[1em]" })}>{children}</h4>,
         h5: ({ children }) => <h5 className={styles.heading({ className: "text-[1em]" })}>{children}</h5>,

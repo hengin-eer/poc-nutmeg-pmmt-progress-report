@@ -2,13 +2,21 @@ import { type ReactNode, useCallback, useState } from "react";
 import { ThreadContext } from "./context";
 import { ThreadDrawer } from "./ThreadDrawer";
 
-export function ThreadProvider({ children }: { children: ReactNode }) {
+type ThreadProviderProps = { children: ReactNode };
+
+export function ThreadProvider({ children }: ThreadProviderProps) {
   const [openId, setOpenId] = useState<number | null>(null);
   const open = useCallback((id: number) => setOpenId(id), []);
+  const hasOpenThread = openId !== null;
+
+  function handleCloseThread() {
+    setOpenId(null);
+  }
+
   return (
     <ThreadContext.Provider value={{ open }}>
       {children}
-      {openId !== null && <ThreadDrawer key={openId} id={openId} onClose={() => setOpenId(null)} />}
+      {hasOpenThread && <ThreadDrawer key={openId} id={openId} onClose={handleCloseThread} />}
     </ThreadContext.Provider>
   );
 }

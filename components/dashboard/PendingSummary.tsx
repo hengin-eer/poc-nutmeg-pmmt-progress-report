@@ -1,9 +1,19 @@
-import { headingStyles, textStyles } from "../ui/styles";
+import { type Props } from "../../pages/index.server";
 import { RecordPill } from "../domain";
 import { Badge, Card, EmptyState, Icon, Link, List, SectionHeader } from "../ui";
-import type { Props } from "../../pages/index.server";
+import { headingStyles, textStyles } from "../ui/styles";
 
-export function PendingSummary({ pending }: Pick<Props, "pending">) {
+type PendingSummaryProps = Pick<Props, "pending">;
+
+type PendingRecord = Props["pending"][number];
+
+export function PendingSummary({ pending }: PendingSummaryProps) {
+  const hasNoPendingRecords = pending.length === 0;
+
+  function hasUnitName(p: PendingRecord) {
+    return Boolean(p.unitName);
+  }
+
   return (
     <Card as="section" className="mt-10">
       <SectionHeader>
@@ -11,7 +21,7 @@ export function PendingSummary({ pending }: Pick<Props, "pending">) {
         <h2 className={headingStyles({ level: "heading" })}>持ち越し中</h2>
         <Badge>{pending.length}</Badge>
       </SectionHeader>
-      {pending.length === 0 ? (
+      {hasNoPendingRecords ? (
         <EmptyState>持ち越しているものはありません</EmptyState>
       ) : (
         <List>
@@ -19,7 +29,7 @@ export function PendingSummary({ pending }: Pick<Props, "pending">) {
             <li key={p.id} className="flex flex-wrap items-center gap-3">
               <RecordPill kind={p.kind} />
               <span className="flex-1 min-w-0">{p.title}</span>
-              {p.unitName && <span className={textStyles({ role: "meta" })}>{p.unitName}</span>}
+              {hasUnitName(p) && <span className={textStyles({ role: "meta" })}>{p.unitName}</span>}
             </li>
           ))}
         </List>

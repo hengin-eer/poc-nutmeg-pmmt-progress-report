@@ -1,6 +1,8 @@
-import { twMerge } from "./styles";
 import type { ComponentProps } from "react";
+import { twMerge } from "./styles";
 
-export function EmptyState({ className, ...props }: ComponentProps<"p">) {
+type EmptyStateProps = ComponentProps<"p">;
+
+export function EmptyState({ className, ...props }: EmptyStateProps) {
   return <p {...props} data-slot="emptystate" className={twMerge("m-0 py-1 text-meta text-muted", className)} />;
 }

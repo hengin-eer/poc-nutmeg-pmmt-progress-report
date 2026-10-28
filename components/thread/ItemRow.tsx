@@ -1,7 +1,9 @@
+import { type ItemState } from "../../lib/domain";
 import { Counts, CrossBureau, KindIcon, StatePill } from "../domain";
 import { Button, Icon, Row } from "../ui";
 import { useThread } from "./context";
-import type { ItemState } from "../../lib/domain";
+
+type ItemRowProps = { item: ItemSummary; showState?: boolean };
 
 export type ItemSummary = {
   id: number;
@@ -15,16 +17,25 @@ export type ItemSummary = {
   reactions?: number;
 };
 
-export function ItemRow({ item, showState = true }: { item: ItemSummary; showState?: boolean }) {
+export function ItemRow({ item, showState = true }: ItemRowProps) {
   const { open } = useThread();
+  const hasUnitName = Boolean(item.unitName);
+  const hasResolutionNote = Boolean(item.resolutionNote);
+  const commentCount = item.comments ?? 0;
+  const reactionCount = item.reactions ?? 0;
+
+  function handleOpenThread() {
+    open(item.id);
+  }
+
   return (
     <li data-slot="item">
-      <Button type="button" variant="plain" data-slot="item-row" className="grid w-full box-content grid-cols-[auto_minmax(0,1fr)_auto] items-start gap-3 -mx-3 rounded-xl p-3 text-left text-inherit hover:bg-surface-2" onClick={() => open(item.id)}>
+      <Button type="button" variant="plain" data-slot="item-row" className="grid w-full box-content grid-cols-[auto_minmax(0,1fr)_auto] items-start gap-3 -mx-3 rounded-xl p-3 text-left text-inherit hover:bg-surface-2" onClick={handleOpenThread}>
         <KindIcon kind={item.kind} />
         <div>
-          {item.unitName && <div className="text-meta font-bold">{item.unitName}</div>}
+          {hasUnitName && <div className="text-meta font-bold">{item.unitName}</div>}
           <div className="mt-1 line-clamp-3 whitespace-pre-wrap leading-relaxed text-text">{item.body}</div>
-          {item.resolutionNote && (
+          {hasResolutionNote && (
             <div className="mt-1 flex gap-1 text-caption text-text-2">
               <Icon name="corner-down-right-line" />
               {item.resolutionNote}
@@ -36,7 +47,7 @@ export function ItemRow({ item, showState = true }: { item: ItemSummary; showSta
             <CrossBureau on={item.crossBureau} />
             {showState && <StatePill state={item.state} />}
           </Row>
-          <Counts comments={item.comments ?? 0} reactions={item.reactions ?? 0} />
+          <Counts comments={commentCount} reactions={reactionCount} />
         </div>
       </Button>
     </li>

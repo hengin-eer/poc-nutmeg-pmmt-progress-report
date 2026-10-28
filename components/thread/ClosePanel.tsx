@@ -1,9 +1,11 @@
-import { textStyles } from "../ui/styles";
-import { useState } from "react";
+import { useState, type ChangeEvent, type FormEvent } from "react";
 import { ITEM_STATE_LABEL, type ItemState } from "../../lib/domain";
 import { STATE_ICON } from "../domain";
 import { Button, Icon, Input, Row, Segmented, SegmentedButton } from "../ui";
-import type { Result } from "./request";
+import { textStyles } from "../ui/styles";
+import { type Result } from "./request";
+
+type ClosePanelProps = { nextStates: ItemState[]; run: (p: Record<string, unknown>) => Promise<Result> };
 
 const CLOSE_HINT: Partial<Record<ItemState, string>> = {
   decided: "決まった内容を一言で。「決まったこと」の記録に残ります",
@@ -13,19 +15,48 @@ const CLOSE_HINT: Partial<Record<ItemState, string>> = {
   open: "もう一度、未解決に戻します",
 };
 
-export function ClosePanel({ nextStates, run }: { nextStates: ItemState[]; run: (p: Record<string, unknown>) => Promise<Result> }) {
+export function ClosePanel({ nextStates, run }: ClosePanelProps) {
   const [chosen, setChosen] = useState<ItemState | null>(null);
   const [note, setNote] = useState("");
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
   const needsNote = chosen === "decided" || chosen === "deferred" || chosen === "resolved";
+  const resolutionPlaceholder = chosen === "decided" ? "例: 1 週間後ろにずらす。新しい期限は 11/20" : "任意";
+  const selectedStateLabel = chosen ? ITEM_STATE_LABEL[chosen] : "";
+  const resolutionSubmitLabel = chosen === "open" ? "未解決に戻す" : `「${selectedStateLabel}」にする`;
 
-  const submit = async () => {
+  function isResolutionSelected(state: ItemState) {
+    return chosen === state;
+  }
+
+  function getResolutionChoiceIcon(s: ItemState) {
+    return s === "open" ? "arrow-go-back-line" : STATE_ICON(s);
+  }
+
+  function getResolutionChoiceLabel(s: ItemState) {
+    return s === "open" ? "未解決に戻す" : ITEM_STATE_LABEL[s];
+  }
+
+  async function submit() {
     setPending(true);
     const res = await run({ op: "close", state: chosen, note });
     setPending(false);
     if (!res.ok) setError(Object.values(res.errors)[0] ?? "");
-  };
+  }
+
+  function handleSelectResolution(s: ItemState) {
+    setChosen(chosen === s ? null : s);
+    setError("");
+  }
+
+  function handleSubmitResolution(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    submit();
+  }
+
+  function handleResolutionNoteChange(e: ChangeEvent<HTMLInputElement>) {
+    setNote(e.target.value);
+  }
 
   return (
     <section data-slot="close-panel" className="rounded-card border border-border p-3">
@@ -34,24 +65,18 @@ export function ClosePanel({ nextStates, run }: { nextStates: ItemState[]; run: 
           <SegmentedButton
             key={s}
             type="button"
-            selected={chosen === s}
-            onClick={() => {
-              setChosen(chosen === s ? null : s);
-              setError("");
-            }}
+            selected={isResolutionSelected(s)}
+            onClick={() => handleSelectResolution(s)}
           >
-            <Icon name={s === "open" ? "arrow-go-back-line" : STATE_ICON(s)} />
-            {s === "open" ? "未解決に戻す" : ITEM_STATE_LABEL[s]}
+            <Icon name={getResolutionChoiceIcon(s)} />
+            {getResolutionChoiceLabel(s)}
           </SegmentedButton>
         ))}
       </Segmented>
       {chosen && (
         <form
           data-slot="close-form" className="mt-3 flex flex-col gap-2 [&_p]:m-0"
-          onSubmit={(e) => {
-            e.preventDefault();
-            submit();
-          }}
+          onSubmit={handleSubmitResolution}
         >
           <p className={textStyles({ className: "mb-3", role: "hint" })}>{CLOSE_HINT[chosen]}</p>
           {needsNote && (
@@ -59,15 +84,15 @@ export function ClosePanel({ nextStates, run }: { nextStates: ItemState[]; run: 
               type="text"
               autoFocus
               value={note}
-              onChange={(e) => setNote(e.target.value)}
-              placeholder={chosen === "decided" ? "例: 1 週間後ろにずらす。新しい期限は 11/20" : "任意"}
+              onChange={handleResolutionNoteChange}
+              placeholder={resolutionPlaceholder}
             />
           )}
           {error && <div className={textStyles({ role: "error" })}>{error}</div>}
           <Row>
             <span className="flex-1" />
             <Button type="submit" variant="primary" disabled={pending}>
-              {chosen === "open" ? "未解決に戻す" : `「${ITEM_STATE_LABEL[chosen]}」にする`}
+              {resolutionSubmitLabel}
             </Button>
           </Row>
         </form>

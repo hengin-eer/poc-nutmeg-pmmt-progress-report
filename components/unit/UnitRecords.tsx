@@ -1,10 +1,20 @@
-import { headingStyles, textStyles } from "../ui/styles";
-import { Badge, Card, EmptyState, List, SectionHeader } from "../ui";
-import { RecordPill, recordTitle } from "../domain";
 import { formatJstDate } from "../../lib/domain";
 import { type Props } from "../../pages/units/[id].server";
+import { RecordPill, recordTitle } from "../domain";
+import { Badge, Card, EmptyState, List, SectionHeader } from "../ui";
+import { headingStyles, textStyles } from "../ui/styles";
 
-export function UnitRecords({ records }: Pick<Props, "records">) {
+type UnitRecordsProps = Pick<Props, "records">;
+
+type UnitRecord = Props["records"][number];
+
+export function UnitRecords({ records }: UnitRecordsProps) {
+  const hasNoRecords = records.length === 0;
+
+  function isRecordCompleted(record: UnitRecord) {
+    return Boolean(record.doneAt) && record.kind !== "decision";
+  }
+
   return (
     <section>
       <SectionHeader>
@@ -12,13 +22,13 @@ export function UnitRecords({ records }: Pick<Props, "records">) {
         <Badge>{records.length}</Badge>
       </SectionHeader>
       <Card>
-        {records.length === 0 ? (
+        {hasNoRecords ? (
           <EmptyState>まだ記録はありません</EmptyState>
         ) : (
           <List>
             {records.map((r) => (
               <li key={r.id}>
-                <div className={recordTitle({ done: Boolean(r.doneAt) && r.kind !== "decision" })}>
+                <div className={recordTitle({ done: isRecordCompleted(r) })}>
                   {r.title}
                 </div>
                 <div className="flex flex-wrap items-center gap-2 mt-1">

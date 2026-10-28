@@ -1,11 +1,17 @@
-import { Card, EmptyState, Icon, List, Notice } from "../ui";
 import { type Props } from "../../pages/items/index.server";
+import { Card, EmptyState, Icon, List, Notice } from "../ui";
 import { ItemRow } from "./ItemRow";
 
-export function ItemsPanel({ tab, list }: Pick<Props, "tab" | "list">) {
+type ItemsPanelProps = Pick<Props, "tab" | "list">;
+
+export function ItemsPanel({ tab, list }: ItemsPanelProps) {
+  const isLiveTab = tab === "live";
+  const hasNoItems = list.length === 0;
+  const showItemState = tab === "all" || tab === "closed";
+
   return (
     <>
-      {tab === "live" && (
+      {isLiveTab && (
         <Notice tone="info" className="mb-4">
           <Icon name="information-line" />
           当日の議題一覧です。話し終わったら「決定」か「先送り」で閉じてください
@@ -13,12 +19,12 @@ export function ItemsPanel({ tab, list }: Pick<Props, "tab" | "list">) {
       )}
 
       <Card>
-        {list.length === 0 ? (
+        {hasNoItems ? (
           <EmptyState>ここに表示するものはありません</EmptyState>
         ) : (
           <List>
             {list.map((i) => (
-              <ItemRow key={i.id} item={i} showState={tab === "all" || tab === "closed"} />
+              <ItemRow key={i.id} item={i} showState={showItemState} />
             ))}
           </List>
         )}

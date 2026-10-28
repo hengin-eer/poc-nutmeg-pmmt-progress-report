@@ -1,11 +1,13 @@
 import { useRouter } from "@void/react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { KIND_LABEL } from "../domain";
+import { type ThreadData } from "../../lib/items";
+import { ITEM_KIND_CONFIG } from "../domain";
 import { EmptyState, Icon, IconButton, Link, iconButtonStyles } from "../ui";
 import { ThreadView } from "./ThreadView";
-import type { ThreadData } from "../../lib/items";
 
-export function ThreadDrawer({ id, onClose }: { id: number; onClose: () => void }) {
+type ThreadDrawerProps = { id: number; onClose: () => void };
+
+export function ThreadDrawer({ id, onClose }: ThreadDrawerProps) {
   const router = useRouter();
   const [data, setData] = useState<ThreadData | null>(null);
   const [failed, setFailed] = useState(false);
@@ -17,7 +19,6 @@ export function ThreadDrawer({ id, onClose }: { id: number; onClose: () => void 
       .then(setData)
       .catch(() => setFailed(true));
   }, [id]);
-
   const close = useCallback(() => {
     onClose();
     // 件数や状態が変わっていたら、後ろの画面も読み直す
@@ -34,6 +35,11 @@ export function ThreadDrawer({ id, onClose }: { id: number; onClose: () => void 
     };
   }, [close]);
 
+  function handleThreadChange(d: ThreadData) {
+    changed.current = true;
+    setData(d);
+  }
+
   return (
     <div data-slot="drawer-root" className="fixed inset-0 z-50" role="dialog" aria-modal="true" aria-label="スレッド">
       <div className="absolute inset-0 animate-fade bg-overlay/35" onClick={close} />
@@ -42,8 +48,8 @@ export function ThreadDrawer({ id, onClose }: { id: number; onClose: () => void 
           <span className="flex items-center gap-2 text-caption font-bold text-muted">
             {data ? (
               <>
-                <Icon name={data.item.kind === "confirm" ? "question-answer-line" : "chat-smile-2-line"} />
-                {KIND_LABEL[data.item.kind]}
+                <Icon name={ITEM_KIND_CONFIG[data.item.kind].icon} />
+                {ITEM_KIND_CONFIG[data.item.kind].label}
               </>
             ) : (
               "スレッド"
@@ -63,10 +69,7 @@ export function ThreadDrawer({ id, onClose }: { id: number; onClose: () => void 
           ) : data ? (
             <ThreadView
               data={data}
-              onChange={(d) => {
-                changed.current = true;
-                setData(d);
-              }}
+              onChange={handleThreadChange}
             />
           ) : (
             <div className="h-50 animate-shimmer rounded-xl bg-linear-to-r from-surface-2 via-surface to-surface-2 bg-size-[200%_100%]" />

@@ -1,9 +1,13 @@
-import { textStyles } from "../ui/styles";
+import { type ReactNode } from "react";
+import { type Me } from "../../lib/server";
 import { Avatar, BrandMark, Icon, IconButton, Link } from "../ui";
-import type { ReactNode } from "react";
-import type { Me } from "../../lib/server";
+import { textStyles } from "../ui/styles";
 
-export function Sidebar({ me, demo, logout, children }: { me: Me; demo: boolean; logout: () => void; children: ReactNode }) {
+type SidebarProps = { me: Me; demo: boolean; logout: () => void; children: ReactNode };
+
+export function Sidebar({ me, demo, logout, children }: SidebarProps) {
+  const memberUnitLabel = me.unitName ?? "ユニットなし";
+
   return (
         <aside className="sticky top-0 flex h-screen w-sidebar flex-col gap-6 border-r border-border bg-surface px-4 pt-6 pb-6 max-md:hidden">
           <Link href="/" className="flex items-center gap-2 px-2 text-body tracking-wide text-text hover:no-underline [&_b]:text-accent">
@@ -21,7 +25,7 @@ export function Sidebar({ me, demo, logout, children }: { me: Me; demo: boolean;
               <div className="min-w-0 flex-1 leading-snug">
                 <div className="truncate text-meta font-bold">{me.name}</div>
                 <div className={textStyles({ role: "meta" })}>
-                  {me.unitName ?? "ユニットなし"}
+                  {memberUnitLabel}
                   {demo && <span className="ml-2 rounded-full bg-yellow-soft px-2 py-px text-caption font-bold text-yellow">デモ</span>}
                 </div>
               </div>

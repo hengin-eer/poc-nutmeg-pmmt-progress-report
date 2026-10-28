@@ -1,8 +1,10 @@
-import { tv } from "../ui/styles";
+import { type Props } from "../../pages/index.server";
 import { Busy, ProgressPill, UNIT_KIND_SHORT } from "../domain";
 import { Markdown } from "../markdown";
 import { Card, Icon, Link, Pill, Row } from "../ui";
-import type { Props } from "../../pages/index.server";
+import { tv } from "../ui/styles";
+
+type UnitCardProps = { card: Props["cards"][number] };
 
 const unitCard = tv({
   slots: {
@@ -14,8 +16,12 @@ const unitCard = tv({
   variants: { submitted: { false: { root: "border-dashed bg-transparent shadow-none", title: "text-muted" } } },
 });
 
-export function UnitCard({ card }: { card: Props["cards"][number] }) {
+export function UnitCard({ card }: UnitCardProps) {
   const styles = unitCard({ submitted: card.submitted });
+  const hasSubmittedReport = Boolean(card.submitted);
+  const hasOpenItems = card.openCount > 0;
+  const hasCrossBureauItems = card.crossCount > 0;
+
   return (
     <Card as="article" className={styles.root()}>
       <Row className="items-start">
@@ -23,19 +29,19 @@ export function UnitCard({ card }: { card: Props["cards"][number] }) {
           <Link href={`/units/${card.id}`} className={styles.title()}>{card.name}</Link>
           <div className="text-caption font-semibold text-muted">{UNIT_KIND_SHORT[card.kind]}</div>
         </div>
-        {card.submitted ? <ProgressPill value={card.progress} /> : <Pill>未記入</Pill>}
+        {hasSubmittedReport ? <ProgressPill value={card.progress} /> : <Pill>未記入</Pill>}
       </Row>
-      {card.submitted && <Markdown compact className={styles.excerpt()}>{card.excerpt}</Markdown>}
+      {hasSubmittedReport && <Markdown compact className={styles.excerpt()}>{card.excerpt}</Markdown>}
       <div className={styles.foot()}>
-        {card.submitted && <Busy value={card.busyness} label />}
+        {hasSubmittedReport && <Busy value={card.busyness} label />}
         <span className="flex-1" />
-        {card.openCount > 0 && (
+        {hasOpenItems && (
           <Pill tone="yellow" title={`未解決の確認事項 ${card.openCount} 件`}>
             <Icon name="question-answer-line" />
             {card.openCount}
           </Pill>
         )}
-        {card.crossCount > 0 && (
+        {hasCrossBureauItems && (
           <Pill tone="accent" title={`他局・実行委員に関わる ${card.crossCount} 件`}>
             <Icon name="community-line" />
             {card.crossCount}

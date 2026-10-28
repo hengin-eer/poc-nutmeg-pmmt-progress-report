@@ -1,6 +1,6 @@
-import { tv } from "./styles";
 import type { ComponentProps } from "react";
 import type { VariantProps } from "tailwind-variants";
+import { tv } from "./styles";
 
 const grid = tv({
   base: "grid gap-6",
@@ -9,6 +9,8 @@ const grid = tv({
     cards: "grid-cols-[repeat(auto-fill,minmax(min(100%,16rem),1fr))] gap-4",
   } },
 });
-export function Grid({ columns, className, ...props }: ComponentProps<"div"> & VariantProps<typeof grid>) {
+type GridProps = ComponentProps<"div"> & VariantProps<typeof grid>;
+
+export function Grid({ columns, className, ...props }: GridProps) {
   return <div {...props} className={grid({ columns, className })} />;
 }
