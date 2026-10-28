@@ -36,6 +36,11 @@ export function ThreadDrawer({ id, onClose }: ThreadDrawerProps) {
     };
   }, [close]);
 
+    function handleThreadChange(d: ThreadData) {
+                changed.current = true;
+                setData(d);
+              }
+
   return (
     <div className="drawer-root" role="dialog" aria-modal="true" aria-label="スレッド">
       <div className="drawer-backdrop" onClick={close} />
@@ -65,10 +70,7 @@ export function ThreadDrawer({ id, onClose }: ThreadDrawerProps) {
           ) : data ? (
             <ThreadView
               data={data}
-              onChange={(d) => {
-                changed.current = true;
-                setData(d);
-              }}
+              onChange={handleThreadChange}
             />
           ) : (
             <div className="skeleton" />

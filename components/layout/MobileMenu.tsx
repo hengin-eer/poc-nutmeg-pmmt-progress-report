@@ -18,9 +18,13 @@ export function MobileMenu({
   const [open, setOpen] = useState(false);
   useEffect(() => setOpen(false), [path]);
 
+    function handleCloseMenu() { return setOpen(false); }
+
+  function handleToggleMenu() { return setOpen(!open); }
+
   return (
     <div className={`mobile-menu ${open ? "open" : ""}`}>
-      {open && <div className="mobile-backdrop" onClick={() => setOpen(false)} />}
+      {open && <div className="mobile-backdrop" onClick={handleCloseMenu} />}
       <div className="mobile-panel" aria-hidden={!open}>
         <nav className="nav">{children}</nav>
         <Button type="button" className="nav-link" onClick={logout}>
@@ -28,7 +32,7 @@ export function MobileMenu({
           <span>ログアウト</span>
         </Button>
       </div>
-      <Button type="button" className="mobile-trigger" onClick={() => setOpen(!open)} aria-expanded={open} aria-label="メニュー">
+      <Button type="button" className="mobile-trigger" onClick={handleToggleMenu} aria-expanded={open} aria-label="メニュー">
         <Icon name={open ? "close-line" : current.icon} />
         <span>{open ? "閉じる" : current.label}</span>
         {!open && <Icon name="menu-line" className="muted" />}

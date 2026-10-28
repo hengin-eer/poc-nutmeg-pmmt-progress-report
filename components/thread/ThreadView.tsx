@@ -18,6 +18,8 @@ export function ThreadView({ data, onChange }: ThreadViewProps) {
     return res;
   };
 
+    function handleReaction(r: (typeof reactionSummary)[number]) { return run({ op: "react", emoji: r.emoji }); }
+
   return (
     <article className="thread">
       <header className="thread-head">
@@ -55,7 +57,7 @@ export function ThreadView({ data, onChange }: ThreadViewProps) {
             type="button"
             className={`reaction ${r.mine ? "mine" : ""} ${r.count ? "" : "zero"}`}
             title={r.names.join("、") || "リアクションする"}
-            onClick={() => run({ op: "react", emoji: r.emoji })}
+            onClick={() => handleReaction(r)}
           >
             {r.emoji}
             {r.count > 0 && <span>{r.count}</span>}

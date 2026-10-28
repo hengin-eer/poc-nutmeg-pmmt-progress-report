@@ -1,3 +1,4 @@
+import type { ChangeEvent } from "react";
 import { action } from "@void/react";
 import type { Props } from "../../pages/report.server";
 import { RecordPill } from "../domain";
@@ -7,6 +8,8 @@ type PendingRecordsProps = Pick<Props, "pending"> & { isOpen: boolean };
 
 export function PendingRecords({ pending, isOpen }: PendingRecordsProps) {
   if (pending.length === 0) return null;
+    function handleToggleRecord(r: (typeof pending)[number], e: ChangeEvent<HTMLInputElement>) { return action("/report?toggleRecord", { data: { id: r.id, done: e.target.checked } }); }
+
   return (
     <Card as="section" className="card section">
       <SectionHeader className="section-head">
@@ -21,7 +24,7 @@ export function PendingRecords({ pending, isOpen }: PendingRecordsProps) {
               <input
                 type="checkbox"
                 disabled={!isOpen}
-                onChange={(e) => action("/report?toggleRecord", { data: { id: r.id, done: e.target.checked } })}
+                onChange={e => handleToggleRecord(r, e)}
               />
               <RecordPill kind={r.kind} />
               <span>{r.title}</span>

@@ -1,3 +1,4 @@
+import type { ChangeEvent } from "react";
 import { Form, Link, useForm } from "@void/react";
 import { Badge, Button, Card, Icon, SectionHeader } from "../ui";
 import { UNIT_KIND_LABEL, type UnitKind } from "../domain";
@@ -7,6 +8,10 @@ type UnitSectionProps = Pick<Props, "units">;
 
 export function UnitSection({ units }: UnitSectionProps) {
   const form = useForm("/admin?addUnit", { name: "", kind: "project" as UnitKind }, { resetOnSuccess: true });
+    function handleNameChange(e: ChangeEvent<HTMLInputElement>) { return form.setData("name", e.target.value); }
+
+  function handleKindChange(e: ChangeEvent<HTMLSelectElement>) { return form.setData("kind", e.target.value as UnitKind); }
+
   return (
     <Card as="section" className="card card-lg section">
       <SectionHeader className="section-head">
@@ -24,8 +29,8 @@ export function UnitSection({ units }: UnitSectionProps) {
         ))}
       </ul>
       <Form form={form} className="row" style={{ marginTop: 20 }}>
-        <input type="text" value={form.data.name} onChange={(e) => form.setData("name", e.target.value)} placeholder="ユニット名" style={{ flex: 1, minWidth: 160 }} />
-        <select value={form.data.kind} onChange={(e) => form.setData("kind", e.target.value as UnitKind)} style={{ width: "auto" }}>
+        <input type="text" value={form.data.name} onChange={handleNameChange} placeholder="ユニット名" style={{ flex: 1, minWidth: 160 }} />
+        <select value={form.data.kind} onChange={handleKindChange} style={{ width: "auto" }}>
           {(Object.keys(UNIT_KIND_LABEL) as UnitKind[]).map((k) => (
             <option key={k} value={k}>
               {UNIT_KIND_LABEL[k]}

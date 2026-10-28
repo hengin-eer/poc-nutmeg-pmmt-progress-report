@@ -7,10 +7,12 @@ type ThreadProviderProps = { children: ReactNode };
 export function ThreadProvider({ children }: ThreadProviderProps) {
   const [openId, setOpenId] = useState<number | null>(null);
   const open = useCallback((id: number) => setOpenId(id), []);
+    function handleCloseThread() { return setOpenId(null); }
+
   return (
     <ThreadContext.Provider value={{ open }}>
       {children}
-      {openId !== null && <ThreadDrawer key={openId} id={openId} onClose={() => setOpenId(null)} />}
+      {openId !== null && <ThreadDrawer key={openId} id={openId} onClose={handleCloseThread} />}
     </ThreadContext.Provider>
   );
 }

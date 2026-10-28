@@ -1,3 +1,4 @@
+import type { ChangeEvent, FormEvent } from "react";
 import { useState } from "react";
 import { ITEM_STATE_LABEL, type ItemState } from "../../lib/domain";
 import { STATE_ICON } from "../domain";
@@ -28,6 +29,18 @@ export function ClosePanel({ nextStates, run }: ClosePanelProps) {
     if (!res.ok) setError(Object.values(res.errors)[0] ?? "");
   };
 
+    function handleSelectResolution(s: (typeof nextStates)[number]) {
+              setChosen(chosen === s ? null : s);
+              setError("");
+            }
+
+  function handleSubmitResolution(e: FormEvent<HTMLFormElement>) {
+            e.preventDefault();
+            submit();
+          }
+
+  function handleResolutionNoteChange(e: ChangeEvent<HTMLInputElement>) { return setNote(e.target.value); }
+
   return (
     <section className="close-panel">
       <Segmented className="segmented" role="group" aria-label="状態を変える">
@@ -36,10 +49,7 @@ export function ClosePanel({ nextStates, run }: ClosePanelProps) {
             key={s}
             type="button"
             className={chosen === s ? "selected" : ""}
-            onClick={() => {
-              setChosen(chosen === s ? null : s);
-              setError("");
-            }}
+            onClick={() => handleSelectResolution(s)}
           >
             <Icon name={s === "open" ? "arrow-go-back-line" : STATE_ICON(s)} />
             {s === "open" ? "未解決に戻す" : ITEM_STATE_LABEL[s]}
@@ -49,10 +59,7 @@ export function ClosePanel({ nextStates, run }: ClosePanelProps) {
       {chosen && (
         <form
           className="close-form"
-          onSubmit={(e) => {
-            e.preventDefault();
-            submit();
-          }}
+          onSubmit={handleSubmitResolution}
         >
           <p className="hint">{CLOSE_HINT[chosen]}</p>
           {needsNote && (
@@ -60,7 +67,7 @@ export function ClosePanel({ nextStates, run }: ClosePanelProps) {
               type="text"
               autoFocus
               value={note}
-              onChange={(e) => setNote(e.target.value)}
+              onChange={handleResolutionNoteChange}
               placeholder={chosen === "decided" ? "例: 1 週間後ろにずらす。新しい期限は 11/20" : "任意"}
             />
           )}

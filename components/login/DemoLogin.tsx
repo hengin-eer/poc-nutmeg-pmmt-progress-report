@@ -7,6 +7,8 @@ type DemoLoginProps = Pick<Props, "demoMembers">;
 export function DemoLogin({ demoMembers }: DemoLoginProps) {
   const loginAs = (memberId: number) => action("/login?login", { data: { memberId } }).then(() => (location.href = "/"));
 
+    function handleDemoLogin(m: (typeof demoMembers)[number]) { return loginAs(m.id); }
+
   return (
     <Card className="card card-lg stack">
       <div className="row">
@@ -22,7 +24,7 @@ export function DemoLogin({ demoMembers }: DemoLoginProps) {
             <span>{m.name}</span>
             <span className="meta">{m.unitName}</span>
             <span className="spacer" />
-            <Button className="small" onClick={() => loginAs(m.id)}>
+            <Button className="small" onClick={() => handleDemoLogin(m)}>
               <Icon name="login-box-line" />
               入る
             </Button>

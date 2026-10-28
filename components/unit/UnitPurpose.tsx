@@ -1,3 +1,4 @@
+import type { ChangeEvent } from "react";
 import { Form, useForm } from "@void/react";
 import { useEffect, useState } from "react";
 import { Button, Card, Field, Icon, IconButton, SectionHeader } from "../ui";
@@ -12,6 +13,14 @@ export function UnitPurpose({ unit, canEdit }: UnitPurposeProps) {
     if (form.wasSuccessful) setEditing(false);
   }, [form.wasSuccessful]);
 
+    function handleStartEditing() { return setEditing(true); }
+
+  function handlePurposeChange(e: ChangeEvent<HTMLInputElement>) { return form.setData("purpose", e.target.value); }
+
+  function handleSummaryChange(e: ChangeEvent<HTMLTextAreaElement>) { return form.setData("summary", e.target.value); }
+
+  function handleCancelEditing() { return setEditing(false); }
+
   return (
     <Card as="section" className="card card-lg">
       <SectionHeader className="section-head">
@@ -19,7 +28,7 @@ export function UnitPurpose({ unit, canEdit }: UnitPurposeProps) {
         <h2>何のためにやっているか</h2>
         <span className="spacer" />
         {canEdit && !editing && (
-          <IconButton className="icon-button" onClick={() => setEditing(true)} title="編集" aria-label="編集">
+          <IconButton className="icon-button" onClick={handleStartEditing} title="編集" aria-label="編集">
             <Icon name="pencil-line" />
           </IconButton>
         )}
@@ -31,17 +40,17 @@ export function UnitPurpose({ unit, canEdit }: UnitPurposeProps) {
               <label htmlFor="purpose">目的</label>
               <span className="hint">一文で。新入生が読んでもわかるように</span>
             </div>
-            <input id="purpose" type="text" value={form.data.purpose} onChange={(e) => form.setData("purpose", e.target.value)} />
+            <input id="purpose" type="text" value={form.data.purpose} onChange={handlePurposeChange} />
           </Field>
           <Field className="field">
             <div className="field-label">
               <label htmlFor="summary">概要</label>
             </div>
-            <textarea id="summary" value={form.data.summary} onChange={(e) => form.setData("summary", e.target.value)} />
+            <textarea id="summary" value={form.data.summary} onChange={handleSummaryChange} />
           </Field>
           <div className="row">
             <span className="spacer" />
-            <Button type="button" className="ghost" onClick={() => setEditing(false)}>
+            <Button type="button" className="ghost" onClick={handleCancelEditing}>
               やめる
             </Button>
             <Button type="submit" className="primary" disabled={form.pending}>

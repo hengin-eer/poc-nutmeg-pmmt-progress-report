@@ -1,3 +1,4 @@
+import type { ChangeEvent } from "react";
 import { action, Form, useForm } from "@void/react";
 import { useState } from "react";
 import { Button, Card, Icon, Pill, SectionHeader } from "../ui";
@@ -11,6 +12,24 @@ export function CycleSection({ cycles, defaults, unitCount }: CycleSectionProps)
   const [editing, setEditing] = useState<number | null>(null);
   const [deadline, setDeadline] = useState("");
 
+    function handleMeetingAtChange(e: ChangeEvent<HTMLInputElement>) { return form.setData("meetingAt", e.target.value); }
+
+  function handleDeadlineAtChange(e: ChangeEvent<HTMLInputElement>) { return form.setData("deadlineAt", e.target.value); }
+
+  function handleEditedDeadlineChange(e: ChangeEvent<HTMLInputElement>) { return setDeadline(e.target.value); }
+
+  async function handleUpdateDeadline(cy: (typeof cycles)[number]) {
+                          await action("/admin?updateDeadline", { data: { id: cy.id, deadlineAt: deadline } });
+                          setEditing(null);
+                        }
+
+  function handleEditMember(cy: (typeof cycles)[number]) {
+                            setEditing(cy.id);
+                            setDeadline(toJstInput(cy.deadlineAt));
+                          }
+
+  function handleCloseCycle(cy: (typeof cycles)[number]) { return confirm("この回を閉じますか？") && action("/admin?closeCycle", { data: { id: cy.id } }); }
+
   return (
     <Card as="section" className="card card-lg">
       <SectionHeader className="section-head">
@@ -20,13 +39,13 @@ export function CycleSection({ cycles, defaults, unitCount }: CycleSectionProps)
       <Form form={form} className="row" style={{ alignItems: "flex-end", marginBottom: 12, gap: 16 }}>
         <div style={{ flex: 1, minWidth: 200 }}>
           <label htmlFor="meetingAt">PMMT の日時</label>
-          <input id="meetingAt" type="datetime-local" value={form.data.meetingAt} onChange={(e) => form.setData("meetingAt", e.target.value)} />
+          <input id="meetingAt" type="datetime-local" value={form.data.meetingAt} onChange={handleMeetingAtChange} />
         </div>
         <div style={{ flex: 1, minWidth: 200 }}>
           <label htmlFor="deadlineAt">
             事前記入の締切 <span className="hint">二枚看板の打ち合わせの前</span>
           </label>
-          <input id="deadlineAt" type="datetime-local" value={form.data.deadlineAt} onChange={(e) => form.setData("deadlineAt", e.target.value)} />
+          <input id="deadlineAt" type="datetime-local" value={form.data.deadlineAt} onChange={handleDeadlineAtChange} />
         </div>
         <Button type="submit" className="primary" disabled={form.pending}>
           回を作る
@@ -53,13 +72,10 @@ export function CycleSection({ cycles, defaults, unitCount }: CycleSectionProps)
                 <td>
                   {editing === cy.id ? (
                     <div className="row">
-                      <input type="datetime-local" value={deadline} onChange={(e) => setDeadline(e.target.value)} style={{ width: "auto" }} />
+                      <input type="datetime-local" value={deadline} onChange={handleEditedDeadlineChange} style={{ width: "auto" }} />
                       <Button
                         className="small primary"
-                        onClick={async () => {
-                          await action("/admin?updateDeadline", { data: { id: cy.id, deadlineAt: deadline } });
-                          setEditing(null);
-                        }}
+                        onClick={() => handleUpdateDeadline(cy)}
                       >
                         保存
                       </Button>
@@ -70,10 +86,7 @@ export function CycleSection({ cycles, defaults, unitCount }: CycleSectionProps)
                       {cy.status === "open" && (
                         <Button
                           className="ghost small"
-                          onClick={() => {
-                            setEditing(cy.id);
-                            setDeadline(toJstInput(cy.deadlineAt));
-                          }}
+                          onClick={() => handleEditMember(cy)}
                         >
                           変更
                         </Button>
@@ -87,7 +100,7 @@ export function CycleSection({ cycles, defaults, unitCount }: CycleSectionProps)
                 <td>{cy.status === "open" ? <Pill className="pill green">受付中</Pill> : <Pill className="pill">終了</Pill>}</td>
                 <td>
                   {cy.status === "open" && (
-                    <Button className="small" onClick={() => confirm("この回を閉じますか？") && action("/admin?closeCycle", { data: { id: cy.id } })}>
+                    <Button className="small" onClick={() => handleCloseCycle(cy)}>
                       閉じる
                     </Button>
                   )}

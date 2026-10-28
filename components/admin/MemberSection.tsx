@@ -1,3 +1,4 @@
+import type { ChangeEvent } from "react";
 import { action, Form, useForm, useShared } from "@void/react";
 import { useState } from "react";
 import { Badge, Button, Card, Icon, IconButton, SectionHeader } from "../ui";
@@ -12,6 +13,26 @@ export function MemberSection({ members, units }: MemberSectionProps) {
   const [editing, setEditing] = useState<number | null>(null);
   const form = useForm("/admin?addMember", { name: "", email: "", role: "lead" as const, unitId: units[0]?.id ?? 0, slackUserId: "" }, { resetOnSuccess: true });
   const unitName = (id: number | null) => units.find((u) => u.id === id)?.name ?? "—";
+
+    function handleFinishEditing() { return setEditing(null); }
+
+  function handleEditMember(m: (typeof members)[number]) { return setEditing(m.id); }
+
+  async function handleDeleteMember(m: (typeof members)[number]) {
+                      if (!confirm(`${m.name} さんを削除しますか？`)) return;
+                      const r = await action("/admin?deleteMember", { data: { id: m.id } });
+                      if (!r.ok) alert(r.error.message);
+                    }
+
+  function handleNameChange(e: ChangeEvent<HTMLInputElement>) { return form.setData("name", e.target.value); }
+
+  function handleEmailChange(e: ChangeEvent<HTMLInputElement>) { return form.setData("email", e.target.value); }
+
+  function handleRoleChange(e: ChangeEvent<HTMLSelectElement>) { return form.setData("role", e.target.value as typeof form.data.role); }
+
+  function handleUnitIdChange(e: ChangeEvent<HTMLSelectElement>) { return form.setData("unitId", Number(e.target.value)); }
+
+  function handleSlackUserIdChange(e: ChangeEvent<HTMLInputElement>) { return form.setData("slackUserId", e.target.value); }
 
   return (
     <Card as="section" className="card card-lg section">
@@ -35,7 +56,7 @@ export function MemberSection({ members, units }: MemberSectionProps) {
           </thead>
           <tbody>
             {members.map((m) => editing === m.id ? (
-              <MemberEditRow key={m.id} member={m} units={units} isSelf={m.id === me?.id} onDone={() => setEditing(null)} />
+              <MemberEditRow key={m.id} member={m} units={units} isSelf={m.id === me?.id} onDone={handleFinishEditing} />
             ) : (
               <tr key={m.id}>
                 <td>{m.name}</td>
@@ -49,7 +70,7 @@ export function MemberSection({ members, units }: MemberSectionProps) {
                     className="icon-button"
                     title="編集"
                     aria-label={`${m.name} さんを編集`}
-                    onClick={() => setEditing(m.id)}
+                    onClick={() => handleEditMember(m)}
                   >
                     <Icon name="pencil-line" />
                   </IconButton>
@@ -57,11 +78,7 @@ export function MemberSection({ members, units }: MemberSectionProps) {
                     className="icon-button danger"
                     title="削除"
                     aria-label={`${m.name} さんを削除`}
-                    onClick={async () => {
-                      if (!confirm(`${m.name} さんを削除しますか？`)) return;
-                      const r = await action("/admin?deleteMember", { data: { id: m.id } });
-                      if (!r.ok) alert(r.error.message);
-                    }}
+                    onClick={() => handleDeleteMember(m)}
                   >
                     <Icon name="delete-bin-line" />
                   </IconButton>
@@ -75,17 +92,17 @@ export function MemberSection({ members, units }: MemberSectionProps) {
       <Form form={form} className="grid add-member" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))", alignItems: "end", marginTop: 24, gap: 12 }}>
         <div>
           <label>名前</label>
-          <input type="text" value={form.data.name} onChange={(e) => form.setData("name", e.target.value)} />
+          <input type="text" value={form.data.name} onChange={handleNameChange} />
           {form.errors.name && <div className="error">{form.errors.name}</div>}
         </div>
         <div>
           <label>アドレス</label>
-          <input type="email" value={form.data.email} onChange={(e) => form.setData("email", e.target.value)} placeholder="25.t.yamada.nutfes@gmail.com" />
+          <input type="email" value={form.data.email} onChange={handleEmailChange} placeholder="25.t.yamada.nutfes@gmail.com" />
           {form.errors.email && <div className="error">{form.errors.email}</div>}
         </div>
         <div>
           <label>役割</label>
-          <select value={form.data.role} onChange={(e) => form.setData("role", e.target.value as typeof form.data.role)}>
+          <select value={form.data.role} onChange={handleRoleChange}>
             {Object.entries(ROLE_LABEL).map(([k, v]) => (
               <option key={k} value={k}>
                 {v}
@@ -95,7 +112,7 @@ export function MemberSection({ members, units }: MemberSectionProps) {
         </div>
         <div>
           <label>ユニット</label>
-          <select value={form.data.unitId} onChange={(e) => form.setData("unitId", Number(e.target.value))}>
+          <select value={form.data.unitId} onChange={handleUnitIdChange}>
             <option value={0}>なし</option>
             {units.map((u) => (
               <option key={u.id} value={u.id}>
@@ -106,7 +123,7 @@ export function MemberSection({ members, units }: MemberSectionProps) {
         </div>
         <div>
           <label>Slack ID <span className="hint">任意</span></label>
-          <input type="text" value={form.data.slackUserId} onChange={(e) => form.setData("slackUserId", e.target.value)} placeholder="U0123ABCD" />
+          <input type="text" value={form.data.slackUserId} onChange={handleSlackUserIdChange} placeholder="U0123ABCD" />
         </div>
         <Button type="submit" className="primary" disabled={form.pending}>
           <Icon name="user-add-line" />

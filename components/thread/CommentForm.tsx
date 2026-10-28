@@ -1,3 +1,4 @@
+import type { ChangeEvent, FormEvent, KeyboardEvent } from "react";
 import { useState } from "react";
 import { Button, Icon } from "../ui";
 import type { Result } from "./request";
@@ -20,20 +21,26 @@ export function CommentForm({ run }: CommentFormProps) {
     } else setError(Object.values(res.errors)[0] ?? "");
   };
 
+    function handleSubmitComment(e: FormEvent<HTMLFormElement>) {
+        e.preventDefault();
+        submit();
+      }
+
+  function handleCommentChange(e: ChangeEvent<HTMLTextAreaElement>) { return setBody(e.target.value); }
+
+  function handleCommentKeyDown(e: KeyboardEvent<HTMLTextAreaElement>) {
+          if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) submit();
+        }
+
   return (
     <form
       className="comment-form"
-      onSubmit={(e) => {
-        e.preventDefault();
-        submit();
-      }}
+      onSubmit={handleSubmitComment}
     >
       <textarea
         value={body}
-        onChange={(e) => setBody(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) submit();
-        }}
+        onChange={handleCommentChange}
+        onKeyDown={handleCommentKeyDown}
         placeholder="コメントする（Ctrl + Enter で送信）"
         rows={2}
       />

@@ -1,3 +1,4 @@
+import type { ChangeEvent } from "react";
 import { Link } from "@void/react";
 import { Button, Card, Icon, SectionHeader } from "../ui";
 import { type ImportState } from "./useMinutesImport";
@@ -20,15 +21,19 @@ type MinutesInputProps = { state: ImportState };
 
 export function MinutesInput({ state }: MinutesInputProps) {
   const { text, setText, parse } = state;
+    function handleMinutesChange(e: ChangeEvent<HTMLTextAreaElement>) { return setText(e.target.value); }
+
+  function handleLoadSample() { return setText(SAMPLE); }
+
   return (
     <Card as="section" className="card card-lg">
       <SectionHeader className="section-head"><span className="step">1</span><h2>議事録を貼り付ける</h2></SectionHeader>
       <p className="hint">
         過去の回を取り込む時は、先に<Link href="/admin">管理画面</Link>で過去の日付の回を作ってください。Notion から書き出した Markdown や文字起こしは、スキルで下の形式に変換してから貼り付けます。
       </p>
-      <textarea value={text} onChange={(e) => setText(e.target.value)} placeholder={SAMPLE} style={{ minHeight: 280, fontFamily: "ui-monospace, monospace", fontSize: 13 }} />
+      <textarea value={text} onChange={handleMinutesChange} placeholder={SAMPLE} style={{ minHeight: 280, fontFamily: "ui-monospace, monospace", fontSize: 13 }} />
       <div className="row" style={{ marginTop: 8 }}>
-        <Button className="ghost small" onClick={() => setText(SAMPLE)}>
+        <Button className="ghost small" onClick={handleLoadSample}>
           サンプルを入れる
         </Button>
         <span className="spacer" />

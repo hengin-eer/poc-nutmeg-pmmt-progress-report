@@ -1,3 +1,4 @@
+import type { ChangeEvent } from "react";
 import type { ItemKind } from "../../lib/domain";
 import { action, Form, useForm } from "@void/react";
 import { useEffect, useState } from "react";
@@ -26,6 +27,18 @@ export function ItemSection({
     if (form.wasSuccessful) setAdding(false);
   }, [form.wasSuccessful]);
 
+    function handleOpenThread(i: (typeof list)[number]) { return open(i.id); }
+
+  function handleDeleteItem(i: (typeof list)[number]) { return confirm("削除しますか？") && action("/report?deleteItem", { data: { id: i.id } }); }
+
+  function handleBodyChange(e: ChangeEvent<HTMLTextAreaElement>) { return form.setData("body", e.target.value); }
+
+  function handleCrossBureauChange(e: ChangeEvent<HTMLInputElement>) { return form.setData("crossBureau", e.target.checked); }
+
+  function handleCancelAdding() { return setAdding(false); }
+
+  function handleStartAdding() { return setAdding(true); }
+
   return (
     <Card as="section" className="card">
       <SectionHeader className="section-head">
@@ -43,7 +56,7 @@ export function ItemSection({
         <ul className="list" style={{ margin: "8px 0 16px" }}>
           {list.map((i) => (
             <li key={i.id} className="my-item">
-              <Button type="button" className="my-item-body" onClick={() => open(i.id)} title="スレッドを開く">
+              <Button type="button" className="my-item-body" onClick={() => handleOpenThread(i)} title="スレッドを開く">
                 {i.body}
               </Button>
               <div className="row">
@@ -57,7 +70,7 @@ export function ItemSection({
                     className="icon-button danger"
                     title="削除"
                     aria-label="削除"
-                    onClick={() => confirm("削除しますか？") && action("/report?deleteItem", { data: { id: i.id } })}
+                    onClick={() => handleDeleteItem(i)}
                   >
                     <Icon name="delete-bin-line" />
                   </IconButton>
@@ -75,7 +88,7 @@ export function ItemSection({
               <textarea
                 autoFocus
                 value={form.data.body}
-                onChange={(e) => form.setData("body", e.target.value)}
+                onChange={handleBodyChange}
                 placeholder={kindConfig.placeholder}
               />
               {form.errors.body && <div className="error">{form.errors.body}</div>}
@@ -83,12 +96,12 @@ export function ItemSection({
             <div className="row">
               {canMarkCrossBureau && (
                 <label className="row" style={{ fontWeight: 500, margin: 0, cursor: "pointer" }}>
-                  <input type="checkbox" checked={form.data.crossBureau} onChange={(e) => form.setData("crossBureau", e.target.checked)} />
+                  <input type="checkbox" checked={form.data.crossBureau} onChange={handleCrossBureauChange} />
                   他局・実行委員全体に関わる
                 </label>
               )}
               <span className="spacer" />
-              <Button type="button" className="ghost small" onClick={() => setAdding(false)}>
+              <Button type="button" className="ghost small" onClick={handleCancelAdding}>
                 やめる
               </Button>
               <Button type="submit" className="primary small" disabled={form.pending}>
@@ -97,7 +110,7 @@ export function ItemSection({
             </div>
           </Form>
         ) : (
-          <Button type="button" className="ghost add-button" onClick={() => setAdding(true)}>
+          <Button type="button" className="ghost add-button" onClick={handleStartAdding}>
             <Icon name="add-line" />
             追加
           </Button>

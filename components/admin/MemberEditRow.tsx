@@ -1,3 +1,4 @@
+import type { ChangeEvent } from "react";
 import { Form, useForm } from "@void/react";
 import { useEffect } from "react";
 import { Button, Icon, IconButton } from "../ui";
@@ -24,29 +25,37 @@ export function MemberEditRow({ member, units, isSelf, onDone }: MemberEditRowPr
     if (form.wasSuccessful) onDone();
   }, [form.wasSuccessful, onDone]);
 
+    function handleNameChange(e: ChangeEvent<HTMLInputElement>) { return form.setData("name", e.target.value); }
+
+  function handleRoleChange(e: ChangeEvent<HTMLSelectElement>) { return form.setData("role", e.target.value as typeof form.data.role); }
+
+  function handleUnitIdChange(e: ChangeEvent<HTMLSelectElement>) { return form.setData("unitId", Number(e.target.value)); }
+
+  function handleSlackUserIdChange(e: ChangeEvent<HTMLInputElement>) { return form.setData("slackUserId", e.target.value); }
+
   return (
     <tr>
       <td>
-        <input form={formId} aria-label="名前" aria-invalid={Boolean(form.errors.name)} value={form.data.name} onChange={(e) => form.setData("name", e.target.value)} />
+        <input form={formId} aria-label="名前" aria-invalid={Boolean(form.errors.name)} value={form.data.name} onChange={handleNameChange} />
         {form.errors.name && <div className="error" role="alert">{form.errors.name}</div>}
       </td>
       <td className="meta">{member.email}</td>
       <td>
-        <select form={formId} aria-label="役割" aria-invalid={Boolean(form.errors.role)} value={form.data.role} disabled={isSelf} onChange={(e) => form.setData("role", e.target.value as typeof form.data.role)}>
+        <select form={formId} aria-label="役割" aria-invalid={Boolean(form.errors.role)} value={form.data.role} disabled={isSelf} onChange={handleRoleChange}>
           {Object.entries(ROLE_LABEL).map(([key, label]) => <option key={key} value={key}>{label}</option>)}
         </select>
         {isSelf && <div className="hint">自分の役割は変更できません</div>}
         {form.errors.role && <div className="error" role="alert">{form.errors.role}</div>}
       </td>
       <td>
-        <select form={formId} aria-label="ユニット" aria-invalid={Boolean(form.errors.unitId)} value={form.data.unitId} onChange={(e) => form.setData("unitId", Number(e.target.value))}>
+        <select form={formId} aria-label="ユニット" aria-invalid={Boolean(form.errors.unitId)} value={form.data.unitId} onChange={handleUnitIdChange}>
           <option value={0}>なし</option>
           {units.map((unit) => <option key={unit.id} value={unit.id}>{unit.name}</option>)}
         </select>
         {form.errors.unitId && <div className="error" role="alert">{form.errors.unitId}</div>}
       </td>
       <td>
-        <input form={formId} aria-label="Slack ID" aria-invalid={Boolean(form.errors.slackUserId)} value={form.data.slackUserId} placeholder="U0123ABCD" onChange={(e) => form.setData("slackUserId", e.target.value)} />
+        <input form={formId} aria-label="Slack ID" aria-invalid={Boolean(form.errors.slackUserId)} value={form.data.slackUserId} placeholder="U0123ABCD" onChange={handleSlackUserIdChange} />
         {form.errors.slackUserId && <div className="error" role="alert">{form.errors.slackUserId}</div>}
       </td>
       <td>

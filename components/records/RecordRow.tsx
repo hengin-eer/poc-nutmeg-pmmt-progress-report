@@ -1,3 +1,4 @@
+import type { ChangeEvent } from "react";
 import { action } from "@void/react";
 import { useThread } from "../thread";
 import { Button, Icon } from "../ui";
@@ -11,6 +12,10 @@ export function RecordRow({ record: r, me }: RecordRowProps) {
   const { open } = useThread();
   const toggleable = r.kind !== "decision" && (me.isAdmin || r.unitId === me.unitId);
   const done = Boolean(r.doneAt) && r.kind !== "decision";
+    function handleToggle(e: ChangeEvent<HTMLInputElement>) { return action("/records?toggle", { data: { id: r.id, done: e.target.checked } }); }
+
+  function handleOpenThread() { return open(r.sourceItemId!); }
+
   return (
     <li className="record">
       <div className="record-check">
@@ -20,7 +25,7 @@ export function RecordRow({ record: r, me }: RecordRowProps) {
             checked={Boolean(r.doneAt)}
             disabled={!toggleable}
             aria-label="終わった"
-            onChange={(e) => action("/records?toggle", { data: { id: r.id, done: e.target.checked } })}
+            onChange={handleToggle}
           />
         )}
       </div>
@@ -33,7 +38,7 @@ export function RecordRow({ record: r, me }: RecordRowProps) {
           <span className="meta">{formatJstDate(r.meetingAt)}</span>
           <span className="spacer" />
           {r.source === "thread" && r.sourceItemId ? (
-            <Button type="button" className="source source-thread" onClick={() => open(r.sourceItemId!)} title="元のスレッドを開く">
+            <Button type="button" className="source source-thread" onClick={handleOpenThread} title="元のスレッドを開く">
               <Icon name="chat-3-line" />
               スレッド
             </Button>

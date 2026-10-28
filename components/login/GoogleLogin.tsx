@@ -5,6 +5,8 @@ import { auth } from "void/client";
 type GoogleLoginProps = Pick<Props, "googleReady">;
 
 export function GoogleLogin({ googleReady }: GoogleLoginProps) {
+    function handleGoogleLogin() { return auth.signIn.social({ provider: "google", callbackURL: "/" }); }
+
   return (
     <Card className="card card-lg stack">
       <div className="row" style={{ gap: 12 }}>
@@ -15,7 +17,7 @@ export function GoogleLogin({ googleReady }: GoogleLoginProps) {
       <Button
         className="primary"
         disabled={!googleReady}
-        onClick={() => auth.signIn.social({ provider: "google", callbackURL: "/" })}
+        onClick={handleGoogleLogin}
       >
         <Icon name="google-fill" />
         NUTMEG の Google アカウントでログイン

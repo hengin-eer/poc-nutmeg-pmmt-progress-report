@@ -19,9 +19,11 @@ type ItemRowProps = { item: ItemSummary; showState?: boolean };
 
 export function ItemRow({ item, showState = true }: ItemRowProps) {
   const { open } = useThread();
+    function handleOpenThread() { return open(item.id); }
+
   return (
     <li className="item-li">
-      <Button type="button" className="item-row" onClick={() => open(item.id)}>
+      <Button type="button" className="item-row" onClick={handleOpenThread}>
         <KindIcon kind={item.kind} />
         <div>
           {item.unitName && <div className="item-unit">{item.unitName}</div>}

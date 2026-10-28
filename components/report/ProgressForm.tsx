@@ -18,6 +18,18 @@ export function ProgressForm({ unit, cycle, report }: ProgressFormProps) {
   });
   const showProgress = unit.kind === "project";
 
+    function handleProgressChange(value: (typeof PROGRESS_OPTIONS)[number]["value"]) { return form.setData("progress", form.data.progress === value ? "" : value); }
+
+  function handleBusynessChange(value: (typeof BUSY_OPTIONS)[number]["value"]) { return form.setData("busyness", value); }
+
+  function handleDoneChange(value: string) { return form.setData("done", value); }
+
+  function handleNextChange(value: string) { return form.setData("next", value); }
+
+  function handleSaveDraft() { return form.setData("submit", false); }
+
+  function handleSubmitReport() { return form.setData("submit", true); }
+
   return (
     <Card as="section" className="card card-lg">
       <SectionHeader className="section-head">
@@ -35,7 +47,7 @@ export function ProgressForm({ unit, cycle, report }: ProgressFormProps) {
                   type="button"
                   key={value}
                   className={`choice ${form.data.progress === value ? "selected" : ""}`}
-                  onClick={() => form.setData("progress", form.data.progress === value ? "" : value)}
+                  onClick={() => handleProgressChange(value)}
                 >
                   <span className={`dot ${value}`} />
                   {label}
@@ -55,7 +67,7 @@ export function ProgressForm({ unit, cycle, report }: ProgressFormProps) {
                 type="button"
                 key={value}
                 className={`choice busy-${value} ${form.data.busyness === value ? "selected" : ""}`}
-                onClick={() => form.setData("busyness", value)}
+                onClick={() => handleBusynessChange(value)}
               >
                 <Icon name={icon} />
                 {label}
@@ -67,15 +79,15 @@ export function ProgressForm({ unit, cycle, report }: ProgressFormProps) {
         </Field>
 
         <MarkdownEditor id="done" label={REPORT_COPY.done.label} hint={REPORT_COPY.done.hint}
-          value={form.data.done ?? ""} onChange={(value) => form.setData("done", value)}
+          value={form.data.done ?? ""} onChange={handleDoneChange}
           placeholder={REPORT_COPY.done.placeholder} error={form.errors.done} />
         <MarkdownEditor id="next" label={REPORT_COPY.next.label} hint={REPORT_COPY.next.hint}
-          value={form.data.next ?? ""} onChange={(value) => form.setData("next", value)}
+          value={form.data.next ?? ""} onChange={handleNextChange}
           placeholder={REPORT_COPY.next.placeholder} error={form.errors.next} />
 
         {form.error && <p className="error">{form.error.message}</p>}
         <div className="row" style={{ marginTop: 8 }}>
-          <Button type="submit" className="ghost" disabled={!isOpen || form.pending} onClick={() => form.setData("submit", false)}>
+          <Button type="submit" className="ghost" disabled={!isOpen || form.pending} onClick={handleSaveDraft}>
             <Icon name="save-3-line" />
             下書き保存
           </Button>
@@ -85,7 +97,7 @@ export function ProgressForm({ unit, cycle, report }: ProgressFormProps) {
             </span>
           )}
           <span className="spacer" />
-          <Button type="submit" className="primary" disabled={!isOpen || form.pending} onClick={() => form.setData("submit", true)}>
+          <Button type="submit" className="primary" disabled={!isOpen || form.pending} onClick={handleSubmitReport}>
             <Icon name="send-plane-2-line" />
             {report?.submittedAt ? "更新する" : "提出する"}
           </Button>
