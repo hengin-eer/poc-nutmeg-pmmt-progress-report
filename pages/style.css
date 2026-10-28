@@ -109,19 +109,6 @@ tr:last-child td { border-bottom: 0; }
 /* ---------- 事前記入の確認事項 ---------- */
 
 /* ---------- 記録 ---------- */
-.search { display: flex; align-items: center; gap: 10px; border: 1px solid var(--border); border-radius: 12px; padding: 4px 14px; background: var(--surface); }
-.search:focus-within { border-color: var(--accent); outline: 3px solid var(--accent-soft); }
-.search .icon { color: var(--muted); font-size: 18px; }
-.search input { border: 0; padding: 8px 0; outline: none; background: transparent; }
-.search input:focus { outline: none; }
-select.filter { width: auto; padding: 7px 10px; font-size: 14px; }
-.record { display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: 12px; }
-.record-check { padding-top: 4px; }
-.record-title { font-weight: 700; font-size: 15.5px; line-height: 1.55; }
-.record-title.done { text-decoration: line-through; color: var(--muted); }
-.record-body { color: var(--text-2); font-size: 14px; white-space: pre-wrap; margin-top: 2px; }
-.record-meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
-.record-unit { font-size: 13px; font-weight: 700; color: var(--text-2); }
 
 /* ---------- ユニット ---------- */
 .step { width: 26px; height: 26px; border-radius: 50%; background: var(--text); color: var(--bg); display: grid; place-items: center; font-weight: 800; font-size: 13px; flex: none; }

@@ -1,7 +1,7 @@
 import { action } from "@void/react";
 import { useThread } from "../thread";
-import { Button, Icon } from "../ui";
-import { RecordPill, SourceBadge } from "../domain";
+import { badgeStyles, Button, Checkbox, Icon } from "../ui";
+import { recordTitle, RecordPill, SourceBadge } from "../domain";
 import { formatJstDate } from "../../lib/domain";
 import { type Props } from "../../pages/records/index.server";
 
@@ -10,11 +10,11 @@ export function RecordRow({ record: r, me }: { record: Props["list"][number]; me
   const toggleable = r.kind !== "decision" && (me.isAdmin || r.unitId === me.unitId);
   const done = Boolean(r.doneAt) && r.kind !== "decision";
   return (
-    <li className="record">
-      <div className="record-check">
+    <li data-slot="record" className="grid grid-cols-[24px_minmax(0,1fr)] gap-3">
+      <div className="pt-1">
         {r.kind !== "decision" && (
-          <input
-            type="checkbox"
+          <Checkbox
+
             checked={Boolean(r.doneAt)}
             disabled={!toggleable}
             aria-label="終わった"
@@ -22,16 +22,16 @@ export function RecordRow({ record: r, me }: { record: Props["list"][number]; me
           />
         )}
       </div>
-      <div style={{ minWidth: 0 }}>
-        <div className={`record-title ${done ? "done" : ""}`}>{r.title}</div>
-        {r.body && <div className="record-body">{r.body}</div>}
-        <div className="record-meta">
+      <div className="min-w-0">
+        <div className={recordTitle({ done })}>{r.title}</div>
+        {r.body && <div className="mt-1 whitespace-pre-wrap text-meta text-text-2">{r.body}</div>}
+        <div className="mt-2 flex flex-wrap items-center gap-2">
           <RecordPill kind={r.kind} />
-          {r.unitName && <span className="record-unit">{r.unitName}</span>}
-          <span className="meta">{formatJstDate(r.meetingAt)}</span>
-          <span className="spacer" />
+          {r.unitName && <span className="text-caption font-bold text-text-2">{r.unitName}</span>}
+          <span className="text-caption text-muted">{formatJstDate(r.meetingAt)}</span>
+          <span className="flex-1" />
           {r.source === "thread" && r.sourceItemId ? (
-            <Button type="button" className="source source-thread" onClick={() => open(r.sourceItemId!)} title="元のスレッドを開く">
+            <Button type="button"  variant="plain" className={badgeStyles({ source: "thread" })} onClick={() => open(r.sourceItemId!)} title="元のスレッドを開く">
               <Icon name="chat-3-line" />
               スレッド
             </Button>
