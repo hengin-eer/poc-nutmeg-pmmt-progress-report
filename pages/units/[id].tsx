@@ -1,3 +1,4 @@
+import { Grid } from "../../components/ui";
 import { UnitHeader } from "../../components/unit/UnitHeader";
 import { UnitHistory } from "../../components/unit/UnitHistory";
 import { UnitPurpose } from "../../components/unit/UnitPurpose";
@@ -9,10 +10,10 @@ export default function UnitPage({ unit, people, history, records, canEdit }: Pr
     <>
       <UnitHeader unit={unit} people={people} />
       <UnitPurpose unit={unit} canEdit={canEdit} />
-      <div className="grid gap-6 grid-cols-[repeat(auto-fit,minmax(min(100%,24rem),1fr))] items-start max-sm:grid-cols-1 mt-10">
+      <Grid columns="two" className="mt-10">
         <UnitHistory history={history} />
         <UnitRecords records={records} />
-      </div>
+      </Grid>
     </>
   );
 }

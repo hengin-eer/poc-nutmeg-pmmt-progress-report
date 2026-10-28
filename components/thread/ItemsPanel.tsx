@@ -6,7 +6,7 @@ export function ItemsPanel({ tab, list }: Pick<Props, "tab" | "list">) {
   return (
     <>
       {tab === "live" && (
-        <Notice className="info mb-4">
+        <Notice tone="info" className="mb-4">
           <Icon name="information-line" />
           当日の議題一覧です。話し終わったら「決定」か「先送り」で閉じてください
         </Notice>

@@ -1,4 +1,4 @@
-import { tv } from "tailwind-variants";
+import { tv } from "../ui/styles";
 
 import { Badge, Icon, Link, Tabs } from "../ui";
 import { type Props, type Tab } from "../../pages/items/index.server";

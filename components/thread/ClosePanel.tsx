@@ -1,3 +1,4 @@
+import { textStyles } from "../ui/styles";
 import { useState } from "react";
 import { ITEM_STATE_LABEL, type ItemState } from "../../lib/domain";
 import { STATE_ICON } from "../domain";
@@ -52,7 +53,7 @@ export function ClosePanel({ nextStates, run }: { nextStates: ItemState[]; run: 
             submit();
           }}
         >
-          <p className="text-caption font-normal text-muted">{CLOSE_HINT[chosen]}</p>
+          <p className={textStyles({ role: "hint" })}>{CLOSE_HINT[chosen]}</p>
           {needsNote && (
             <Input
               type="text"
@@ -62,7 +63,7 @@ export function ClosePanel({ nextStates, run }: { nextStates: ItemState[]; run: 
               placeholder={chosen === "decided" ? "例: 1 週間後ろにずらす。新しい期限は 11/20" : "任意"}
             />
           )}
-          {error && <div className="mt-2 text-caption text-red">{error}</div>}
+          {error && <div className={textStyles({ role: "error" })}>{error}</div>}
           <Row>
             <span className="flex-1" />
             <Button type="submit"  variant="primary" disabled={pending}>

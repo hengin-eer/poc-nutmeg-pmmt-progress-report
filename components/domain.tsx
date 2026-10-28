@@ -1,4 +1,5 @@
-import { tv } from "tailwind-variants";
+import { tv } from "./ui/styles";
+
 import { Icon, Pill, Badge, Dot } from "./ui";
 import { ITEM_STATE_LABEL, RECORD_KIND_LABEL, type ItemState, type RecordKind } from "../lib/domain";
 

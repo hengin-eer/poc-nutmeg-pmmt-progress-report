@@ -1,3 +1,4 @@
+import { textStyles } from "../ui/styles";
 import { action } from "@void/react";
 import { useThread } from "../thread";
 import { badgeStyles, Button, Checkbox, Icon } from "../ui";
@@ -28,7 +29,7 @@ export function RecordRow({ record: r, me }: { record: Props["list"][number]; me
         <div className="mt-2 flex flex-wrap items-center gap-2">
           <RecordPill kind={r.kind} />
           {r.unitName && <span className="text-caption font-bold text-text-2">{r.unitName}</span>}
-          <span className="text-caption text-muted">{formatJstDate(r.meetingAt)}</span>
+          <span className={textStyles({ role: "meta" })}>{formatJstDate(r.meetingAt)}</span>
           <span className="flex-1" />
           {r.source === "thread" && r.sourceItemId ? (
             <Button type="button"  variant="plain" className={badgeStyles({ source: "thread" })} onClick={() => open(r.sourceItemId!)} title="元のスレッドを開く">

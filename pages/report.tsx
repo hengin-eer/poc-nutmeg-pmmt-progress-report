@@ -1,3 +1,4 @@
+import { Grid } from "../components/ui";
 import { Stack } from "../components/ui";
 import { ItemSection } from "../components/report/ItemSection";
 import { PendingRecords } from "../components/report/PendingRecords";
@@ -11,7 +12,7 @@ export default function ReportPage({ unit, cycle, report, myItems, pending, now 
     <>
       <ReportHeader unit={unit} cycle={cycle} report={report} now={now} />
       <PendingRecords pending={pending} isOpen={isOpen} />
-      <div className="grid gap-6 grid-cols-[repeat(auto-fit,minmax(min(100%,24rem),1fr))] items-start max-sm:grid-cols-1 mt-10">
+      <Grid columns="two" className="mt-10">
         <ProgressForm unit={unit} cycle={cycle} report={report} />
         <Stack className="gap-6">
           <ItemSection
@@ -29,7 +30,7 @@ export default function ReportPage({ unit, cycle, report, myItems, pending, now 
             isOpen={isOpen}
           />
         </Stack>
-      </div>
+      </Grid>
     </>
   );
 }

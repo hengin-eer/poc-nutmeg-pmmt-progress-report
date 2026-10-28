@@ -1,4 +1,5 @@
-import { tv } from "tailwind-variants";
+import { flowStyles } from "../ui/Flow";
+import { headingStyles, textStyles, tv } from "../ui/styles";
 
 import { formatJst, ITEM_STATE_LABEL } from "../../lib/domain";
 import type { ThreadData } from "../../lib/items";
@@ -36,7 +37,7 @@ export function ThreadView({ data, onChange }: { data: ThreadData; onChange: (d:
 
   return (
     <article data-slot="thread" className="flex flex-col gap-6">
-      <header className="flex flex-col gap-2">
+      <header className={flowStyles({ direction: "column", gap: 2 })}>
         <Row>
           <KindIcon kind={item.kind} />
           <Link href={`/units/${unit.id}`}  className="text-body font-extrabold text-text">
@@ -45,7 +46,7 @@ export function ThreadView({ data, onChange }: { data: ThreadData; onChange: (d:
           <StatePill state={item.state} />
           <CrossBureau on={item.crossBureau} />
         </Row>
-        <div className="text-caption text-muted">
+        <div className={textStyles({ role: "meta" })}>
           {data.authorName} ・ {formatJst(item.createdAt)}
           <span className="max-md:hidden"> ・ {formatJst(cycle.meetingAt)} の PMMT</span>
         </div>
@@ -59,12 +60,12 @@ export function ThreadView({ data, onChange }: { data: ThreadData; onChange: (d:
           <div>
             <strong>{ITEM_STATE_LABEL[item.state]}</strong>
             <div>{item.resolutionNote}</div>
-            {data.closedByName && <div className="text-caption text-muted">{data.closedByName}</div>}
+            {data.closedByName && <div className={textStyles({ role: "meta" })}>{data.closedByName}</div>}
           </div>
         </div>
       )}
 
-      <div className="flex flex-wrap gap-2">
+      <div className={flowStyles({ direction: "wrap", gap: 2 })}>
         {reactionSummary.map((r) => (
           <Button
             key={r.emoji}
@@ -82,7 +83,7 @@ export function ThreadView({ data, onChange }: { data: ThreadData; onChange: (d:
       {data.canClose && <ClosePanel key={item.state} nextStates={data.nextStates} run={run} />}
 
       <section className="border-t border-border pt-6 [&_h3]:mb-4">
-        <h3 className="text-subheading font-bold text-text">
+        <h3 className={headingStyles({ level: "subheading" })}>
           コメント <Badge>{thread.length}</Badge>
         </h3>
         {thread.length === 0 ? (
@@ -97,7 +98,7 @@ export function ThreadView({ data, onChange }: { data: ThreadData; onChange: (d:
                 <div>
                   <Row className="mb-1 gap-2 text-meta">
                     <strong>{t.author}</strong>
-                    <span className="text-caption text-muted">{formatJst(t.createdAt)}</span>
+                    <span className={textStyles({ role: "meta" })}>{formatJst(t.createdAt)}</span>
                   </Row>
                   <div className="whitespace-pre-wrap">{t.body}</div>
                 </div>

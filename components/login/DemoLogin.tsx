@@ -1,3 +1,5 @@
+import { flowStyles } from "../ui/Flow";
+import { textStyles } from "../ui/styles";
 import { action } from "@void/react";
 import { Button, Card, Icon, List, Row } from "../ui";
 import { type Props } from "../../pages/login.server";
@@ -16,9 +18,9 @@ export function DemoLogin({ demoMembers }: Pick<Props, "demoMembers">) {
       </p>
       <List>
         {demoMembers.map((m) => (
-          <li key={m.id} className="flex flex-wrap items-center gap-2">
+          <li key={m.id} className={flowStyles({ direction: "row", gap: 2 })}>
             <span>{m.name}</span>
-            <span className="text-caption text-muted">{m.unitName}</span>
+            <span className={textStyles({ role: "meta" })}>{m.unitName}</span>
             <span className="flex-1" />
             <Button  size="small" onClick={() => loginAs(m.id)}>
               <Icon name="login-box-line" />

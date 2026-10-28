@@ -1,3 +1,4 @@
+import { headingStyles, textStyles } from "../ui/styles";
 
 import { Button, Card, Icon, Link, Row, SectionHeader, Textarea } from "../ui";
 import { type ImportState } from "./useMinutesImport";
@@ -20,11 +21,11 @@ export function MinutesInput({ state }: { state: ImportState }) {
   const { text, setText, parse } = state;
   return (
     <Card as="section" size="large">
-      <SectionHeader><span className="grid size-6 shrink-0 place-items-center rounded-full bg-text text-caption font-extrabold text-bg">1</span><h2 className="text-heading font-bold text-text">議事録を貼り付ける</h2></SectionHeader>
-      <p className="text-caption font-normal text-muted">
+      <SectionHeader><span className="grid size-6 shrink-0 place-items-center rounded-full bg-text text-caption font-extrabold text-bg">1</span><h2 className={headingStyles({ level: "heading" })}>議事録を貼り付ける</h2></SectionHeader>
+      <p className={textStyles({ role: "hint" })}>
         過去の回を取り込む時は、先に<Link href="/admin">管理画面</Link>で過去の日付の回を作ってください。Notion から書き出した Markdown や文字起こしは、スキルで下の形式に変換してから貼り付けます。
       </p>
-      <Textarea value={text} onChange={(e) => setText(e.target.value)} placeholder={SAMPLE} data-tw="min-h-[280px] font-mono text-caption" />
+      <Textarea value={text} onChange={(e) => setText(e.target.value)} placeholder={SAMPLE} className="min-h-[280px] font-mono text-caption" />
       <Row className="mt-2">
         <Button  variant="ghost" size="small" onClick={() => setText(SAMPLE)}>
           サンプルを入れる

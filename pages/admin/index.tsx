@@ -1,3 +1,4 @@
+import { headingStyles, textStyles } from "../../components/ui/styles";
 
 import { ButtonLink, Icon, Link, PageHeader } from "../../components/ui";
 import { CycleSection } from "../../components/admin/CycleSection";
@@ -10,8 +11,8 @@ export default function AdminPage({ cycles, units, members, defaults }: Props) {
     <>
       <PageHeader>
         <div>
-          <h1 className="text-title font-extrabold tracking-[.01em] text-text">管理</h1>
-          <div className="text-body text-text-2">局長・副局長だけが使えます</div>
+          <h1 className={headingStyles({ level: "title" })}>管理</h1>
+          <div className={textStyles({ role: "lead" })}>局長・副局長だけが使えます</div>
         </div>
         <ButtonLink href="/admin/import"  variant="primary">
           <Icon name="import-line" />

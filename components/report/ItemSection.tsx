@@ -1,3 +1,5 @@
+import { flowStyles } from "../ui/Flow";
+import { headingStyles, textStyles } from "../ui/styles";
 import { action, Form, useForm } from "@void/react";
 import { useEffect, useState } from "react";
 import type { Props } from "../../pages/report.server";
@@ -29,7 +31,7 @@ export function ItemSection({
     <Card as="section">
       <SectionHeader>
         <KindIcon kind={kind} />
-        <h2 className="text-heading font-bold text-text">{title}</h2>
+        <h2 className={headingStyles({ level: "heading" })}>{title}</h2>
         <Badge>{list.length}</Badge>
       </SectionHeader>
       <p className="text-caption font-normal text-muted -mt-2">
@@ -39,7 +41,7 @@ export function ItemSection({
       {list.length > 0 && (
         <List className="mt-2 mb-4">
           {list.map((i) => (
-            <li key={i.id} className="flex flex-col gap-2">
+            <li key={i.id} className={flowStyles({ direction: "column", gap: 2 })}>
               <Button variant="plain" type="button" className="-mx-2 cursor-pointer rounded-lg px-2 py-1 text-left whitespace-pre-wrap leading-relaxed font-medium hover:bg-surface-2 focus-visible:outline-3 focus-visible:outline-accent-soft" onClick={() => open(i.id)} title="スレッドを開く">
                 {i.body}
               </Button>
@@ -67,7 +69,7 @@ export function ItemSection({
 
       {isOpen &&
         (adding ? (
-          <Form form={form} className="flex flex-col gap-4 gap-2">
+          <Form form={form} className={flowStyles({ direction: "column", gap: 2 })}>
             <div>
               <Textarea
                 autoFocus
@@ -75,7 +77,7 @@ export function ItemSection({
                 onChange={(e) => form.setData("body", e.target.value)}
                 placeholder={kind === "confirm" ? "例: ○○を△△にしてもいい？" : "例: こんな勉強会をやってみたい"}
               />
-              {form.errors.body && <div className="mt-2 text-caption text-red">{form.errors.body}</div>}
+              {form.errors.body && <div className={textStyles({ role: "error" })}>{form.errors.body}</div>}
             </div>
             <Row>
               {kind === "confirm" && (

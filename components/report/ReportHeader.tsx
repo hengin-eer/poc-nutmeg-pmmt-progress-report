@@ -1,3 +1,5 @@
+import { textStyles } from "../ui/styles";
+import { headingStyles } from "../ui/styles";
 import type { Props } from "../../pages/report.server";
 import { formatJst, remainingLabel } from "../../lib/domain";
 import { UNIT_KIND_LABEL } from "../domain";
@@ -9,8 +11,8 @@ export function ReportHeader({ unit, cycle, report, now }: Pick<Props, "unit" | 
     <>
       <PageHeader>
         <div>
-          <div className="mb-1 text-caption font-semibold text-muted">{UNIT_KIND_LABEL[unit.kind]}</div>
-          <h1 className="text-title font-extrabold tracking-[.01em] text-text">{unit.name} の事前記入</h1>
+          <div className={textStyles({ role: "eyebrow" })}>{UNIT_KIND_LABEL[unit.kind]}</div>
+          <h1 className={headingStyles({ level: "title" })}>{unit.name} の事前記入</h1>
         </div>
         <div className="flex flex-wrap items-center gap-2 text-meta text-text-2 [&_strong]:text-text">
           <Icon name="alarm-line" />

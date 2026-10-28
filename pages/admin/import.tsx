@@ -1,3 +1,5 @@
+import { Grid } from "../../components/ui";
+import { headingStyles, textStyles } from "../../components/ui/styles";
 
 import { Icon, Link, PageHeader } from "../../components/ui";
 import { MinutesInput } from "../../components/admin/MinutesInput";
@@ -17,15 +19,15 @@ export default function ImportPage({ cycles, units }: Props) {
       </nav>
       <PageHeader>
         <div>
-          <h1 className="text-title font-extrabold tracking-[.01em] text-text">議事録・過去の回の取り込み</h1>
-          <div className="text-body text-text-2">議事録スキルの出力を貼り付けると、1 件ずつの候補に分かれます。✓ をつけたものだけ記録に登録されます。</div>
+          <h1 className={headingStyles({ level: "title" })}>議事録・過去の回の取り込み</h1>
+          <div className={textStyles({ role: "lead" })}>議事録スキルの出力を貼り付けると、1 件ずつの候補に分かれます。✓ をつけたものだけ記録に登録されます。</div>
         </div>
       </PageHeader>
 
-      <div className="grid gap-6 grid-cols-[repeat(auto-fit,minmax(min(100%,24rem),1fr))] items-start max-sm:grid-cols-1">
+      <Grid columns="two">
         <MinutesInput state={state} />
         <MinutesCandidates cycles={cycles} units={units} state={state} />
-      </div>
+      </Grid>
     </>
   );
 }

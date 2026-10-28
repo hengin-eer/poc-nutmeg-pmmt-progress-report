@@ -1,4 +1,4 @@
-import { tv } from "tailwind-variants";
+import { tv } from "../ui/styles";
 
 import type { Props } from "../../pages/index.server";
 import { Busy, ProgressPill, UNIT_KIND_SHORT } from "../domain";

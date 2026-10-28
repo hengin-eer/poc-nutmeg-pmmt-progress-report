@@ -1,4 +1,3 @@
-
 import type { Props } from "../../pages/index.server";
 import { formatJst, remainingLabel } from "../../lib/domain";
 import { ButtonLink, Card, Icon, Link } from "../ui";

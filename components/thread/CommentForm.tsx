@@ -1,3 +1,4 @@
+import { textStyles } from "../ui/styles";
 import { useState } from "react";
 import { Button, Icon, Textarea } from "../ui";
 import type { Result } from "./request";
@@ -38,7 +39,7 @@ export function CommentForm({ run }: { run: (p: Record<string, unknown>) => Prom
       <Button type="submit"  variant="primary" size="icon" disabled={pending || !body.trim()} aria-label="送信" title="送信">
         <Icon name="send-plane-2-fill" />
       </Button>
-      {error && <div className="mt-2 text-caption text-red">{error}</div>}
+      {error && <div className={textStyles({ role: "error" })}>{error}</div>}
     </form>
   );
 }

@@ -1,3 +1,4 @@
+import { textStyles } from "../ui/styles";
 
 import type { ReactNode } from "react";
 import type { Me } from "../../lib/server";
@@ -20,7 +21,7 @@ export function Sidebar({ me, demo, logout, children }: { me: Me; demo: boolean;
               </Avatar>
               <div className="min-w-0 flex-1 leading-snug">
                 <div className="truncate text-meta font-bold">{me.name}</div>
-                <div className="text-caption text-muted">
+                <div className={textStyles({ role: "meta" })}>
                   {me.unitName ?? "ユニットなし"}
                   {demo && <span className="ml-2 rounded-full bg-yellow-soft px-2 py-px text-caption font-bold text-yellow">デモ</span>}
                 </div>

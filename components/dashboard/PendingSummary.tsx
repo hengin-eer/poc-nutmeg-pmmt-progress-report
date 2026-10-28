@@ -1,3 +1,4 @@
+import { headingStyles, textStyles } from "../ui/styles";
 
 import type { Props } from "../../pages/index.server";
 import { RecordPill } from "../domain";
@@ -8,7 +9,7 @@ export function PendingSummary({ pending }: Pick<Props, "pending">) {
     <Card as="section" className="mt-10">
       <SectionHeader>
         <Icon name="arrow-go-forward-line" className="text-muted" />
-        <h2 className="text-heading font-bold text-text">持ち越し中</h2>
+        <h2 className={headingStyles({ level: "heading" })}>持ち越し中</h2>
         <Badge>{pending.length}</Badge>
       </SectionHeader>
       {pending.length === 0 ? (
@@ -16,10 +17,10 @@ export function PendingSummary({ pending }: Pick<Props, "pending">) {
       ) : (
         <List>
           {pending.map((p) => (
-            <li key={p.id} className="flex flex-wrap items-center gap-2 gap-3">
+            <li key={p.id} className="flex flex-wrap items-center gap-3">
               <RecordPill kind={p.kind} />
               <span className="flex-1 min-w-0">{p.title}</span>
-              {p.unitName && <span className="text-caption text-muted">{p.unitName}</span>}
+              {p.unitName && <span className={textStyles({ role: "meta" })}>{p.unitName}</span>}
             </li>
           ))}
         </List>

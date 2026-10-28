@@ -1,4 +1,5 @@
-import { tv, type VariantProps } from "tailwind-variants";
+import { tv } from "./styles";
+import { type VariantProps } from "tailwind-variants";
 
 const dot = tv({
   base: "inline-block size-2 shrink-0 rounded-full",

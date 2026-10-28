@@ -1,4 +1,4 @@
-import { twMerge } from "tailwind-merge";
+import { twMerge } from "./styles";
 
 /** Remix Icon。name は ri- を除いた名前。 */
 export function Icon({ name, className, label }: { name: string; className?: string; label?: string }) {

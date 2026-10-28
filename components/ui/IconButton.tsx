@@ -1,4 +1,5 @@
-import { tv } from "tailwind-variants";
+import { tv } from "./styles";
+
 import { Button, type ButtonProps } from "./Button";
 
 export const iconButtonStyles = tv({

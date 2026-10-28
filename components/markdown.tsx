@@ -1,5 +1,5 @@
+import { tv } from "./ui/styles";
 import ReactMarkdown from "react-markdown";
-import { tv } from "tailwind-variants";
 
 const markdown = tv({
   slots: {
@@ -15,7 +15,7 @@ const markdown = tv({
   },
   variants: { compact: { true: {
     root: "text-meta leading-[1.65]",
-    heading: "m-0 text-[1em] leading-inherit",
+    heading: "m-0 text-[1em] leading-[inherit]",
     paragraph: "m-0",
     list: "my-0",
     item: "[&+&]:mt-0",

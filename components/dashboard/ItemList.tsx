@@ -1,3 +1,4 @@
+import { headingStyles } from "../ui/styles";
 
 import { ItemRow, type ItemSummary } from "../thread";
 import { Badge, Card, EmptyState, Icon, Link, List, SectionHeader } from "../ui";
@@ -14,7 +15,7 @@ export function ItemList({ title, icon, items, empty, moreHref, moreLabel }: {
     <Card as="section">
       <SectionHeader>
         <Icon name={icon} className="text-muted" />
-        <h2 className="text-heading font-bold text-text">{title}</h2>
+        <h2 className={headingStyles({ level: "heading" })}>{title}</h2>
         <Badge>{items.length}</Badge>
       </SectionHeader>
       {items.length === 0 ? (

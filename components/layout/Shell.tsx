@@ -1,4 +1,5 @@
-import { tv } from "tailwind-variants";
+import { tv } from "../ui/styles";
+
 import { action } from "@void/react";
 import type { ReactNode } from "react";
 import { auth } from "void/client";

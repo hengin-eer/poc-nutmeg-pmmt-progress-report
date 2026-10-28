@@ -1,5 +1,6 @@
+import { tv } from "../ui/styles";
 import { useEffect, useState, type ReactNode } from "react";
-import { tv } from "tailwind-variants";
+
 import { Button, Icon } from "../ui";
 
 const menu = tv({

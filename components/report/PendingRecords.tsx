@@ -1,3 +1,4 @@
+import { headingStyles, textStyles } from "../ui/styles";
 import { action } from "@void/react";
 import type { Props } from "../../pages/report.server";
 import { RecordPill } from "../domain";
@@ -9,13 +10,13 @@ export function PendingRecords({ pending, isOpen }: Pick<Props, "pending"> & { i
     <Card as="section" className="mt-10">
       <SectionHeader>
         <Icon name="arrow-go-forward-line" className="text-muted" />
-        <h2 className="text-heading font-bold text-text">前回からの持ち越し</h2>
-        <span className="text-caption font-normal text-muted">終わったらチェック</span>
+        <h2 className={headingStyles({ level: "heading" })}>前回からの持ち越し</h2>
+        <span className={textStyles({ role: "hint" })}>終わったらチェック</span>
       </SectionHeader>
       <List>
         {pending.map((r) => (
           <li key={r.id}>
-            <Label className="flex flex-wrap items-center gap-2 m-0 font-medium gap-3 cursor-pointer">
+            <Label className="flex flex-wrap items-center m-0 font-medium gap-3 cursor-pointer">
               <Checkbox
 
                 disabled={!isOpen}

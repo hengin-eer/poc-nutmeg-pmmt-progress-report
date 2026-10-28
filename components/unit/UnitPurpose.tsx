@@ -1,3 +1,5 @@
+import { FieldLabel } from "../ui";
+import { headingStyles, textStyles } from "../ui/styles";
 import { Form, useForm } from "@void/react";
 import { useEffect, useState } from "react";
 import { Button, Card, Field, Icon, IconButton, Input, Label, Row, SectionHeader, Textarea } from "../ui";
@@ -14,7 +16,7 @@ export function UnitPurpose({ unit, canEdit }: Pick<Props, "unit" | "canEdit">) 
     <Card as="section" size="large">
       <SectionHeader>
         <Icon name="flag-line" className="text-muted" />
-        <h2 className="text-heading font-bold text-text">何のためにやっているか</h2>
+        <h2 className={headingStyles({ level: "heading" })}>何のためにやっているか</h2>
         <span className="flex-1" />
         {canEdit && !editing && (
           <IconButton  onClick={() => setEditing(true)} title="編集" aria-label="編集">
@@ -25,16 +27,16 @@ export function UnitPurpose({ unit, canEdit }: Pick<Props, "unit" | "canEdit">) 
       {editing ? (
         <Form form={form}>
           <Field>
-            <div className="mb-2 flex flex-wrap items-baseline gap-x-2 gap-y-1 [&_label]:m-0 [&_label]:whitespace-nowrap">
+            <FieldLabel>
               <Label htmlFor="purpose">目的</Label>
-              <span className="text-caption font-normal text-muted">一文で。新入生が読んでもわかるように</span>
-            </div>
+              <span className={textStyles({ role: "hint" })}>一文で。新入生が読んでもわかるように</span>
+            </FieldLabel>
             <Input id="purpose" type="text" value={form.data.purpose} onChange={(e) => form.setData("purpose", e.target.value)} />
           </Field>
           <Field>
-            <div className="mb-2 flex flex-wrap items-baseline gap-x-2 gap-y-1 [&_label]:m-0 [&_label]:whitespace-nowrap">
+            <FieldLabel>
               <Label htmlFor="summary">概要</Label>
-            </div>
+            </FieldLabel>
             <Textarea id="summary" value={form.data.summary} onChange={(e) => form.setData("summary", e.target.value)} />
           </Field>
           <Row>

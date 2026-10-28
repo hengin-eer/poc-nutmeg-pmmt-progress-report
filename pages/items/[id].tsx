@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { ThreadView } from "../../components/thread";
 import { ButtonLink, Card, Icon, Link } from "../../components/ui";

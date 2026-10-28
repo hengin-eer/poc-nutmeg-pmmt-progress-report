@@ -1,3 +1,4 @@
+import { headingStyles, textStyles } from "../ui/styles";
 import { Badge, Card, EmptyState, List, SectionHeader } from "../ui";
 import { recordTitle, RecordPill } from "../domain";
 import { formatJstDate } from "../../lib/domain";
@@ -7,7 +8,7 @@ export function UnitRecords({ records }: Pick<Props, "records">) {
   return (
     <section>
       <SectionHeader>
-        <h2 className="text-heading font-bold text-text">このユニットの記録</h2>
+        <h2 className={headingStyles({ level: "heading" })}>このユニットの記録</h2>
         <Badge>{records.length}</Badge>
       </SectionHeader>
       <Card>
@@ -20,9 +21,9 @@ export function UnitRecords({ records }: Pick<Props, "records">) {
                 <div className={recordTitle({ done: Boolean(r.doneAt) && r.kind !== "decision" })}>
                   {r.title}
                 </div>
-                <div className="mt-2 flex flex-wrap items-center gap-2 mt-1">
+                <div className="flex flex-wrap items-center gap-2 mt-1">
                   <RecordPill kind={r.kind} />
-                  <span className="text-caption text-muted">{formatJstDate(r.meetingAt)}</span>
+                  <span className={textStyles({ role: "meta" })}>{formatJstDate(r.meetingAt)}</span>
                 </div>
               </li>
             ))}

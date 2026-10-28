@@ -29,3 +29,6 @@ export { badgeStyles } from "./Badge";
 export { Dot } from "./Dot";
 export { SegmentedButton } from "./SegmentedButton";
 export { Choice } from "./Choice";
+export { FieldLabel } from "./FieldLabel";
+export { Grid } from "./Grid";
+export { flowStyles } from "./Flow";

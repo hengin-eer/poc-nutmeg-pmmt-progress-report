@@ -1,8 +1,9 @@
-import { tv } from "tailwind-variants";
+import { FieldLabel } from "./ui";
+import { textStyles, tv } from "./ui/styles";
+
 import { useRef, useState } from "react";
 import { Markdown } from "./markdown";
 import { Button, EmptyState, Field, Icon, Label, Textarea } from "./ui";
-
 
 const editor = tv({
   slots: {
@@ -30,10 +31,10 @@ export function MarkdownEditor({ id, label, hint, value, onChange, placeholder, 
   const tabs = useRef<(HTMLButtonElement | null)[]>([]);
   return (
     <Field>
-      <div className="mb-2 flex flex-wrap items-baseline gap-x-2 gap-y-1 [&_label]:m-0 [&_label]:whitespace-nowrap">
+      <FieldLabel>
         <Label id={`${id}-label`} htmlFor={id}>{label}</Label>
-        <span id={`${id}-hint`} className="text-caption font-normal text-muted">{hint}</span>
-      </div>
+        <span id={`${id}-hint`} className={textStyles({ role: "hint" })}>{hint}</span>
+      </FieldLabel>
       <div data-slot="markdown-editor" className={styles.root()}>
         <div className={styles.header()} role="tablist" aria-label={`${label}の表示切り替え`}>
           {([false, true] as const).map((isPreview, index) => (
@@ -68,7 +69,7 @@ export function MarkdownEditor({ id, label, hint, value, onChange, placeholder, 
           {preview && (value.trim() ? <Markdown>{value}</Markdown> : <EmptyState>まだ記入されていません</EmptyState>)}
         </div>
       </div>
-      {error && <div id={`${id}-error`} className="mt-2 text-caption text-red">{error}</div>}
+      {error && <div id={`${id}-error`} className={textStyles({ role: "error" })}>{error}</div>}
     </Field>
   );
 }

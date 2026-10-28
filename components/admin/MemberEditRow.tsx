@@ -1,3 +1,5 @@
+import { flowStyles } from "../ui/Flow";
+import { textStyles } from "../ui/styles";
 import { Form, useForm } from "@void/react";
 import { useEffect } from "react";
 import { Button, Icon, IconButton, Input, Row, Select } from "../ui";
@@ -26,29 +28,29 @@ export function MemberEditRow({ member, units, isSelf, onDone }: {
     <tr>
       <td>
         <Input form={formId} aria-label="名前" aria-invalid={Boolean(form.errors.name)} value={form.data.name} onChange={(e) => form.setData("name", e.target.value)} />
-        {form.errors.name && <div className="mt-2 text-caption text-red" role="alert">{form.errors.name}</div>}
+        {form.errors.name && <div className={textStyles({ role: "error" })} role="alert">{form.errors.name}</div>}
       </td>
-      <td className="text-caption text-muted">{member.email}</td>
+      <td className={textStyles({ role: "meta" })}>{member.email}</td>
       <td>
         <Select form={formId} aria-label="役割" aria-invalid={Boolean(form.errors.role)} value={form.data.role} disabled={isSelf} onChange={(e) => form.setData("role", e.target.value as typeof form.data.role)}>
           {Object.entries(ROLE_LABEL).map(([key, label]) => <option key={key} value={key}>{label}</option>)}
         </Select>
-        {isSelf && <div className="text-caption font-normal text-muted">自分の役割は変更できません</div>}
-        {form.errors.role && <div className="mt-2 text-caption text-red" role="alert">{form.errors.role}</div>}
+        {isSelf && <div className={textStyles({ role: "hint" })}>自分の役割は変更できません</div>}
+        {form.errors.role && <div className={textStyles({ role: "error" })} role="alert">{form.errors.role}</div>}
       </td>
       <td>
         <Select form={formId} aria-label="ユニット" aria-invalid={Boolean(form.errors.unitId)} value={form.data.unitId} onChange={(e) => form.setData("unitId", Number(e.target.value))}>
           <option value={0}>なし</option>
           {units.map((unit) => <option key={unit.id} value={unit.id}>{unit.name}</option>)}
         </Select>
-        {form.errors.unitId && <div className="mt-2 text-caption text-red" role="alert">{form.errors.unitId}</div>}
+        {form.errors.unitId && <div className={textStyles({ role: "error" })} role="alert">{form.errors.unitId}</div>}
       </td>
       <td>
         <Input form={formId} aria-label="Slack ID" aria-invalid={Boolean(form.errors.slackUserId)} value={form.data.slackUserId} placeholder="U0123ABCD" onChange={(e) => form.setData("slackUserId", e.target.value)} />
-        {form.errors.slackUserId && <div className="mt-2 text-caption text-red" role="alert">{form.errors.slackUserId}</div>}
+        {form.errors.slackUserId && <div className={textStyles({ role: "error" })} role="alert">{form.errors.slackUserId}</div>}
       </td>
       <td>
-        <Form id={formId} form={form} className="flex flex-col gap-4 gap-2">
+        <Form id={formId} form={form} className={flowStyles({ direction: "column", gap: 2 })}>
           <Row className="gap-1 flex-nowrap">
             <Button type="submit"  variant="primary" size="small" disabled={form.pending}>
               <Icon name="check-line" />保存
@@ -57,7 +59,7 @@ export function MemberEditRow({ member, units, isSelf, onDone }: {
               <Icon name="close-line" />
             </IconButton>
           </Row>
-          {form.errors.id && <div className="mt-2 text-caption text-red" role="alert">{form.errors.id}</div>}
+          {form.errors.id && <div className={textStyles({ role: "error" })} role="alert">{form.errors.id}</div>}
         </Form>
       </td>
     </tr>

@@ -1,3 +1,4 @@
+import { headingStyles, textStyles } from "../ui/styles";
 import { action, Form, useForm, useShared } from "@void/react";
 import { useState } from "react";
 import { Badge, Button, Card, Icon, IconButton, Input, Label, SectionHeader, Select, Table } from "../ui";
@@ -15,10 +16,10 @@ export function MemberSection({ members, units }: Pick<Props, "members" | "units
     <Card as="section" size="large" className="mt-10">
       <SectionHeader>
         <Icon name="group-line" className="text-muted" />
-        <h2 className="text-heading font-bold text-text">メンバー</h2>
+        <h2 className={headingStyles({ level: "heading" })}>メンバー</h2>
         <Badge>{members.length}</Badge>
       </SectionHeader>
-      <p className="text-caption font-normal text-muted">ここに登録された NUTMEG アカウントだけがログインできます。Slack のユーザー ID を入れると、リマインドでメンションされます。</p>
+      <p className={textStyles({ role: "hint" })}>ここに登録された NUTMEG アカウントだけがログインできます。Slack のユーザー ID を入れると、リマインドでメンションされます。</p>
       <div className="overflow-x-auto">
         <Table>
           <thead>
@@ -37,10 +38,10 @@ export function MemberSection({ members, units }: Pick<Props, "members" | "units
             ) : (
               <tr key={m.id}>
                 <td>{m.name}</td>
-                <td className="text-caption text-muted">{m.email}</td>
+                <td className={textStyles({ role: "meta" })}>{m.email}</td>
                 <td>{ROLE_LABEL[m.role]}</td>
                 <td>{unitName(m.unitId)}</td>
-                <td className="text-caption text-muted">{m.slackUserId ?? "—"}</td>
+                <td className={textStyles({ role: "meta" })}>{m.slackUserId ?? "—"}</td>
                 <td>
                   <IconButton
                     type="button"
@@ -70,16 +71,16 @@ export function MemberSection({ members, units }: Pick<Props, "members" | "units
         </Table>
       </div>
 
-      <Form form={form} className="grid gap-6 grid-cols-[repeat(auto-fit,_minmax(170px,_1fr))] items-end mt-6 gap-3">
+      <Form form={form} className="grid grid-cols-[repeat(auto-fit,_minmax(170px,_1fr))] items-end mt-6 gap-3">
         <div>
           <Label>名前</Label>
           <Input type="text" value={form.data.name} onChange={(e) => form.setData("name", e.target.value)} />
-          {form.errors.name && <div className="mt-2 text-caption text-red">{form.errors.name}</div>}
+          {form.errors.name && <div className={textStyles({ role: "error" })}>{form.errors.name}</div>}
         </div>
         <div>
           <Label>アドレス</Label>
           <Input type="email" value={form.data.email} onChange={(e) => form.setData("email", e.target.value)} placeholder="25.t.yamada.nutfes@gmail.com" />
-          {form.errors.email && <div className="mt-2 text-caption text-red">{form.errors.email}</div>}
+          {form.errors.email && <div className={textStyles({ role: "error" })}>{form.errors.email}</div>}
         </div>
         <div>
           <Label>役割</Label>
@@ -103,7 +104,7 @@ export function MemberSection({ members, units }: Pick<Props, "members" | "units
           </Select>
         </div>
         <div>
-          <Label>Slack ID <span className="text-caption font-normal text-muted">任意</span></Label>
+          <Label>Slack ID <span className={textStyles({ role: "hint" })}>任意</span></Label>
           <Input type="text" value={form.data.slackUserId} onChange={(e) => form.setData("slackUserId", e.target.value)} placeholder="U0123ABCD" />
         </div>
         <Button type="submit"  variant="primary" disabled={form.pending}>
