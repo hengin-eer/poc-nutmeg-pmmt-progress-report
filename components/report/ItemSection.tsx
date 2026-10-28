@@ -1,0 +1,107 @@
+import { action, Form, useForm } from "@void/react";
+import { useEffect, useState } from "react";
+import type { Props } from "../../pages/report.server";
+import { CrossBureau, KIND_ICON, StatePill } from "../domain";
+import { ThreadButton, useThread } from "../thread";
+import { Badge, Button, Card, Icon, IconButton, SectionHeader } from "../ui";
+
+export function ItemSection({
+  title,
+  kind,
+  hint,
+  list,
+  isOpen,
+}: {
+  title: string;
+  kind: "confirm" | "talk";
+  hint: string;
+  list: Props["myItems"];
+  isOpen: boolean;
+}) {
+  const form = useForm("/report?addItem", { kind, body: "", crossBureau: false }, { resetOnSuccess: true });
+  const [adding, setAdding] = useState(false);
+  const { open } = useThread();
+  useEffect(() => {
+    if (form.wasSuccessful) setAdding(false);
+  }, [form.wasSuccessful]);
+
+  return (
+    <Card as="section" className="card">
+      <SectionHeader className="section-head">
+        <span className={`kind-icon ${kind}`}>
+          <Icon name={KIND_ICON[kind]} />
+        </span>
+        <h2>{title}</h2>
+        <Badge className="count">{list.length}</Badge>
+      </SectionHeader>
+      <p className="hint" style={{ marginTop: -8 }}>
+        {hint}
+      </p>
+
+      {list.length > 0 && (
+        <ul className="list" style={{ margin: "8px 0 16px" }}>
+          {list.map((i) => (
+            <li key={i.id} className="my-item">
+              <Button type="button" className="my-item-body" onClick={() => open(i.id)} title="スレッドを開く">
+                {i.body}
+              </Button>
+              <div className="row">
+                <StatePill state={i.state} />
+                <CrossBureau on={i.crossBureau} />
+                <span className="spacer" />
+                <ThreadButton id={i.id} comments={i.comments} />
+                {i.state === "open" && isOpen && (
+                  <IconButton
+                    type="button"
+                    className="icon-button danger"
+                    title="削除"
+                    aria-label="削除"
+                    onClick={() => confirm("削除しますか？") && action("/report?deleteItem", { data: { id: i.id } })}
+                  >
+                    <Icon name="delete-bin-line" />
+                  </IconButton>
+                )}
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {isOpen &&
+        (adding ? (
+          <Form form={form} className="stack" style={{ gap: 10 }}>
+            <div>
+              <textarea
+                autoFocus
+                value={form.data.body}
+                onChange={(e) => form.setData("body", e.target.value)}
+                placeholder={kind === "confirm" ? "例: ○○を△△にしてもいい？" : "例: こんな勉強会をやってみたい"}
+              />
+              {form.errors.body && <div className="error">{form.errors.body}</div>}
+            </div>
+            <div className="row">
+              {kind === "confirm" && (
+                <label className="row" style={{ fontWeight: 500, margin: 0, cursor: "pointer" }}>
+                  <input type="checkbox" checked={form.data.crossBureau} onChange={(e) => form.setData("crossBureau", e.target.checked)} />
+                  他局・実行委員全体に関わる
+                </label>
+              )}
+              <span className="spacer" />
+              <Button type="button" className="ghost small" onClick={() => setAdding(false)}>
+                やめる
+              </Button>
+              <Button type="submit" className="primary small" disabled={form.pending}>
+                追加
+              </Button>
+            </div>
+          </Form>
+        ) : (
+          <Button type="button" className="ghost add-button" onClick={() => setAdding(true)}>
+            <Icon name="add-line" />
+            追加
+          </Button>
+        ))}
+    </Card>
+  );
+}
+
