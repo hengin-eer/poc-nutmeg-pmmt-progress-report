@@ -1,6 +1,6 @@
 import type { ComponentProps } from "react";
-import { withBase } from "./classes";
+import { twMerge } from "tailwind-merge";
 
 export function Segmented({ className, ...props }: ComponentProps<"div">) {
-  return <div {...props} className={withBase("segmented", className)} />;
+  return <div {...props} data-slot="segmented" className={twMerge("flex flex-wrap gap-2", className)} />;
 }

@@ -1,6 +1,6 @@
 import type { ComponentProps } from "react";
-import { withBase } from "./classes";
+import { twMerge } from "tailwind-merge";
 
 export function Field({ className, ...props }: ComponentProps<"div">) {
-  return <div {...props} className={withBase("field", className)} />;
+  return <div {...props} data-slot="field" className={twMerge("mb-6", className)} />;
 }

@@ -1,4 +1,5 @@
-import { Icon, Pill, Badge } from "./ui";
+import { tv } from "tailwind-variants";
+import { Icon, Pill, Badge, Dot } from "./ui";
 import { ITEM_STATE_LABEL, RECORD_KIND_LABEL, type ItemState, type RecordKind } from "../lib/domain";
 
 export type Progress = "green" | "yellow" | "red" | null;
@@ -23,8 +24,8 @@ export const UNIT_KIND_SHORT: Record<UnitKind, string> = { project: "PJ", team: 
 export function ProgressPill({ value }: { value: Progress }) {
   if (!value) return null;
   return (
-    <Pill className={`pill ${value}`}>
-      <span className={`dot ${value}`} />
+    <Pill tone={value}>
+      <Dot tone={value} />
       {PROGRESS_LABEL[value]}
     </Pill>
   );
@@ -39,17 +40,28 @@ export const BUSY = [
   { label: "忙しい", icon: "run-line" },
 ] as const;
 
-/** 3 段のメーター。label を付けるとアイコンと文字も出す */
+const busy = tv({
+  slots: {
+    root: "inline-flex items-center gap-2 text-caption font-semibold text-text-2 [&_i]:text-base",
+    meter: "inline-flex h-[14px] items-end gap-[2px]",
+    bar: "w-[5px] rounded-[2px] bg-border nth-1:h-[6px] nth-2:h-[10px] nth-3:h-[14px]",
+  },
+  variants: {
+    level: { 1: { bar: "data-[on=true]:bg-green" }, 2: { bar: "data-[on=true]:bg-yellow" }, 3: { root: "text-red", bar: "data-[on=true]:bg-red" } },
+  },
+});
+
+/** 3 段のメーター。label を付けるとアイコンと文字も出す。 */
 export function Busy({ value, label = false }: { value: number | null; label?: boolean }) {
-  const b = value ? BUSY[value] : null;
-  if (!b || !value) return null;
+  const level = value === 1 || value === 2 || value === 3 ? value : null;
+  if (!level) return null;
+  const b = BUSY[level]!;
+  const styles = busy({ level });
   return (
-    <span className={`busy busy-${value}`} title={`忙しさ：${b.label}`}>
+    <span className={styles.root()} title={`忙しさ：${b.label}`}>
       {label && <Icon name={b.icon} />}
-      <span className="busy-meter" aria-hidden="true">
-        {[1, 2, 3].map((n) => (
-          <span key={n} className={n <= value ? "on" : ""} />
-        ))}
+      <span className={styles.meter()} aria-hidden="true">
+        {[1, 2, 3].map((n) => <span key={n} className={styles.bar()} data-on={n <= level} />)}
       </span>
       {label ? <span>{b.label}</span> : <span className="sr-only">忙しさ：{b.label}</span>}
     </span>
@@ -58,18 +70,18 @@ export function Busy({ value, label = false }: { value: number | null; label?: b
 
 // ---------- 確認事項 ----------
 
-const STATE_STYLE: Record<ItemState, { cls: string; icon: string }> = {
-  open: { cls: "yellow", icon: "time-line" },
-  live: { cls: "purple", icon: "mic-line" },
-  decided: { cls: "green", icon: "check-double-line" },
-  resolved: { cls: "", icon: "check-line" },
-  deferred: { cls: "red", icon: "skip-forward-line" },
+const STATE_STYLE: Record<ItemState, { tone: "neutral" | "yellow" | "purple" | "green" | "red" | "accent"; icon: string }> = {
+  open: { tone: "yellow", icon: "time-line" },
+  live: { tone: "purple", icon: "mic-line" },
+  decided: { tone: "green", icon: "check-double-line" },
+  resolved: { tone: "neutral", icon: "check-line" },
+  deferred: { tone: "red", icon: "skip-forward-line" },
 };
 
 export function StatePill({ state }: { state: ItemState }) {
   const s = STATE_STYLE[state];
   return (
-    <Pill className={`pill ${s.cls}`}>
+    <Pill tone={s.tone}>
       <Icon name={s.icon} />
       {ITEM_STATE_LABEL[state]}
     </Pill>
@@ -81,7 +93,7 @@ export const STATE_ICON = (state: ItemState) => STATE_STYLE[state].icon;
 /** 他局・実行委員全体に関わる */
 export function CrossBureau({ on }: { on: boolean }) {
   return on ? (
-    <Pill className="pill accent" title="他局・実行委員全体に関わる">
+    <Pill tone="accent" title="他局・実行委員全体に関わる">
       <Icon name="community-line" />
       他局
     </Pill>
@@ -91,10 +103,15 @@ export function CrossBureau({ on }: { on: boolean }) {
 export const KIND_LABEL = { confirm: "確認したいこと", talk: "話したいこと" } as const;
 export const KIND_ICON = { confirm: "question-answer-line", talk: "chat-smile-2-line" } as const;
 
+const kindIcon = tv({
+  base: "inline-grid size-6 shrink-0 place-items-center rounded-lg text-body",
+  variants: { kind: { confirm: "bg-accent-soft text-accent", talk: "bg-purple-soft text-purple" } },
+});
+
 /** 確認したいこと / 話したいこと。文字は出さず、アイコンだけ */
 export function KindIcon({ kind }: { kind: "confirm" | "talk" }) {
   return (
-    <span className={`kind-icon ${kind}`} title={KIND_LABEL[kind]}>
+    <span className={kindIcon({ kind })} title={KIND_LABEL[kind]}>
       <Icon name={KIND_ICON[kind]} label={KIND_LABEL[kind]} />
     </span>
   );
@@ -104,15 +121,15 @@ export function KindIcon({ kind }: { kind: "confirm" | "talk" }) {
 export function Counts({ comments, reactions }: { comments: number; reactions: number }) {
   if (!comments && !reactions) return null;
   return (
-    <span className="counts">
+    <span className="inline-flex gap-3 text-caption font-semibold text-muted">
       {comments > 0 && (
-        <span title={`コメント ${comments} 件`}>
+        <span className="inline-flex items-center gap-1" title={`コメント ${comments} 件`}>
           <Icon name="chat-3-line" />
           {comments}
         </span>
       )}
       {reactions > 0 && (
-        <span title={`リアクション ${reactions} 件`}>
+        <span className="inline-flex items-center gap-1" title={`リアクション ${reactions} 件`}>
           <Icon name="emotion-line" />
           {reactions}
         </span>
@@ -123,16 +140,16 @@ export function Counts({ comments, reactions }: { comments: number; reactions: n
 
 // ---------- 記録 ----------
 
-const RECORD_STYLE: Record<RecordKind, { cls: string; icon: string }> = {
-  decision: { cls: "green", icon: "checkbox-circle-line" },
-  todo: { cls: "accent", icon: "task-line" },
-  carryover: { cls: "red", icon: "arrow-go-forward-line" },
+const RECORD_STYLE: Record<RecordKind, { tone: "neutral" | "yellow" | "purple" | "green" | "red" | "accent"; icon: string }> = {
+  decision: { tone: "green", icon: "checkbox-circle-line" },
+  todo: { tone: "accent", icon: "task-line" },
+  carryover: { tone: "red", icon: "arrow-go-forward-line" },
 };
 
 export function RecordPill({ kind }: { kind: RecordKind }) {
   const s = RECORD_STYLE[kind];
   return (
-    <Pill className={`pill ${s.cls}`}>
+    <Pill tone={s.tone}>
       <Icon name={s.icon} />
       {RECORD_KIND_LABEL[kind]}
     </Pill>
@@ -149,7 +166,7 @@ const SOURCE_STYLE = {
 export function SourceBadge({ source }: { source: keyof typeof SOURCE_STYLE }) {
   const s = SOURCE_STYLE[source];
   return (
-    <Badge className={`source source-${source}`}>
+    <Badge source={source}>
       <Icon name={s.icon} />
       {s.label}
     </Badge>

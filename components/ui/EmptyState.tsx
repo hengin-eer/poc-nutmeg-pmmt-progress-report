@@ -1,6 +1,6 @@
 import type { ComponentProps } from "react";
-import { withBase } from "./classes";
+import { twMerge } from "tailwind-merge";
 
 export function EmptyState({ className, ...props }: ComponentProps<"p">) {
-  return <p {...props} className={withBase("empty", className)} />;
+  return <p {...props} data-slot="emptystate" className={twMerge("m-0 py-1 text-meta text-muted", className)} />;
 }
