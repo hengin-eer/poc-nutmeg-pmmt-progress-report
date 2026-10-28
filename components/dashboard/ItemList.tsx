@@ -1,0 +1,30 @@
+import { Link } from "@void/react";
+import { ItemRow, type ItemSummary } from "../thread";
+import { Badge, Card, EmptyState, Icon, SectionHeader } from "../ui";
+
+export function ItemList({ title, icon, items, empty, moreHref, moreLabel }: {
+  title: string;
+  icon: string;
+  items: ItemSummary[];
+  empty: string;
+  moreHref?: string;
+  moreLabel?: string;
+}) {
+  return (
+    <Card as="section" className="card">
+      <SectionHeader className="section-head">
+        <Icon name={icon} className="muted" />
+        <h2>{title}</h2>
+        <Badge className="count">{items.length}</Badge>
+      </SectionHeader>
+      {items.length === 0 ? (
+        <EmptyState className="empty">{empty}</EmptyState>
+      ) : (
+        <ul className="list">
+          {items.map((i) => <ItemRow key={i.id} item={i} showState={false} />)}
+        </ul>
+      )}
+      {moreHref && <Link href={moreHref} className="more">{moreLabel} <Icon name="arrow-right-line" /></Link>}
+    </Card>
+  );
+}
