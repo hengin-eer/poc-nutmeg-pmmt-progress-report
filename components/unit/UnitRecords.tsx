@@ -1,6 +1,6 @@
 import { headingStyles, textStyles } from "../ui/styles";
 import { Badge, Card, EmptyState, List, SectionHeader } from "../ui";
-import { recordTitle, RecordPill } from "../domain";
+import { RecordPill, recordTitle } from "../domain";
 import { formatJstDate } from "../../lib/domain";
 import { type Props } from "../../pages/units/[id].server";
 

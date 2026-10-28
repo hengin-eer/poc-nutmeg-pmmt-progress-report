@@ -1,11 +1,10 @@
 import { flowStyles } from "../ui/Flow";
-import { FieldLabel } from "../ui";
+import { Button, Card, Choice, Dot, Field, FieldLabel, Icon, Label, Row, SectionHeader } from "../ui";
 import { headingStyles, textStyles } from "../ui/styles";
 import { Form, useForm } from "@void/react";
-import type { Props } from "../../pages/report.server";
 import { BUSY, Busy, PROGRESS_LABEL } from "../domain";
 import { MarkdownEditor } from "../markdown-editor";
-import { Button, Choice, Dot, Card, Field, Icon, Label, Row, SectionHeader } from "../ui";
+import type { Props } from "../../pages/report.server";
 
 export function ProgressForm({ unit, cycle, report }: Pick<Props, "unit" | "cycle" | "report">) {
   const isOpen = cycle.status === "open";
@@ -73,9 +72,9 @@ export function ProgressForm({ unit, cycle, report }: Pick<Props, "unit" | "cycl
           value={form.data.next ?? ""} onChange={(value) => form.setData("next", value)}
           placeholder="- ○○のレビュー（佐藤・11/6）" error={form.errors.next} />
 
-        {form.error && <p className={textStyles({ role: "error" })}>{form.error.message}</p>}
+        {form.error && <p className={textStyles({ className: "mb-3", role: "error" })}>{form.error.message}</p>}
         <Row className="mt-2">
-          <Button type="submit"  variant="ghost" disabled={!isOpen || form.pending} onClick={() => form.setData("submit", false)}>
+          <Button type="submit" variant="ghost" disabled={!isOpen || form.pending} onClick={() => form.setData("submit", false)}>
             <Icon name="save-3-line" />
             下書き保存
           </Button>
@@ -85,7 +84,7 @@ export function ProgressForm({ unit, cycle, report }: Pick<Props, "unit" | "cycl
             </span>
           )}
           <span className="flex-1" />
-          <Button type="submit"  variant="primary" disabled={!isOpen || form.pending} onClick={() => form.setData("submit", true)}>
+          <Button type="submit" variant="primary" disabled={!isOpen || form.pending} onClick={() => form.setData("submit", true)}>
             <Icon name="send-plane-2-line" />
             {report?.submittedAt ? "更新する" : "提出する"}
           </Button>

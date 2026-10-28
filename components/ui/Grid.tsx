@@ -1,6 +1,6 @@
+import { tv } from "./styles";
 import type { ComponentProps } from "react";
 import type { VariantProps } from "tailwind-variants";
-import { tv } from "./styles";
 
 const grid = tv({
   base: "grid gap-6",

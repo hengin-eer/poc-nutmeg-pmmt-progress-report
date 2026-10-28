@@ -1,6 +1,6 @@
 import { tv } from "./styles";
-import type { ComponentProps } from "react";
 import { type VariantProps } from "tailwind-variants";
+import type { ComponentProps } from "react";
 
 export const buttonStyles = tv({
   base: "inline-flex items-center justify-center gap-2 rounded-control border border-border bg-surface px-4 py-2 text-meta font-bold whitespace-nowrap text-text cursor-pointer hover:bg-surface-2 hover:no-underline disabled:cursor-default disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2",

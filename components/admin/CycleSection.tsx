@@ -1,6 +1,6 @@
 import { flowStyles } from "../ui/Flow";
 import { headingStyles, textStyles } from "../ui/styles";
-import { action, Form, useForm } from "@void/react";
+import { Form, action, useForm } from "@void/react";
 import { useState } from "react";
 import { Button, Card, Icon, Input, Label, Pill, Row, SectionHeader, Table } from "../ui";
 import { formatJst, toJstInput } from "../../lib/domain";
@@ -28,15 +28,15 @@ export function CycleSection({ cycles, defaults, unitCount }: Pick<Props, "cycle
           </Label>
           <Input id="deadlineAt" type="datetime-local" value={form.data.deadlineAt} onChange={(e) => form.setData("deadlineAt", e.target.value)} />
         </div>
-        <Button type="submit"  variant="primary" disabled={form.pending}>
+        <Button type="submit" variant="primary" disabled={form.pending}>
           回を作る
         </Button>
       </Form>
-      {form.errors.deadlineAt && <p className={textStyles({ role: "error" })}>{form.errors.deadlineAt}</p>}
+      {form.errors.deadlineAt && <p className={textStyles({ className: "mb-3", role: "error" })}>{form.errors.deadlineAt}</p>}
       <p className="text-caption font-normal text-muted mb-6">新しい回を作ると、開いている回は自動で閉じます（「当日に話す」の残りは先送りとして記録）。過去の日付で作ると、取り込み用の「閉じた回」になります。</p>
 
       <div className="overflow-x-auto">
-        <Table>
+        <Table className="min-w-[480px]">
           <thead>
             <tr>
               <th>PMMT</th>
@@ -87,7 +87,7 @@ export function CycleSection({ cycles, defaults, unitCount }: Pick<Props, "cycle
                 <td>{cy.status === "open" ? <Pill tone="green">受付中</Pill> : <Pill>終了</Pill>}</td>
                 <td>
                   {cy.status === "open" && (
-                    <Button  size="small" onClick={() => confirm("この回を閉じますか？") && action("/admin?closeCycle", { data: { id: cy.id } })}>
+                    <Button size="small" onClick={() => confirm("この回を閉じますか？") && action("/admin?closeCycle", { data: { id: cy.id } })}>
                       閉じる
                     </Button>
                   )}

@@ -1,5 +1,4 @@
-import { Grid } from "../components/ui";
-import { Stack } from "../components/ui";
+import { Grid, Stack } from "../components/ui";
 import { ItemSection } from "../components/report/ItemSection";
 import { PendingRecords } from "../components/report/PendingRecords";
 import { ProgressForm } from "../components/report/ProgressForm";

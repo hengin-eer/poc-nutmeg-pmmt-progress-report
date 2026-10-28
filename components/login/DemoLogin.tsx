@@ -22,7 +22,7 @@ export function DemoLogin({ demoMembers }: Pick<Props, "demoMembers">) {
             <span>{m.name}</span>
             <span className={textStyles({ role: "meta" })}>{m.unitName}</span>
             <span className="flex-1" />
-            <Button  size="small" onClick={() => loginAs(m.id)}>
+            <Button size="small" onClick={() => loginAs(m.id)}>
               <Icon name="login-box-line" />
               入る
             </Button>

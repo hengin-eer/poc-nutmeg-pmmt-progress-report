@@ -1,5 +1,5 @@
 import { headingStyles, textStyles } from "../ui/styles";
-import { action, Form, useForm, useShared } from "@void/react";
+import { Form, action, useForm, useShared } from "@void/react";
 import { useState } from "react";
 import { Badge, Button, Card, Icon, IconButton, Input, Label, SectionHeader, Select, Table } from "../ui";
 import { type Props } from "../../pages/admin/index.server";
@@ -19,9 +19,9 @@ export function MemberSection({ members, units }: Pick<Props, "members" | "units
         <h2 className={headingStyles({ level: "heading" })}>メンバー</h2>
         <Badge>{members.length}</Badge>
       </SectionHeader>
-      <p className={textStyles({ role: "hint" })}>ここに登録された NUTMEG アカウントだけがログインできます。Slack のユーザー ID を入れると、リマインドでメンションされます。</p>
+      <p className={textStyles({ className: "mb-3", role: "hint" })}>ここに登録された NUTMEG アカウントだけがログインできます。Slack のユーザー ID を入れると、リマインドでメンションされます。</p>
       <div className="overflow-x-auto">
-        <Table>
+        <Table className="min-w-[760px] whitespace-nowrap [&_td:first-child]:min-w-32 [&_td:nth-child(3)]:min-w-24 [&_td:nth-child(4)]:min-w-32">
           <thead>
             <tr>
               <th>名前</th>
@@ -107,7 +107,7 @@ export function MemberSection({ members, units }: Pick<Props, "members" | "units
           <Label>Slack ID <span className={textStyles({ role: "hint" })}>任意</span></Label>
           <Input type="text" value={form.data.slackUserId} onChange={(e) => form.setData("slackUserId", e.target.value)} placeholder="U0123ABCD" />
         </div>
-        <Button type="submit"  variant="primary" disabled={form.pending}>
+        <Button type="submit" variant="primary" disabled={form.pending}>
           <Icon name="user-add-line" />
           追加
         </Button>

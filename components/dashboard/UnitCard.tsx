@@ -1,9 +1,8 @@
 import { tv } from "../ui/styles";
-
-import type { Props } from "../../pages/index.server";
 import { Busy, ProgressPill, UNIT_KIND_SHORT } from "../domain";
 import { Markdown } from "../markdown";
 import { Card, Icon, Link, Pill, Row } from "../ui";
+import type { Props } from "../../pages/index.server";
 
 const unitCard = tv({
   slots: {
@@ -12,7 +11,7 @@ const unitCard = tv({
     excerpt: "line-clamp-3 max-h-[4.95em] text-meta leading-[1.65] text-text-2",
     foot: "mt-auto flex flex-wrap items-center gap-2 [&_[data-slot=pill]]:relative [&_[data-slot=pill]]:z-10",
   },
-  variants: { submitted: { false: { root: "border-dashed bg-transparent shadow-none" } } },
+  variants: { submitted: { false: { root: "border-dashed bg-transparent shadow-none", title: "text-muted" } } },
 });
 
 export function UnitCard({ card }: { card: Props["cards"][number] }) {
@@ -21,7 +20,7 @@ export function UnitCard({ card }: { card: Props["cards"][number] }) {
     <Card as="article" className={styles.root()}>
       <Row className="items-start">
         <div className="flex-1 min-w-0">
-          <Link href={`/units/${card.id}`}  className={styles.title()}>{card.name}</Link>
+          <Link href={`/units/${card.id}`} className={styles.title()}>{card.name}</Link>
           <div className="text-caption font-semibold text-muted">{UNIT_KIND_SHORT[card.kind]}</div>
         </div>
         {card.submitted ? <ProgressPill value={card.progress} /> : <Pill>未記入</Pill>}

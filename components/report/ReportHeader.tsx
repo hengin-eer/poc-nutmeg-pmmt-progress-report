@@ -1,9 +1,8 @@
-import { textStyles } from "../ui/styles";
-import { headingStyles } from "../ui/styles";
-import type { Props } from "../../pages/report.server";
+import { headingStyles, textStyles } from "../ui/styles";
 import { formatJst, remainingLabel } from "../../lib/domain";
 import { UNIT_KIND_LABEL } from "../domain";
 import { Icon, Notice, PageHeader } from "../ui";
+import type { Props } from "../../pages/report.server";
 
 export function ReportHeader({ unit, cycle, report, now }: Pick<Props, "unit" | "cycle" | "report" | "now">) {
   const isOpen = cycle.status === "open";

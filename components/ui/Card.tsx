@@ -1,6 +1,6 @@
 import { tv } from "./styles";
-import type { HTMLAttributes } from "react";
 import { type VariantProps } from "tailwind-variants";
+import type { HTMLAttributes } from "react";
 
 const card = tv({
   base: "rounded-card border border-border bg-surface p-6 shadow-card max-sm:p-4",

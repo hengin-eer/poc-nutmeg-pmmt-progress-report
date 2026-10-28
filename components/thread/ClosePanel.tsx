@@ -2,7 +2,7 @@ import { textStyles } from "../ui/styles";
 import { useState } from "react";
 import { ITEM_STATE_LABEL, type ItemState } from "../../lib/domain";
 import { STATE_ICON } from "../domain";
-import { Button, SegmentedButton, Icon, Input, Row, Segmented } from "../ui";
+import { Button, Icon, Input, Row, Segmented, SegmentedButton } from "../ui";
 import type { Result } from "./request";
 
 const CLOSE_HINT: Partial<Record<ItemState, string>> = {
@@ -53,7 +53,7 @@ export function ClosePanel({ nextStates, run }: { nextStates: ItemState[]; run: 
             submit();
           }}
         >
-          <p className={textStyles({ role: "hint" })}>{CLOSE_HINT[chosen]}</p>
+          <p className={textStyles({ className: "mb-3", role: "hint" })}>{CLOSE_HINT[chosen]}</p>
           {needsNote && (
             <Input
               type="text"
@@ -66,7 +66,7 @@ export function ClosePanel({ nextStates, run }: { nextStates: ItemState[]; run: 
           {error && <div className={textStyles({ role: "error" })}>{error}</div>}
           <Row>
             <span className="flex-1" />
-            <Button type="submit"  variant="primary" disabled={pending}>
+            <Button type="submit" variant="primary" disabled={pending}>
               {chosen === "open" ? "未解決に戻す" : `「${ITEM_STATE_LABEL[chosen]}」にする`}
             </Button>
           </Row>

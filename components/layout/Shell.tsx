@@ -1,13 +1,12 @@
 import { tv } from "../ui/styles";
-
 import { action } from "@void/react";
-import type { ReactNode } from "react";
 import { auth } from "void/client";
-import type { Me } from "../../lib/server";
 import { ThreadProvider } from "../thread";
 import { Icon, Link } from "../ui";
 import { MobileMenu } from "./MobileMenu";
 import { Sidebar } from "./Sidebar";
+import type { ReactNode } from "react";
+import type { Me } from "../../lib/server";
 
 const NAV = [
   { href: "/", label: "ダッシュボード", icon: "dashboard-3-line" },
@@ -43,7 +42,7 @@ export function Shell({ me, demo, path, children }: { me: Me; demo: boolean; pat
 
   return (
     <ThreadProvider>
-      <div className="grid min-h-screen grid-cols-[var(--sidebar)_minmax(0,1fr)] bg-[linear-gradient(to_right,var(--surface)_calc(var(--sidebar)_-_1px),var(--border)_0_var(--sidebar),transparent_0)] max-md:block max-md:bg-none">
+      <div className="grid min-h-screen grid-cols-[auto_minmax(0,1fr)] bg-[linear-gradient(to_right,var(--surface)_calc(var(--sidebar)_-_1px),var(--border)_0_var(--sidebar),transparent_0)] max-md:block">
         <Sidebar me={me} demo={demo} logout={logout}>{links}</Sidebar>
 
         <main className="min-w-0 px-12 pt-10 pb-24 [&>*]:max-w-[1440px] max-md:px-4 max-md:pt-6 max-md:pb-32">{children}</main>

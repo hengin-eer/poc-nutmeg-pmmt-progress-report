@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { ThreadView } from "../../components/thread";
 import { ButtonLink, Card, Icon, Link } from "../../components/ui";
-
 import type { Props } from "./[id].server";
 
 export default function ItemPage({ data: initial, cycleOpen }: Props) {

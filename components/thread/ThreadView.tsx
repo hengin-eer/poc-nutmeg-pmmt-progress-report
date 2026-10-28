@@ -1,13 +1,12 @@
 import { flowStyles } from "../ui/Flow";
 import { headingStyles, textStyles, tv } from "../ui/styles";
-
-import { formatJst, ITEM_STATE_LABEL } from "../../lib/domain";
-import type { ThreadData } from "../../lib/items";
+import { ITEM_STATE_LABEL, formatJst } from "../../lib/domain";
 import { CrossBureau, KindIcon, STATE_ICON, StatePill } from "../domain";
 import { Avatar, Badge, Button, EmptyState, Icon, Link, Row } from "../ui";
 import { ClosePanel } from "./ClosePanel";
 import { CommentForm } from "./CommentForm";
 import { post } from "./request";
+import type { ThreadData } from "../../lib/items";
 
 const resolution = tv({
   base: "flex gap-2 rounded-xl bg-surface-2 px-4 py-3 text-meta [&>i]:mt-1 [&>i]:text-lg",
@@ -40,7 +39,7 @@ export function ThreadView({ data, onChange }: { data: ThreadData; onChange: (d:
       <header className={flowStyles({ direction: "column", gap: 2 })}>
         <Row>
           <KindIcon kind={item.kind} />
-          <Link href={`/units/${unit.id}`}  className="text-body font-extrabold text-text">
+          <Link href={`/units/${unit.id}`} className="text-body font-extrabold text-text">
             {unit.name}
           </Link>
           <StatePill state={item.state} />

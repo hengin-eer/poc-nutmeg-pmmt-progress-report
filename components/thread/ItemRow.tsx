@@ -1,7 +1,7 @@
-import type { ItemState } from "../../lib/domain";
 import { Counts, CrossBureau, KindIcon, StatePill } from "../domain";
 import { Button, Icon, Row } from "../ui";
 import { useThread } from "./context";
+import type { ItemState } from "../../lib/domain";
 
 export type ItemSummary = {
   id: number;
@@ -19,7 +19,7 @@ export function ItemRow({ item, showState = true }: { item: ItemSummary; showSta
   const { open } = useThread();
   return (
     <li data-slot="item">
-      <Button type="button"  variant="plain" data-slot="item-row" className="grid w-full box-content grid-cols-[auto_minmax(0,1fr)_auto] items-start gap-3 -mx-3 rounded-xl p-3 text-left text-inherit hover:bg-surface-2" onClick={() => open(item.id)}>
+      <Button type="button" variant="plain" data-slot="item-row" className="grid w-full box-content grid-cols-[auto_minmax(0,1fr)_auto] items-start gap-3 -mx-3 rounded-xl p-3 text-left text-inherit hover:bg-surface-2" onClick={() => open(item.id)}>
         <KindIcon kind={item.kind} />
         <div>
           {item.unitName && <div className="text-meta font-bold">{item.unitName}</div>}

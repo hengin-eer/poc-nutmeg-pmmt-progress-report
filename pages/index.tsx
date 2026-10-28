@@ -1,11 +1,9 @@
-import { Grid } from "../components/ui";
+import { Card, Grid, Link, SectionHeader } from "../components/ui";
 import { headingStyles, textStyles } from "../components/ui/styles";
-
 import { Hero } from "../components/dashboard/Hero";
 import { ItemList } from "../components/dashboard/ItemList";
 import { PendingSummary } from "../components/dashboard/PendingSummary";
 import { UnitCard } from "../components/dashboard/UnitCard";
-import { Card, Link, SectionHeader } from "../components/ui";
 import type { Props } from "./index.server";
 
 export default function Dashboard({ me, cycle, cards, liveItems, openItems, pending, now }: Props) {
@@ -13,7 +11,7 @@ export default function Dashboard({ me, cycle, cards, liveItems, openItems, pend
     return (
       <Card size="large" className="max-w-[820px]">
         <h1 className={headingStyles({ level: "title" })}>まだ回がありません</h1>
-        <p className={textStyles({ role: "lead" })}>{me.isAdmin ? <Link href="/admin">管理画面</Link> : "局長・副局長が管理画面"}から PMMT の回を作ってください。</p>
+        <p className={textStyles({ className: "mb-3", role: "lead" })}>{me.isAdmin ? <Link href="/admin">管理画面</Link> : "局長・副局長が管理画面"}から PMMT の回を作ってください。</p>
       </Card>
     );
   }

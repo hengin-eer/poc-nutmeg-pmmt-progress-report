@@ -1,6 +1,6 @@
-import type { Props } from "../../pages/index.server";
 import { formatJst, remainingLabel } from "../../lib/domain";
-import { ButtonLink, Card, Icon, Link } from "../ui";
+import { ButtonLink, Card, Icon } from "../ui";
+import type { Props } from "../../pages/index.server";
 
 export function Hero({ cycle, cards, unitId, now }: { cycle: NonNullable<Props["cycle"]>; cards: Props["cards"]; unitId: number | null; now: string }) {
   const done = cards.filter((c) => c.submitted).length;

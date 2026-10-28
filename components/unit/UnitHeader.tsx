@@ -1,5 +1,4 @@
-import { textStyles } from "../ui/styles";
-import { headingStyles } from "../ui/styles";
+import { headingStyles, textStyles } from "../ui/styles";
 import { Icon, PageHeader, Row } from "../ui";
 import { UNIT_KIND_LABEL } from "../domain";
 import { type Props } from "../../pages/units/[id].server";

@@ -1,8 +1,8 @@
 import { headingStyles, textStyles } from "../ui/styles";
 import { action } from "@void/react";
-import type { Props } from "../../pages/report.server";
 import { RecordPill } from "../domain";
 import { Card, Checkbox, Icon, Label, List, SectionHeader } from "../ui";
+import type { Props } from "../../pages/report.server";
 
 export function PendingRecords({ pending, isOpen }: Pick<Props, "pending"> & { isOpen: boolean }) {
   if (pending.length === 0) return null;

@@ -1,8 +1,7 @@
 import { headingStyles, textStyles } from "../ui/styles";
-
-import type { Props } from "../../pages/index.server";
 import { RecordPill } from "../domain";
 import { Badge, Card, EmptyState, Icon, Link, List, SectionHeader } from "../ui";
+import type { Props } from "../../pages/index.server";
 
 export function PendingSummary({ pending }: Pick<Props, "pending">) {
   return (
@@ -25,7 +24,7 @@ export function PendingSummary({ pending }: Pick<Props, "pending">) {
           ))}
         </List>
       )}
-      <Link href="/records?status=pending"  className="mt-4 inline-flex items-center gap-1 text-meta font-semibold text-accent hover:underline">
+      <Link href="/records?status=pending" className="mt-4 inline-flex items-center gap-1 text-meta font-semibold text-accent hover:underline">
         記録を見る <Icon name="arrow-right-line" />
       </Link>
     </Card>

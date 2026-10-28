@@ -1,5 +1,4 @@
-import { textStyles } from "../ui/styles";
-import { headingStyles } from "../ui/styles";
+import { headingStyles, textStyles } from "../ui/styles";
 import { PageHeader } from "../ui";
 import { formatJst } from "../../lib/domain";
 import { type Props } from "../../pages/items/index.server";

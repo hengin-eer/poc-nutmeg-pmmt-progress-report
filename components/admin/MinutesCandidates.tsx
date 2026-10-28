@@ -67,7 +67,7 @@ export function MinutesCandidates({ cycles, units, state }: Props & { state: Imp
             </Field>
           )}
           {form.errors.entries && <div className={textStyles({ role: "error" })}>{form.errors.entries}</div>}
-          <Button type="submit"  variant="primary" disabled={form.pending || selected.length === 0}>
+          <Button type="submit" variant="primary" disabled={form.pending || selected.length === 0}>
             {selected.length} 件を登録する
           </Button>
         </Form>

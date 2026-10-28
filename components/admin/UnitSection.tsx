@@ -14,7 +14,7 @@ export function UnitSection({ units }: Pick<Props, "units">) {
         <h2 className={headingStyles({ level: "heading" })}>報告ユニット</h2>
         <Badge>{units.length}</Badge>
       </SectionHeader>
-      <p className={textStyles({ role: "hint" })}>進捗を報告する単位です。目的・概要は各ユニットのページで編集できます。</p>
+      <p className={textStyles({ className: "mb-3", role: "hint" })}>進捗を報告する単位です。目的・概要は各ユニットのページで編集できます。</p>
       <List>
         {units.map((u) => (
           <li key={u.id} className={flowStyles({ direction: "row", gap: 2 })}>
@@ -36,7 +36,7 @@ export function UnitSection({ units }: Pick<Props, "units">) {
           追加
         </Button>
       </Form>
-      {form.errors.name && <p className={textStyles({ role: "error" })}>{form.errors.name}</p>}
+      {form.errors.name && <p className={textStyles({ className: "mb-3", role: "error" })}>{form.errors.name}</p>}
     </Card>
   );
 }

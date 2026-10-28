@@ -1,9 +1,9 @@
 import { useRouter } from "@void/react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { ThreadData } from "../../lib/items";
 import { KIND_LABEL } from "../domain";
-import { EmptyState, iconButtonStyles, Icon, IconButton, Link } from "../ui";
+import { EmptyState, Icon, IconButton, Link, iconButtonStyles } from "../ui";
 import { ThreadView } from "./ThreadView";
+import type { ThreadData } from "../../lib/items";
 
 export function ThreadDrawer({ id, onClose }: { id: number; onClose: () => void }) {
   const router = useRouter();
@@ -50,10 +50,10 @@ export function ThreadDrawer({ id, onClose }: { id: number; onClose: () => void 
             )}
           </span>
           <span className="flex-1" />
-          <Link className={iconButtonStyles()} href={`/items/${id}`}  title="全画面で開く" aria-label="全画面で開く" onClick={onClose}>
+          <Link className={iconButtonStyles()} href={`/items/${id}`} title="全画面で開く" aria-label="全画面で開く" onClick={onClose}>
             <Icon name="external-link-line" />
           </Link>
-          <IconButton type="button"  onClick={close} title="閉じる（Esc）" aria-label="閉じる">
+          <IconButton type="button" onClick={close} title="閉じる（Esc）" aria-label="閉じる">
             <Icon name="close-line" />
           </IconButton>
         </div>

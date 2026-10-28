@@ -52,10 +52,10 @@ export function MemberEditRow({ member, units, isSelf, onDone }: {
       <td>
         <Form id={formId} form={form} className={flowStyles({ direction: "column", gap: 2 })}>
           <Row className="gap-1 flex-nowrap">
-            <Button type="submit"  variant="primary" size="small" disabled={form.pending}>
+            <Button type="submit" variant="primary" size="small" disabled={form.pending}>
               <Icon name="check-line" />保存
             </Button>
-            <IconButton type="button"  title="キャンセル" aria-label="編集をキャンセル" disabled={form.pending} onClick={onDone}>
+            <IconButton type="button" title="キャンセル" aria-label="編集をキャンセル" disabled={form.pending} onClick={onDone}>
               <Icon name="close-line" />
             </IconButton>
           </Row>

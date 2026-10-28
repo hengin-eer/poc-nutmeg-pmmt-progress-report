@@ -1,8 +1,8 @@
 import { textStyles } from "../ui/styles";
 import { action } from "@void/react";
 import { useThread } from "../thread";
-import { badgeStyles, Button, Checkbox, Icon } from "../ui";
-import { recordTitle, RecordPill, SourceBadge } from "../domain";
+import { Button, Checkbox, Icon, badgeStyles } from "../ui";
+import { RecordPill, SourceBadge, recordTitle } from "../domain";
 import { formatJstDate } from "../../lib/domain";
 import { type Props } from "../../pages/records/index.server";
 
@@ -32,7 +32,7 @@ export function RecordRow({ record: r, me }: { record: Props["list"][number]; me
           <span className={textStyles({ role: "meta" })}>{formatJstDate(r.meetingAt)}</span>
           <span className="flex-1" />
           {r.source === "thread" && r.sourceItemId ? (
-            <Button type="button"  variant="plain" className={badgeStyles({ source: "thread" })} onClick={() => open(r.sourceItemId!)} title="元のスレッドを開く">
+            <Button type="button" variant="plain" className={badgeStyles({ source: "thread" })} onClick={() => open(r.sourceItemId!)} title="元のスレッドを開く">
               <Icon name="chat-3-line" />
               スレッド
             </Button>

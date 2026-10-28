@@ -1,8 +1,7 @@
-import { FieldLabel } from "../ui";
+import { Button, Card, Field, FieldLabel, Icon, IconButton, Input, Label, Row, SectionHeader, Textarea } from "../ui";
 import { headingStyles, textStyles } from "../ui/styles";
 import { Form, useForm } from "@void/react";
 import { useEffect, useState } from "react";
-import { Button, Card, Field, Icon, IconButton, Input, Label, Row, SectionHeader, Textarea } from "../ui";
 import { type Props } from "../../pages/units/[id].server";
 
 export function UnitPurpose({ unit, canEdit }: Pick<Props, "unit" | "canEdit">) {
@@ -19,7 +18,7 @@ export function UnitPurpose({ unit, canEdit }: Pick<Props, "unit" | "canEdit">) 
         <h2 className={headingStyles({ level: "heading" })}>何のためにやっているか</h2>
         <span className="flex-1" />
         {canEdit && !editing && (
-          <IconButton  onClick={() => setEditing(true)} title="編集" aria-label="編集">
+          <IconButton onClick={() => setEditing(true)} title="編集" aria-label="編集">
             <Icon name="pencil-line" />
           </IconButton>
         )}
@@ -41,10 +40,10 @@ export function UnitPurpose({ unit, canEdit }: Pick<Props, "unit" | "canEdit">) 
           </Field>
           <Row>
             <span className="flex-1" />
-            <Button type="button"  variant="ghost" onClick={() => setEditing(false)}>
+            <Button type="button" variant="ghost" onClick={() => setEditing(false)}>
               やめる
             </Button>
-            <Button type="submit"  variant="primary" disabled={form.pending}>
+            <Button type="submit" variant="primary" disabled={form.pending}>
               保存
             </Button>
           </Row>

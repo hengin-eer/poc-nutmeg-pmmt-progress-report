@@ -1,6 +1,5 @@
 import { tv } from "../ui/styles";
-import { useEffect, useState, type ReactNode } from "react";
-
+import { type ReactNode, useEffect, useState } from "react";
 import { Button, Icon } from "../ui";
 
 const menu = tv({

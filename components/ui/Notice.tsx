@@ -1,6 +1,6 @@
 import { tv } from "./styles";
-import type { ComponentProps } from "react";
 import { type VariantProps } from "tailwind-variants";
+import type { ComponentProps } from "react";
 
 const notice = tv({
   base: "m-0 flex items-center gap-2 rounded-xl px-4 py-3 text-meta font-semibold [&_i]:text-lg",

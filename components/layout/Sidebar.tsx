@@ -1,13 +1,12 @@
 import { textStyles } from "../ui/styles";
-
+import { Avatar, BrandMark, Icon, IconButton, Link } from "../ui";
 import type { ReactNode } from "react";
 import type { Me } from "../../lib/server";
-import { Avatar, BrandMark, Icon, IconButton, Link } from "../ui";
 
 export function Sidebar({ me, demo, logout, children }: { me: Me; demo: boolean; logout: () => void; children: ReactNode }) {
   return (
-        <aside className="sticky top-0 flex h-screen flex-col gap-6 border-r border-border bg-surface px-4 pt-6 pb-6 max-md:hidden">
-          <Link href="/"  className="flex items-center gap-2 px-2 text-body tracking-wide text-text hover:no-underline [&_b]:text-accent">
+        <aside className="sticky top-0 flex h-screen w-sidebar flex-col gap-6 border-r border-border bg-surface px-4 pt-6 pb-6 max-md:hidden">
+          <Link href="/" className="flex items-center gap-2 px-2 text-body tracking-wide text-text hover:no-underline [&_b]:text-accent">
             <BrandMark>N</BrandMark>
             <span>
               NUTMEG <b>PMMT</b>
@@ -26,7 +25,7 @@ export function Sidebar({ me, demo, logout, children }: { me: Me; demo: boolean;
                   {demo && <span className="ml-2 rounded-full bg-yellow-soft px-2 py-px text-caption font-bold text-yellow">デモ</span>}
                 </div>
               </div>
-              <IconButton type="button"  onClick={logout} title="ログアウト" aria-label="ログアウト">
+              <IconButton type="button" onClick={logout} title="ログアウト" aria-label="ログアウト">
                 <Icon name="logout-box-r-line" />
               </IconButton>
             </div>

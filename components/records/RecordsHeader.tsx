@@ -1,5 +1,5 @@
 import { headingStyles, textStyles } from "../ui/styles";
-import { buttonStyles, Icon, PageHeader } from "../ui";
+import { Icon, PageHeader, buttonStyles } from "../ui";
 import { type Props } from "../../pages/records/index.server";
 
 export function RecordsHeader({ filter }: Pick<Props, "filter">) {

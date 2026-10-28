@@ -1,6 +1,6 @@
 import { tv } from "./styles";
-import type { ComponentProps } from "react";
 import { type VariantProps } from "tailwind-variants";
+import type { ComponentProps } from "react";
 
 export const flowStyles = tv({
   base: "flex",

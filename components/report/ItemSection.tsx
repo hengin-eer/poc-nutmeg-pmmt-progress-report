@@ -1,11 +1,11 @@
 import { flowStyles } from "../ui/Flow";
 import { headingStyles, textStyles } from "../ui/styles";
-import { action, Form, useForm } from "@void/react";
+import { Form, action, useForm } from "@void/react";
 import { useEffect, useState } from "react";
-import type { Props } from "../../pages/report.server";
 import { CrossBureau, KindIcon, StatePill } from "../domain";
 import { ThreadButton, useThread } from "../thread";
 import { Badge, Button, Card, Checkbox, Icon, IconButton, Label, List, Row, SectionHeader, Textarea } from "../ui";
+import type { Props } from "../../pages/report.server";
 
 export function ItemSection({
   title,
@@ -34,7 +34,7 @@ export function ItemSection({
         <h2 className={headingStyles({ level: "heading" })}>{title}</h2>
         <Badge>{list.length}</Badge>
       </SectionHeader>
-      <p className="text-caption font-normal text-muted -mt-2">
+      <p className="mb-3 text-caption font-normal text-muted -mt-2">
         {hint}
       </p>
 
@@ -87,16 +87,16 @@ export function ItemSection({
                 </Label>
               )}
               <span className="flex-1" />
-              <Button type="button"  variant="ghost" size="small" onClick={() => setAdding(false)}>
+              <Button type="button" variant="ghost" size="small" onClick={() => setAdding(false)}>
                 やめる
               </Button>
-              <Button type="submit"  variant="primary" size="small" disabled={form.pending}>
+              <Button type="submit" variant="primary" size="small" disabled={form.pending}>
                 追加
               </Button>
             </Row>
           </Form>
         ) : (
-          <Button type="button"  variant="ghost" className="w-full border border-dashed border-border text-muted hover:border-accent hover:bg-accent-soft hover:text-accent" onClick={() => setAdding(true)}>
+          <Button type="button" variant="ghost" className="w-full border border-dashed border-border text-muted hover:border-accent hover:bg-accent-soft hover:text-accent" onClick={() => setAdding(true)}>
             <Icon name="add-line" />
             追加
           </Button>

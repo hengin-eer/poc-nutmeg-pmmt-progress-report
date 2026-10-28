@@ -1,6 +1,6 @@
 import { tv } from "./styles";
-import type { ComponentProps } from "react";
 import { type VariantProps } from "tailwind-variants";
+import type { ComponentProps } from "react";
 
 const pill = tv({
   base: "inline-flex items-center gap-1 rounded-full px-2 py-1 text-caption leading-normal font-bold whitespace-nowrap [&_i]:text-caption",
