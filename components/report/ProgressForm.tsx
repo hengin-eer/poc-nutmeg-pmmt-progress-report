@@ -1,13 +1,13 @@
 import { Form, useForm } from "@void/react";
 import type { Props } from "../../pages/report.server";
-import { BUSY, Busy, PROGRESS_LABEL } from "../domain";
+import { BUSY_OPTIONS, Busy, PROGRESS_OPTIONS, type ProgressValue } from "../domain";
 import { MarkdownEditor } from "../markdown-editor";
 import { Button, Card, Field, Icon, SectionHeader } from "../ui";
 
 export function ProgressForm({ unit, cycle, report }: Pick<Props, "unit" | "cycle" | "report">) {
   const isOpen = cycle.status === "open";
   const form = useForm("/report?save", {
-    progress: (report?.progress ?? "") as "" | "green" | "yellow" | "red",
+    progress: (report?.progress ?? "") as "" | ProgressValue,
     busyness: report?.busyness ?? 0,
     done: report?.done ?? "",
     next: report?.next ?? "",
@@ -27,15 +27,15 @@ export function ProgressForm({ unit, cycle, report }: Pick<Props, "unit" | "cycl
               <label>進み具合</label>
             </div>
             <div className="choices">
-              {(["green", "yellow", "red"] as const).map((v) => (
+              {PROGRESS_OPTIONS.map(({ value, label }) => (
                 <Button
                   type="button"
-                  key={v}
-                  className={`choice ${form.data.progress === v ? "selected" : ""}`}
-                  onClick={() => form.setData("progress", form.data.progress === v ? "" : v)}
+                  key={value}
+                  className={`choice ${form.data.progress === value ? "selected" : ""}`}
+                  onClick={() => form.setData("progress", form.data.progress === value ? "" : value)}
                 >
-                  <span className={`dot ${v}`} />
-                  {PROGRESS_LABEL[v]}
+                  <span className={`dot ${value}`} />
+                  {label}
                 </Button>
               ))}
             </div>
@@ -47,16 +47,16 @@ export function ProgressForm({ unit, cycle, report }: Pick<Props, "unit" | "cycl
             <label>忙しさ</label>
           </div>
           <div className="choices">
-            {([1, 2, 3] as const).map((v) => (
+            {BUSY_OPTIONS.map(({ value, label, icon }) => (
               <Button
                 type="button"
-                key={v}
-                className={`choice busy-${v} ${form.data.busyness === v ? "selected" : ""}`}
-                onClick={() => form.setData("busyness", v)}
+                key={value}
+                className={`choice busy-${value} ${form.data.busyness === value ? "selected" : ""}`}
+                onClick={() => form.setData("busyness", value)}
               >
-                <Icon name={BUSY[v].icon} />
-                {BUSY[v].label}
-                <Busy value={v} />
+                <Icon name={icon} />
+                {label}
+                <Busy value={value} />
               </Button>
             ))}
           </div>

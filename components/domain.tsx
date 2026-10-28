@@ -1,14 +1,16 @@
 import { Icon, Pill, Badge } from "./ui";
 import { ITEM_STATE_LABEL, RECORD_KIND_LABEL, type ItemKind, type ItemState, type RecordKind } from "../lib/domain";
 
-export type Progress = "green" | "yellow" | "red" | null;
+export type Progress = ProgressValue | null;
 export type UnitKind = "project" | "team" | "chief" | "vice";
 
-export const PROGRESS_LABEL: Record<"green" | "yellow" | "red", string> = {
-  green: "順調",
-  yellow: "注意",
-  red: "困っている",
-};
+export const PROGRESS_OPTIONS = [
+  { value: "green", label: "順調" },
+  { value: "yellow", label: "注意" },
+  { value: "red", label: "困っている" },
+] as const;
+export type ProgressValue = (typeof PROGRESS_OPTIONS)[number]["value"];
+export const getProgressOption = (value: Progress) => PROGRESS_OPTIONS.find((option) => option.value === value);
 
 export const UNIT_KIND_LABEL: Record<UnitKind, string> = {
   project: "プロジェクト",
@@ -21,34 +23,36 @@ export const UNIT_KIND_LABEL: Record<UnitKind, string> = {
 export const UNIT_KIND_SHORT: Record<UnitKind, string> = { project: "PJ", team: "チーム", chief: "局長", vice: "副局長" };
 
 export function ProgressPill({ value }: { value: Progress }) {
-  if (!value) return null;
+  const option = getProgressOption(value);
+  if (!option) return null;
   return (
     <Pill className={`pill ${value}`}>
       <span className={`dot ${value}`} />
-      {PROGRESS_LABEL[value]}
+      {option.label}
     </Pill>
   );
 }
 
 // ---------- 忙しさ ----------
 
-export const BUSY = [
-  null,
-  { label: "余裕あり", icon: "cup-line" },
-  { label: "ふつう", icon: "walk-line" },
-  { label: "忙しい", icon: "run-line" },
+export const BUSY_OPTIONS = [
+  { value: 1, label: "余裕あり", icon: "cup-line" },
+  { value: 2, label: "ふつう", icon: "walk-line" },
+  { value: 3, label: "忙しい", icon: "run-line" },
 ] as const;
+export type BusyValue = (typeof BUSY_OPTIONS)[number]["value"];
+export const getBusyOption = (value: number | null) => BUSY_OPTIONS.find((option) => option.value === value);
 
 /** 3 段のメーター。label を付けるとアイコンと文字も出す */
 export function Busy({ value, label = false }: { value: number | null; label?: boolean }) {
-  const b = value ? BUSY[value] : null;
+  const b = getBusyOption(value);
   if (!b || !value) return null;
   return (
     <span className={`busy busy-${value}`} title={`忙しさ：${b.label}`}>
       {label && <Icon name={b.icon} />}
       <span className="busy-meter" aria-hidden="true">
-        {[1, 2, 3].map((n) => (
-          <span key={n} className={n <= value ? "on" : ""} />
+        {BUSY_OPTIONS.map(({ value: level }) => (
+          <span key={level} className={level <= value ? "on" : ""} />
         ))}
       </span>
       {label ? <span>{b.label}</span> : <span className="sr-only">忙しさ：{b.label}</span>}
