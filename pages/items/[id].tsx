@@ -1,7 +1,8 @@
 import { Link } from "@void/react";
 import { useEffect, useState } from "react";
 import { ThreadView } from "../../components/thread";
-import { Icon } from "../../components/ui";
+import { Card, Icon } from "../../components/ui";
+
 import type { Props } from "./[id].server";
 
 export default function ItemPage({ data: initial, cycleOpen }: Props) {
@@ -24,9 +25,9 @@ export default function ItemPage({ data: initial, cycleOpen }: Props) {
           </Link>
         )}
       </nav>
-      <div className="card card-lg">
+      <Card className="card card-lg">
         <ThreadView data={data} onChange={setData} />
-      </div>
+      </Card>
     </div>
   );
 }

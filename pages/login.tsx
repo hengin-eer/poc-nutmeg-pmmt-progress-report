@@ -1,6 +1,7 @@
 import { action } from "@void/react";
 import { auth } from "void/client";
-import { Icon } from "../components/ui";
+import { Button, Card, Icon } from "../components/ui";
+
 import "remixicon/fonts/remixicon.css";
 import type { Props } from "./login.server";
 
@@ -10,28 +11,28 @@ export default function LoginPage({ demo, demoMembers, googleReady }: Props) {
   return (
     <div className="container">
       <div className="login stack">
-        <div className="card card-lg stack">
+        <Card className="card card-lg stack">
           <div className="row" style={{ gap: 12 }}>
             <span className="brand-mark">N</span>
             <h1 style={{ margin: 0 }}>NUTMEG PMMT</h1>
           </div>
           <p className="sub">部門長MTの事前記入・確認事項・記録をまとめるアプリ</p>
-          <button
+          <Button
             className="primary"
             disabled={!googleReady}
             onClick={() => auth.signIn.social({ provider: "google", callbackURL: "/" })}
           >
             <Icon name="google-fill" />
             NUTMEG の Google アカウントでログイン
-          </button>
+          </Button>
           {!googleReady && <p className="hint">Google ログインはまだ設定されていません（AUTH_GOOGLE_CLIENT_ID）</p>}
           <p className="hint">
             <code>xx.x.xxxx.nutfes@gmail.com</code> の形式で、管理画面に登録されたアカウントだけが使えます。
           </p>
-        </div>
+        </Card>
 
         {demo && (
-          <div className="card card-lg stack">
+          <Card className="card card-lg stack">
             <div className="row">
               <h2 style={{ margin: 0 }}>デモ用ログイン</h2>
               <span className="demo-badge">DEMO_MODE</span>
@@ -45,14 +46,14 @@ export default function LoginPage({ demo, demoMembers, googleReady }: Props) {
                   <span>{m.name}</span>
                   <span className="meta">{m.unitName}</span>
                   <span className="spacer" />
-                  <button className="small" onClick={() => loginAs(m.id)}>
+                  <Button className="small" onClick={() => loginAs(m.id)}>
                     <Icon name="login-box-line" />
                     入る
-                  </button>
+                  </Button>
                 </li>
               ))}
             </ul>
-          </div>
+          </Card>
         )}
       </div>
     </div>

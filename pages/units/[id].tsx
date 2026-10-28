@@ -2,7 +2,8 @@ import { Form, useForm } from "@void/react";
 import { useEffect, useState } from "react";
 import { Markdown } from "../../components/markdown";
 import { ItemRow } from "../../components/thread";
-import { Busy, Icon, ProgressPill, RecordPill, UNIT_KIND_LABEL } from "../../components/ui";
+import { Badge, Button, Card, EmptyState, Field, Icon, IconButton, PageHeader, SectionHeader } from "../../components/ui";
+import { Busy, ProgressPill, RecordPill, UNIT_KIND_LABEL } from "../../components/domain";
 import { formatJstDate } from "../../lib/domain";
 import type { Props } from "./[id].server";
 
@@ -15,7 +16,7 @@ export default function UnitPage({ unit, people, history, records, canEdit }: Pr
 
   return (
     <>
-      <div className="page-head">
+      <PageHeader className="page-head">
         <div>
           <div className="eyebrow">{UNIT_KIND_LABEL[unit.kind]}</div>
           <h1>{unit.name}</h1>
@@ -26,42 +27,42 @@ export default function UnitPage({ unit, people, history, records, canEdit }: Pr
             </div>
           )}
         </div>
-      </div>
+      </PageHeader>
 
-      <section className="card card-lg">
-        <div className="section-head">
+      <Card as="section" className="card card-lg">
+        <SectionHeader className="section-head">
           <Icon name="flag-line" className="muted" />
           <h2>何のためにやっているか</h2>
           <span className="spacer" />
           {canEdit && !editing && (
-            <button className="icon-button" onClick={() => setEditing(true)} title="編集" aria-label="編集">
+            <IconButton className="icon-button" onClick={() => setEditing(true)} title="編集" aria-label="編集">
               <Icon name="pencil-line" />
-            </button>
+            </IconButton>
           )}
-        </div>
+        </SectionHeader>
         {editing ? (
           <Form form={form}>
-            <div className="field">
+            <Field className="field">
               <div className="field-label">
                 <label htmlFor="purpose">目的</label>
                 <span className="hint">一文で。新入生が読んでもわかるように</span>
               </div>
               <input id="purpose" type="text" value={form.data.purpose} onChange={(e) => form.setData("purpose", e.target.value)} />
-            </div>
-            <div className="field">
+            </Field>
+            <Field className="field">
               <div className="field-label">
                 <label htmlFor="summary">概要</label>
               </div>
               <textarea id="summary" value={form.data.summary} onChange={(e) => form.setData("summary", e.target.value)} />
-            </div>
+            </Field>
             <div className="row">
               <span className="spacer" />
-              <button type="button" className="ghost" onClick={() => setEditing(false)}>
+              <Button type="button" className="ghost" onClick={() => setEditing(false)}>
                 やめる
-              </button>
-              <button type="submit" className="primary" disabled={form.pending}>
+              </Button>
+              <Button type="submit" className="primary" disabled={form.pending}>
                 保存
-              </button>
+              </Button>
             </div>
           </Form>
         ) : (
@@ -70,17 +71,17 @@ export default function UnitPage({ unit, people, history, records, canEdit }: Pr
             {unit.summary && <p className="md" style={{ margin: 0 }}>{unit.summary}</p>}
           </>
         )}
-      </section>
+      </Card>
 
       <div className="grid grid-2 section">
         <section>
-          <div className="section-head">
+          <SectionHeader className="section-head">
             <h2>週ごとの更新</h2>
-          </div>
-          {history.length === 0 && <p className="empty">まだ提出された記入はありません</p>}
+          </SectionHeader>
+          {history.length === 0 && <EmptyState className="empty">まだ提出された記入はありません</EmptyState>}
           <div className="stack" style={{ gap: 20 }}>
             {history.map((h) => (
-              <article key={h.cycleId} className="card">
+              <Card as="article" key={h.cycleId} className="card">
                 <div className="row" style={{ marginBottom: 14 }}>
                   <strong>{formatJstDate(h.meetingAt)}</strong>
                   <span className="spacer" />
@@ -106,19 +107,19 @@ export default function UnitPage({ unit, people, history, records, canEdit }: Pr
                     ))}
                   </ul>
                 )}
-              </article>
+              </Card>
             ))}
           </div>
         </section>
 
         <section>
-          <div className="section-head">
+          <SectionHeader className="section-head">
             <h2>このユニットの記録</h2>
-            <span className="count">{records.length}</span>
-          </div>
-          <div className="card">
+            <Badge className="count">{records.length}</Badge>
+          </SectionHeader>
+          <Card className="card">
             {records.length === 0 ? (
-              <p className="empty">まだ記録はありません</p>
+              <EmptyState className="empty">まだ記録はありません</EmptyState>
             ) : (
               <ul className="list">
                 {records.map((r) => (
@@ -134,7 +135,7 @@ export default function UnitPage({ unit, people, history, records, canEdit }: Pr
                 ))}
               </ul>
             )}
-          </div>
+          </Card>
         </section>
       </div>
     </>

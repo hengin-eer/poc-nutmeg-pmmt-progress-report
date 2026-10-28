@@ -1,6 +1,7 @@
 import { Form, Link, useForm } from "@void/react";
 import { useMemo, useState } from "react";
-import { Icon, RecordPill } from "../../components/ui";
+import { Button, Card, EmptyState, Field, Icon, PageHeader, SectionHeader } from "../../components/ui";
+import { RecordPill } from "../../components/domain";
 import { formatJst, parseMinutes, type RecordKind } from "../../lib/domain";
 import type { Props } from "./import.server";
 
@@ -56,36 +57,36 @@ export default function ImportPage({ cycles, units }: Props) {
           管理
         </Link>
       </nav>
-      <div className="page-head">
+      <PageHeader className="page-head">
         <div>
           <h1>議事録・過去の回の取り込み</h1>
           <div className="lead">議事録スキルの出力を貼り付けると、1 件ずつの候補に分かれます。✓ をつけたものだけ記録に登録されます。</div>
         </div>
-      </div>
+      </PageHeader>
 
       <div className="grid grid-2">
-        <section className="card card-lg">
-          <div className="section-head"><span className="step">1</span><h2>議事録を貼り付ける</h2></div>
+        <Card as="section" className="card card-lg">
+          <SectionHeader className="section-head"><span className="step">1</span><h2>議事録を貼り付ける</h2></SectionHeader>
           <p className="hint">
             過去の回を取り込む時は、先に<Link href="/admin">管理画面</Link>で過去の日付の回を作ってください。Notion から書き出した Markdown や文字起こしは、スキルで下の形式に変換してから貼り付けます。
           </p>
           <textarea value={text} onChange={(e) => setText(e.target.value)} placeholder={SAMPLE} style={{ minHeight: 280, fontFamily: "ui-monospace, monospace", fontSize: 13 }} />
           <div className="row" style={{ marginTop: 8 }}>
-            <button className="ghost small" onClick={() => setText(SAMPLE)}>
+            <Button className="ghost small" onClick={() => setText(SAMPLE)}>
               サンプルを入れる
-            </button>
+            </Button>
             <span className="spacer" />
-            <button className="primary" onClick={parse} disabled={!text.trim()}>
+            <Button className="primary" onClick={parse} disabled={!text.trim()}>
               候補に分ける
               <Icon name="arrow-right-line" />
-            </button>
+            </Button>
           </div>
-        </section>
+        </Card>
 
-        <section className="card card-lg">
-          <div className="section-head"><span className="step">2</span><h2>確認して登録する</h2></div>
+        <Card as="section" className="card card-lg">
+          <SectionHeader className="section-head"><span className="step">2</span><h2>確認して登録する</h2></SectionHeader>
           {rows.length === 0 ? (
-            <p className="empty">左に貼り付けて「候補に分ける」を押してください</p>
+            <EmptyState className="empty">左に貼り付けて「候補に分ける」を押してください</EmptyState>
           ) : (
             <Form
               form={form}
@@ -97,7 +98,7 @@ export default function ImportPage({ cycles, units }: Props) {
                 );
               }}
             >
-              <div className="field">
+              <Field className="field">
                 <label>どの回の議事録か</label>
                 <select value={form.data.cycleId} onChange={(e) => form.setData("cycleId", Number(e.target.value))}>
                   <option value={0}>選んでください</option>
@@ -109,7 +110,7 @@ export default function ImportPage({ cycles, units }: Props) {
                   ))}
                 </select>
                 {form.errors.cycleId && <div className="error">{form.errors.cycleId}</div>}
-              </div>
+              </Field>
 
               <ul className="list" style={{ marginBottom: 12 }}>
                 {rows.map((r, i) => (
@@ -134,18 +135,18 @@ export default function ImportPage({ cycles, units }: Props) {
               </ul>
 
               {summary && (
-                <div className="field">
+                <Field className="field">
                   <label>要約 <span className="hint">回の要約として保存されます</span></label>
                   <textarea value={summary} onChange={(e) => setSummary(e.target.value)} />
-                </div>
+                </Field>
               )}
               {form.errors.entries && <div className="error">{form.errors.entries}</div>}
-              <button type="submit" className="primary" disabled={form.pending || selected.length === 0}>
+              <Button type="submit" className="primary" disabled={form.pending || selected.length === 0}>
                 {selected.length} 件を登録する
-              </button>
+              </Button>
             </Form>
           )}
-        </section>
+        </Card>
       </div>
     </>
   );

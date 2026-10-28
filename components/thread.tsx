@@ -2,7 +2,8 @@ import { Link, useRouter } from "@void/react";
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { formatJst, ITEM_STATE_LABEL, type ItemState } from "../lib/domain";
 import type { ThreadData } from "../lib/items";
-import { Counts, CrossBureau, Icon, KIND_LABEL, KindIcon, STATE_ICON, StatePill } from "./ui";
+import { Badge, Button, EmptyState, Icon, IconButton, Segmented } from "./ui";
+import { Counts, CrossBureau, KIND_LABEL, KindIcon, STATE_ICON, StatePill } from "./domain";
 
 // ---------- どの画面からでもスレッドを開けるようにする ----------
 
@@ -24,10 +25,10 @@ export function ThreadProvider({ children }: { children: ReactNode }) {
 export function ThreadButton({ id, comments = 0 }: { id: number; comments?: number }) {
   const { open } = useThread();
   return (
-    <button type="button" className="icon-button" onClick={() => open(id)} title="スレッドを開く" aria-label="スレッドを開く">
+    <IconButton type="button" className="icon-button" onClick={() => open(id)} title="スレッドを開く" aria-label="スレッドを開く">
       <Icon name="chat-3-line" />
       {comments > 0 && <span>{comments}</span>}
-    </button>
+    </IconButton>
   );
 }
 
@@ -81,13 +82,13 @@ function ThreadDrawer({ id, onClose }: { id: number; onClose: () => void }) {
           <Link href={`/items/${id}`} className="icon-button" title="全画面で開く" aria-label="全画面で開く" onClick={onClose}>
             <Icon name="external-link-line" />
           </Link>
-          <button type="button" className="icon-button" onClick={close} title="閉じる（Esc）" aria-label="閉じる">
+          <IconButton type="button" className="icon-button" onClick={close} title="閉じる（Esc）" aria-label="閉じる">
             <Icon name="close-line" />
-          </button>
+          </IconButton>
         </div>
         <div className="drawer-body">
           {failed ? (
-            <p className="empty">読み込めませんでした</p>
+            <EmptyState className="empty">読み込めませんでした</EmptyState>
           ) : data ? (
             <ThreadView
               data={data}
@@ -160,7 +161,7 @@ export function ThreadView({ data, onChange }: { data: ThreadData; onChange: (d:
 
       <div className="reactions">
         {reactionSummary.map((r) => (
-          <button
+          <Button
             key={r.emoji}
             type="button"
             className={`reaction ${r.mine ? "mine" : ""} ${r.count ? "" : "zero"}`}
@@ -169,7 +170,7 @@ export function ThreadView({ data, onChange }: { data: ThreadData; onChange: (d:
           >
             {r.emoji}
             {r.count > 0 && <span>{r.count}</span>}
-          </button>
+          </Button>
         ))}
       </div>
 
@@ -177,10 +178,10 @@ export function ThreadView({ data, onChange }: { data: ThreadData; onChange: (d:
 
       <section className="comments">
         <h3>
-          コメント <span className="count">{thread.length}</span>
+          コメント <Badge className="count">{thread.length}</Badge>
         </h3>
         {thread.length === 0 ? (
-          <p className="empty">まだコメントはありません</p>
+          <EmptyState className="empty">まだコメントはありません</EmptyState>
         ) : (
           <ul className="comment-list">
             {thread.map((t) => (
@@ -238,9 +239,9 @@ function CommentForm({ run }: { run: (p: Record<string, unknown>) => Promise<Res
         placeholder="コメントする（Ctrl + Enter で送信）"
         rows={2}
       />
-      <button type="submit" className="primary icon-only" disabled={pending || !body.trim()} aria-label="送信" title="送信">
+      <Button type="submit" className="primary icon-only" disabled={pending || !body.trim()} aria-label="送信" title="送信">
         <Icon name="send-plane-2-fill" />
-      </button>
+      </Button>
       {error && <div className="error">{error}</div>}
     </form>
   );
@@ -270,9 +271,9 @@ function ClosePanel({ nextStates, run }: { nextStates: ItemState[]; run: (p: Rec
 
   return (
     <section className="close-panel">
-      <div className="segmented" role="group" aria-label="状態を変える">
+      <Segmented className="segmented" role="group" aria-label="状態を変える">
         {nextStates.map((s) => (
-          <button
+          <Button
             key={s}
             type="button"
             className={chosen === s ? "selected" : ""}
@@ -283,9 +284,9 @@ function ClosePanel({ nextStates, run }: { nextStates: ItemState[]; run: (p: Rec
           >
             <Icon name={s === "open" ? "arrow-go-back-line" : STATE_ICON(s)} />
             {s === "open" ? "未解決に戻す" : ITEM_STATE_LABEL[s]}
-          </button>
+          </Button>
         ))}
-      </div>
+      </Segmented>
       {chosen && (
         <form
           className="close-form"
@@ -307,9 +308,9 @@ function ClosePanel({ nextStates, run }: { nextStates: ItemState[]; run: (p: Rec
           {error && <div className="error">{error}</div>}
           <div className="row">
             <span className="spacer" />
-            <button type="submit" className="primary" disabled={pending}>
+            <Button type="submit" className="primary" disabled={pending}>
               {chosen === "open" ? "未解決に戻す" : `「${ITEM_STATE_LABEL[chosen]}」にする`}
-            </button>
+            </Button>
           </div>
         </form>
       )}
@@ -335,7 +336,7 @@ export function ItemRow({ item, showState = true }: { item: ItemSummary; showSta
   const { open } = useThread();
   return (
     <li className="item-li">
-      <button type="button" className="item-row" onClick={() => open(item.id)}>
+      <Button type="button" className="item-row" onClick={() => open(item.id)}>
         <KindIcon kind={item.kind} />
         <div>
           {item.unitName && <div className="item-unit">{item.unitName}</div>}
@@ -354,7 +355,7 @@ export function ItemRow({ item, showState = true }: { item: ItemSummary; showSta
           </div>
           <Counts comments={item.comments ?? 0} reactions={item.reactions ?? 0} />
         </div>
-      </button>
+      </Button>
     </li>
   );
 }

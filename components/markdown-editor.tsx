@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { Markdown } from "./markdown";
-import { Icon } from "./ui";
+import { Button, EmptyState, Field, Icon } from "./ui";
+
 
 export function MarkdownEditor({ id, label, hint, value, onChange, placeholder, error }: {
   id: string;
@@ -14,7 +15,7 @@ export function MarkdownEditor({ id, label, hint, value, onChange, placeholder, 
   const [preview, setPreview] = useState(false);
   const tabs = useRef<(HTMLButtonElement | null)[]>([]);
   return (
-    <div className="field">
+    <Field className="field">
       <div className="field-label">
         <label id={`${id}-label`} htmlFor={id}>{label}</label>
         <span id={`${id}-hint`} className="hint">{hint}</span>
@@ -22,7 +23,7 @@ export function MarkdownEditor({ id, label, hint, value, onChange, placeholder, 
       <div className="markdown-editor">
         <div className="markdown-editor-header" role="tablist" aria-label={`${label}の表示切り替え`}>
           {([false, true] as const).map((isPreview, index) => (
-            <button
+            <Button
               key={String(isPreview)} ref={(node) => { tabs.current[index] = node; }}
               type="button" role="tab" id={`${id}-tab-${index}`}
               aria-selected={preview === isPreview} tabIndex={preview === isPreview ? 0 : -1}
@@ -41,7 +42,7 @@ export function MarkdownEditor({ id, label, hint, value, onChange, placeholder, 
             >
               <Icon name={isPreview ? "eye-line" : "edit-line"} />
               {isPreview ? "プレビュー" : "書く"}
-            </button>
+            </Button>
           ))}
         </div>
         <div id={`${id}-write`} role="tabpanel" aria-labelledby={`${id}-tab-0`} hidden={preview}>
@@ -50,10 +51,10 @@ export function MarkdownEditor({ id, label, hint, value, onChange, placeholder, 
         </div>
         <div id={`${id}-preview`} hidden={!preview} className="markdown-preview" role="tabpanel"
           aria-labelledby={`${id}-tab-1`} tabIndex={0}>
-          {preview && (value.trim() ? <Markdown>{value}</Markdown> : <p className="empty">まだ記入されていません</p>)}
+          {preview && (value.trim() ? <Markdown>{value}</Markdown> : <EmptyState className="empty">まだ記入されていません</EmptyState>)}
         </div>
       </div>
       {error && <div id={`${id}-error`} className="error">{error}</div>}
-    </div>
+    </Field>
   );
 }

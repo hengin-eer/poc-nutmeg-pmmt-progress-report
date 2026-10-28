@@ -1,6 +1,7 @@
 import { action, Form, Link, useForm, useShared } from "@void/react";
 import { useEffect, useState } from "react";
-import { Icon, UNIT_KIND_LABEL, type UnitKind } from "../../components/ui";
+import { Badge, Button, Card, Icon, IconButton, PageHeader, Pill, SectionHeader } from "../../components/ui";
+import { UNIT_KIND_LABEL, type UnitKind } from "../../components/domain";
 import { formatJst, toJstInput } from "../../lib/domain";
 import type { Props } from "./index.server";
 
@@ -9,7 +10,7 @@ const ROLE_LABEL = { lead: "部門長", chief: "局長", vice: "副局長", view
 export default function AdminPage({ cycles, units, members, defaults }: Props) {
   return (
     <>
-      <div className="page-head">
+      <PageHeader className="page-head">
         <div>
           <h1>管理</h1>
           <div className="lead">局長・副局長だけが使えます</div>
@@ -18,7 +19,7 @@ export default function AdminPage({ cycles, units, members, defaults }: Props) {
           <Icon name="import-line" />
           議事録・過去の回を取り込む
         </Link>
-      </div>
+      </PageHeader>
 
       <CycleSection cycles={cycles} defaults={defaults} unitCount={units.length} />
       <MemberSection members={members} units={units} />
@@ -33,11 +34,11 @@ function CycleSection({ cycles, defaults, unitCount }: Pick<Props, "cycles" | "d
   const [deadline, setDeadline] = useState("");
 
   return (
-    <section className="card card-lg">
-      <div className="section-head">
+    <Card as="section" className="card card-lg">
+      <SectionHeader className="section-head">
         <Icon name="calendar-event-line" className="muted" />
         <h2>PMMT の回</h2>
-      </div>
+      </SectionHeader>
       <Form form={form} className="row" style={{ alignItems: "flex-end", marginBottom: 12, gap: 16 }}>
         <div style={{ flex: 1, minWidth: 200 }}>
           <label htmlFor="meetingAt">PMMT の日時</label>
@@ -49,9 +50,9 @@ function CycleSection({ cycles, defaults, unitCount }: Pick<Props, "cycles" | "d
           </label>
           <input id="deadlineAt" type="datetime-local" value={form.data.deadlineAt} onChange={(e) => form.setData("deadlineAt", e.target.value)} />
         </div>
-        <button type="submit" className="primary" disabled={form.pending}>
+        <Button type="submit" className="primary" disabled={form.pending}>
           回を作る
-        </button>
+        </Button>
       </Form>
       {form.errors.deadlineAt && <p className="error">{form.errors.deadlineAt}</p>}
       <p className="hint" style={{ marginBottom: 24 }}>新しい回を作ると、開いている回は自動で閉じます（「当日に話す」の残りは先送りとして記録）。過去の日付で作ると、取り込み用の「閉じた回」になります。</p>
@@ -75,7 +76,7 @@ function CycleSection({ cycles, defaults, unitCount }: Pick<Props, "cycles" | "d
                   {editing === cy.id ? (
                     <div className="row">
                       <input type="datetime-local" value={deadline} onChange={(e) => setDeadline(e.target.value)} style={{ width: "auto" }} />
-                      <button
+                      <Button
                         className="small primary"
                         onClick={async () => {
                           await action("/admin?updateDeadline", { data: { id: cy.id, deadlineAt: deadline } });
@@ -83,13 +84,13 @@ function CycleSection({ cycles, defaults, unitCount }: Pick<Props, "cycles" | "d
                         }}
                       >
                         保存
-                      </button>
+                      </Button>
                     </div>
                   ) : (
                     <span className="row">
                       {formatJst(cy.deadlineAt)}
                       {cy.status === "open" && (
-                        <button
+                        <Button
                           className="ghost small"
                           onClick={() => {
                             setEditing(cy.id);
@@ -97,7 +98,7 @@ function CycleSection({ cycles, defaults, unitCount }: Pick<Props, "cycles" | "d
                           }}
                         >
                           変更
-                        </button>
+                        </Button>
                       )}
                     </span>
                   )}
@@ -105,12 +106,12 @@ function CycleSection({ cycles, defaults, unitCount }: Pick<Props, "cycles" | "d
                 <td>
                   {cy.submitted} / {unitCount}
                 </td>
-                <td>{cy.status === "open" ? <span className="pill green">受付中</span> : <span className="pill">終了</span>}</td>
+                <td>{cy.status === "open" ? <Pill className="pill green">受付中</Pill> : <Pill className="pill">終了</Pill>}</td>
                 <td>
                   {cy.status === "open" && (
-                    <button className="small" onClick={() => confirm("この回を閉じますか？") && action("/admin?closeCycle", { data: { id: cy.id } })}>
+                    <Button className="small" onClick={() => confirm("この回を閉じますか？") && action("/admin?closeCycle", { data: { id: cy.id } })}>
                       閉じる
-                    </button>
+                    </Button>
                   )}
                 </td>
               </tr>
@@ -118,7 +119,7 @@ function CycleSection({ cycles, defaults, unitCount }: Pick<Props, "cycles" | "d
           </tbody>
         </table>
       </div>
-    </section>
+    </Card>
   );
 }
 
@@ -129,12 +130,12 @@ function MemberSection({ members, units }: Pick<Props, "members" | "units">) {
   const unitName = (id: number | null) => units.find((u) => u.id === id)?.name ?? "—";
 
   return (
-    <section className="card card-lg section">
-      <div className="section-head">
+    <Card as="section" className="card card-lg section">
+      <SectionHeader className="section-head">
         <Icon name="group-line" className="muted" />
         <h2>メンバー</h2>
-        <span className="count">{members.length}</span>
-      </div>
+        <Badge className="count">{members.length}</Badge>
+      </SectionHeader>
       <p className="hint">ここに登録された NUTMEG アカウントだけがログインできます。Slack のユーザー ID を入れると、リマインドでメンションされます。</p>
       <div className="table-wrap">
         <table>
@@ -159,7 +160,7 @@ function MemberSection({ members, units }: Pick<Props, "members" | "units">) {
                 <td>{unitName(m.unitId)}</td>
                 <td className="meta">{m.slackUserId ?? "—"}</td>
                 <td>
-                  <button
+                  <IconButton
                     type="button"
                     className="icon-button"
                     title="編集"
@@ -167,8 +168,8 @@ function MemberSection({ members, units }: Pick<Props, "members" | "units">) {
                     onClick={() => setEditing(m.id)}
                   >
                     <Icon name="pencil-line" />
-                  </button>
-                  <button
+                  </IconButton>
+                  <IconButton
                     className="icon-button danger"
                     title="削除"
                     aria-label={`${m.name} さんを削除`}
@@ -179,7 +180,7 @@ function MemberSection({ members, units }: Pick<Props, "members" | "units">) {
                     }}
                   >
                     <Icon name="delete-bin-line" />
-                  </button>
+                  </IconButton>
                 </td>
               </tr>
             ))}
@@ -223,12 +224,12 @@ function MemberSection({ members, units }: Pick<Props, "members" | "units">) {
           <label>Slack ID <span className="hint">任意</span></label>
           <input type="text" value={form.data.slackUserId} onChange={(e) => form.setData("slackUserId", e.target.value)} placeholder="U0123ABCD" />
         </div>
-        <button type="submit" className="primary" disabled={form.pending}>
+        <Button type="submit" className="primary" disabled={form.pending}>
           <Icon name="user-add-line" />
           追加
-        </button>
+        </Button>
       </Form>
-    </section>
+    </Card>
   );
 }
 
@@ -278,12 +279,12 @@ function MemberEditRow({ member, units, isSelf, onDone }: {
       <td>
         <Form id={formId} form={form} className="stack" style={{ gap: 8 }}>
           <div className="row" style={{ gap: 4, flexWrap: "nowrap" }}>
-            <button type="submit" className="small primary" disabled={form.pending}>
+            <Button type="submit" className="small primary" disabled={form.pending}>
               <Icon name="check-line" />保存
-            </button>
-            <button type="button" className="icon-button" title="キャンセル" aria-label="編集をキャンセル" disabled={form.pending} onClick={onDone}>
+            </Button>
+            <IconButton type="button" className="icon-button" title="キャンセル" aria-label="編集をキャンセル" disabled={form.pending} onClick={onDone}>
               <Icon name="close-line" />
-            </button>
+            </IconButton>
           </div>
           {form.errors.id && <div className="error" role="alert">{form.errors.id}</div>}
         </Form>
@@ -295,12 +296,12 @@ function MemberEditRow({ member, units, isSelf, onDone }: {
 function UnitSection({ units }: Pick<Props, "units">) {
   const form = useForm("/admin?addUnit", { name: "", kind: "project" as UnitKind }, { resetOnSuccess: true });
   return (
-    <section className="card card-lg section">
-      <div className="section-head">
+    <Card as="section" className="card card-lg section">
+      <SectionHeader className="section-head">
         <Icon name="flag-line" className="muted" />
         <h2>報告ユニット</h2>
-        <span className="count">{units.length}</span>
-      </div>
+        <Badge className="count">{units.length}</Badge>
+      </SectionHeader>
       <p className="hint">進捗を報告する単位です。目的・概要は各ユニットのページで編集できます。</p>
       <ul className="list">
         {units.map((u) => (
@@ -319,11 +320,11 @@ function UnitSection({ units }: Pick<Props, "units">) {
             </option>
           ))}
         </select>
-        <button type="submit" disabled={form.pending}>
+        <Button type="submit" disabled={form.pending}>
           追加
-        </button>
+        </Button>
       </Form>
       {form.errors.name && <p className="error">{form.errors.name}</p>}
-    </section>
+    </Card>
   );
 }

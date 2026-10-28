@@ -1,7 +1,8 @@
 import { action, useRouter } from "@void/react";
 import { useState } from "react";
 import { useThread } from "../../components/thread";
-import { Icon, RecordPill, SourceBadge } from "../../components/ui";
+import { Badge, Button, Card, EmptyState, Icon, PageHeader } from "../../components/ui";
+import { RecordPill, SourceBadge } from "../../components/domain";
 import { formatJstDate, RECORD_KIND_LABEL, type RecordKind } from "../../lib/domain";
 import type { Props } from "./index.server";
 
@@ -27,7 +28,7 @@ export default function RecordsPage({ me, filter, list, unitList }: Props) {
 
   return (
     <>
-      <div className="page-head">
+      <PageHeader className="page-head">
         <div>
           <h1>記録</h1>
           <div className="lead">決まったこと・TODO・先送りした議題を、回をまたいで探せます</div>
@@ -36,9 +37,9 @@ export default function RecordsPage({ me, filter, list, unitList }: Props) {
           <Icon name="download-2-line" />
           Markdown
         </a>
-      </div>
+      </PageHeader>
 
-      <div className="card stack" style={{ gap: 14 }}>
+      <Card className="card stack" style={{ gap: 14 }}>
         <form
           className="search"
           onSubmit={(e) => {
@@ -72,13 +73,13 @@ export default function RecordsPage({ me, filter, list, unitList }: Props) {
             <option value="done">終わったもの</option>
           </select>
           <span className="spacer" />
-          <span className="count">{list.length} 件</span>
+          <Badge className="count">{list.length} 件</Badge>
         </div>
-      </div>
+      </Card>
 
-      <div className="card section">
+      <Card className="card section">
         {list.length === 0 ? (
-          <p className="empty">見つかりませんでした</p>
+          <EmptyState className="empty">見つかりませんでした</EmptyState>
         ) : (
           <ul className="list">
             {list.map((r) => {
@@ -106,10 +107,10 @@ export default function RecordsPage({ me, filter, list, unitList }: Props) {
                       <span className="meta">{formatJstDate(r.meetingAt)}</span>
                       <span className="spacer" />
                       {r.source === "thread" && r.sourceItemId ? (
-                        <button type="button" className="source source-thread" onClick={() => open(r.sourceItemId!)} title="元のスレッドを開く">
+                        <Button type="button" className="source source-thread" onClick={() => open(r.sourceItemId!)} title="元のスレッドを開く">
                           <Icon name="chat-3-line" />
                           スレッド
-                        </button>
+                        </Button>
                       ) : (
                         <SourceBadge source={r.source} />
                       )}
@@ -120,7 +121,7 @@ export default function RecordsPage({ me, filter, list, unitList }: Props) {
             })}
           </ul>
         )}
-      </div>
+      </Card>
     </>
   );
 }

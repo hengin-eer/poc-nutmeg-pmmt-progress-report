@@ -1,12 +1,8 @@
+import { Icon, Pill, Badge } from "./ui";
 import { ITEM_STATE_LABEL, RECORD_KIND_LABEL, type ItemState, type RecordKind } from "../lib/domain";
 
 export type Progress = "green" | "yellow" | "red" | null;
 export type UnitKind = "project" | "team" | "chief" | "vice";
-
-/** Remix Icon（https://remixicon.com）。name は "ri-" を除いた名前 */
-export function Icon({ name, className = "", label }: { name: string; className?: string; label?: string }) {
-  return <i className={`ri-${name} icon ${className}`} aria-hidden={label ? undefined : true} aria-label={label} role={label ? "img" : undefined} />;
-}
 
 export const PROGRESS_LABEL: Record<"green" | "yellow" | "red", string> = {
   green: "順調",
@@ -27,10 +23,10 @@ export const UNIT_KIND_SHORT: Record<UnitKind, string> = { project: "PJ", team: 
 export function ProgressPill({ value }: { value: Progress }) {
   if (!value) return null;
   return (
-    <span className={`pill ${value}`}>
+    <Pill className={`pill ${value}`}>
       <span className={`dot ${value}`} />
       {PROGRESS_LABEL[value]}
-    </span>
+    </Pill>
   );
 }
 
@@ -73,10 +69,10 @@ const STATE_STYLE: Record<ItemState, { cls: string; icon: string }> = {
 export function StatePill({ state }: { state: ItemState }) {
   const s = STATE_STYLE[state];
   return (
-    <span className={`pill ${s.cls}`}>
+    <Pill className={`pill ${s.cls}`}>
       <Icon name={s.icon} />
       {ITEM_STATE_LABEL[state]}
-    </span>
+    </Pill>
   );
 }
 
@@ -85,10 +81,10 @@ export const STATE_ICON = (state: ItemState) => STATE_STYLE[state].icon;
 /** 他局・実行委員全体に関わる */
 export function CrossBureau({ on }: { on: boolean }) {
   return on ? (
-    <span className="pill accent" title="他局・実行委員全体に関わる">
+    <Pill className="pill accent" title="他局・実行委員全体に関わる">
       <Icon name="community-line" />
       他局
-    </span>
+    </Pill>
   ) : null;
 }
 
@@ -136,10 +132,10 @@ const RECORD_STYLE: Record<RecordKind, { cls: string; icon: string }> = {
 export function RecordPill({ kind }: { kind: RecordKind }) {
   const s = RECORD_STYLE[kind];
   return (
-    <span className={`pill ${s.cls}`}>
+    <Pill className={`pill ${s.cls}`}>
       <Icon name={s.icon} />
       {RECORD_KIND_LABEL[kind]}
-    </span>
+    </Pill>
   );
 }
 
@@ -153,9 +149,9 @@ const SOURCE_STYLE = {
 export function SourceBadge({ source }: { source: keyof typeof SOURCE_STYLE }) {
   const s = SOURCE_STYLE[source];
   return (
-    <span className={`source source-${source}`}>
+    <Badge className={`source source-${source}`}>
       <Icon name={s.icon} />
       {s.label}
-    </span>
+    </Badge>
   );
 }

@@ -3,7 +3,8 @@ import "remixicon/fonts/remixicon.css";
 import { useEffect, useState } from "react";
 import { auth } from "void/client";
 import { ThreadProvider } from "../components/thread";
-import { Icon } from "../components/ui";
+import { Button, Icon, IconButton } from "../components/ui";
+
 import "./app.css";
 import "./style.css";
 
@@ -59,9 +60,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   {demo && <span className="demo-badge">デモ</span>}
                 </div>
               </div>
-              <button type="button" className="icon-button" onClick={logout} title="ログアウト" aria-label="ログアウト">
+              <IconButton type="button" className="icon-button" onClick={logout} title="ログアウト" aria-label="ログアウト">
                 <Icon name="logout-box-r-line" />
-              </button>
+              </IconButton>
             </div>
           </div>
         </aside>
@@ -96,16 +97,16 @@ function MobileMenu({
       {open && <div className="mobile-backdrop" onClick={() => setOpen(false)} />}
       <div className="mobile-panel" aria-hidden={!open}>
         <nav className="nav">{children}</nav>
-        <button type="button" className="nav-link" onClick={logout}>
+        <Button type="button" className="nav-link" onClick={logout}>
           <Icon name="logout-box-r-line" />
           <span>ログアウト</span>
-        </button>
+        </Button>
       </div>
-      <button type="button" className="mobile-trigger" onClick={() => setOpen(!open)} aria-expanded={open} aria-label="メニュー">
+      <Button type="button" className="mobile-trigger" onClick={() => setOpen(!open)} aria-expanded={open} aria-label="メニュー">
         <Icon name={open ? "close-line" : current.icon} />
         <span>{open ? "閉じる" : current.label}</span>
         {!open && <Icon name="menu-line" className="muted" />}
-      </button>
+      </Button>
     </div>
   );
 }
