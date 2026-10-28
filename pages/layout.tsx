@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { auth } from "void/client";
 import { ThreadProvider } from "../components/thread";
 import { Icon } from "../components/ui";
+import "./app.css";
 import "./style.css";
 
 const NAV = [
