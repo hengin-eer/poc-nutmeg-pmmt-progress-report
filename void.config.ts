@@ -24,6 +24,10 @@ export default defineConfig({
       { name: "twitter:card", content: "summary_large_image" },
       { name: "theme-color", content: "#2f6fed" },
     ],
+    link: [
+      { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
+      { rel: "apple-touch-icon", sizes: "180x180", href: "/apple-touch-icon.png" },
+    ],
   },
   cloudflare: {
     name: "nutmeg-pmmt-progress",
