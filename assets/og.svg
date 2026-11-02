@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#f4f5f7" />
+  <rect x="40" y="40" width="1120" height="550" rx="32" fill="#ffffff" />
+  <rect x="40" y="40" width="1120" height="12" rx="6" fill="#2f6fed" />
+  <g font-family="Harano Aji Gothic, sans-serif">
+    <text x="96" y="136" font-size="28" font-weight="700" letter-spacing="2" fill="#2f6fed">NUTMEG PMMT</text>
+    <text x="96" y="252" font-size="68" font-weight="700" fill="#16191f">PMMT 進捗確認</text>
+    <text x="96" y="320" font-size="28" fill="#3d4452">NUTMEG PMMT 進捗確認アプリ（プロトタイプ）</text>
+    <text x="96" y="430" font-size="26" fill="#3d4452">進捗・確認したいこと・話したいことを</text>
+    <text x="96" y="476" font-size="26" fill="#3d4452">会議の前に集めて、みんなで共有。</text>
+    <text x="96" y="550" font-size="18" fill="#7a8294">nutmeg-pmmt-progress.hiro-to.moda</text>
+  </g>
+  <g transform="translate(860 350)">
+    <rect width="216" height="180" rx="24" fill="#e9f0ff" />
+    <rect x="24" y="18" width="168" height="144" rx="16" fill="#ffffff" stroke="#e6e8ec" stroke-width="2" />
+    <path d="M46 40V140H172M46 106H172M46 73H172M88 40V140M130 40V140"
+      fill="none" stroke="#e6e8ec" stroke-width="3" />
+    <path d="M48 122L84 91L111 104L168 49" fill="none" stroke="#cf3f3f"
+      stroke-width="9" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M146 49H168V71" fill="none" stroke="#cf3f3f"
+      stroke-width="9" stroke-linecap="round" stroke-linejoin="round" />
+  </g>
+</svg>
