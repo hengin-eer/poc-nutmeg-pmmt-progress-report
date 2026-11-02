@@ -1,0 +1,40 @@
+import { action } from "@void/react";
+import type { Props } from "../../pages/report.server";
+import { RecordPill } from "../domain";
+import { Card, Icon, SectionHeader } from "../ui";
+
+type PendingRecordsProps = Pick<Props, "pending"> & { isOpen: boolean };
+
+export function PendingRecords({ pending, isOpen }: PendingRecordsProps) {
+  if (pending.length === 0) return null;
+  const isCycleClosed = !isOpen;
+
+  function handleToggleRecord(id: number, checked: boolean) {
+    action("/report?toggleRecord", { data: { id, done: checked } });
+  }
+
+  return (
+    <Card as="section" className="card section">
+      <SectionHeader className="section-head">
+        <Icon name="arrow-go-forward-line" className="muted" />
+        <h2>前回からの持ち越し</h2>
+        <span className="hint">終わったらチェック</span>
+      </SectionHeader>
+      <ul className="list">
+        {pending.map((r) => (
+          <li key={r.id}>
+            <label className="row" style={{ margin: 0, fontWeight: 500, gap: 12, cursor: "pointer" }}>
+              <input
+                type="checkbox"
+                disabled={isCycleClosed}
+                onChange={(e) => handleToggleRecord(r.id, e.target.checked)}
+              />
+              <RecordPill kind={r.kind} />
+              <span>{r.title}</span>
+            </label>
+          </li>
+        ))}
+      </ul>
+    </Card>
+  );
+}

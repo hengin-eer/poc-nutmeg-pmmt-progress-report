@@ -1,0 +1,13 @@
+/*
+ * @import "tailwindcss" のうち Preflight だけを除外する。
+ * PR A は既存のブラウザー標準スタイルと style.css の見た目を維持する。
+ * https://tailwindcss.com/docs/preflight#disabling-preflight
+ * トークン定義とユーティリティへの移植は PR B で行う。
+ */
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+/* ログインで使っている既存の container は幅制限を持たない。
+ * Tailwind の同名ユーティリティによる位置ずれを防ぐ（PR B で再検討）。 */
+@source not inline("container");

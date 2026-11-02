@@ -1,0 +1,66 @@
+import { formatJstDate } from "../../lib/domain";
+import { type Props } from "../../pages/units/[id].server";
+import { Busy, ProgressPill } from "../domain";
+import { Markdown } from "../markdown";
+import { ItemRow } from "../thread";
+import { Card, EmptyState, SectionHeader } from "../ui";
+
+type HistoryEntry = Props["history"][number];
+
+type UnitHistoryProps = Pick<Props, "history">;
+
+export function UnitHistory({ history }: UnitHistoryProps) {
+  const hasNoHistory = history.length === 0;
+
+  function hasCompletedWork(h: HistoryEntry) {
+    return Boolean(h.done);
+  }
+
+  function hasPlannedWork(h: HistoryEntry) {
+    return Boolean(h.next);
+  }
+
+  function hasRelatedItems(h: HistoryEntry) {
+    return h.items.length > 0;
+  }
+
+  return (
+    <section>
+      <SectionHeader className="section-head">
+        <h2>週ごとの更新</h2>
+      </SectionHeader>
+      {hasNoHistory && <EmptyState className="empty">まだ提出された記入はありません</EmptyState>}
+      <div className="stack" style={{ gap: 20 }}>
+        {history.map((h) => (
+          <Card as="article" key={h.cycleId} className="card">
+            <div className="row" style={{ marginBottom: 14 }}>
+              <strong>{formatJstDate(h.meetingAt)}</strong>
+              <span className="spacer" />
+              <ProgressPill value={h.progress} />
+              <Busy value={h.busyness} label />
+            </div>
+            {hasCompletedWork(h) && (
+              <div className="report-block">
+                <h3>やったこと</h3>
+                <Markdown>{h.done}</Markdown>
+              </div>
+            )}
+            {hasPlannedWork(h) && (
+              <div className="report-block">
+                <h3>次にやること</h3>
+                <Markdown>{h.next}</Markdown>
+              </div>
+            )}
+            {hasRelatedItems(h) && (
+              <ul className="list" style={{ marginTop: 8, borderTop: "1px solid var(--border)", paddingTop: 8 }}>
+                {h.items.map((i) => (
+                  <ItemRow key={i.id} item={i} />
+                ))}
+              </ul>
+            )}
+          </Card>
+        ))}
+      </div>
+    </section>
+  );
+}

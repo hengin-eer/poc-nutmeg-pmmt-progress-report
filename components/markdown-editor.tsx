@@ -1,8 +1,10 @@
+import type { ChangeEvent, KeyboardEvent } from "react";
 import { useRef, useState } from "react";
 import { Markdown } from "./markdown";
-import { Icon } from "./ui";
+import { Button, EmptyState, Field, Icon } from "./ui";
 
-export function MarkdownEditor({ id, label, hint, value, onChange, placeholder, error }: {
+
+type MarkdownEditorProps = {
   id: string;
   label: string;
   hint: string;
@@ -10,11 +12,61 @@ export function MarkdownEditor({ id, label, hint, value, onChange, placeholder, 
   onChange: (value: string) => void;
   placeholder: string;
   error?: string;
-}) {
+};
+
+export function MarkdownEditor({ id, label, hint, value, onChange, placeholder, error }: MarkdownEditorProps) {
   const [preview, setPreview] = useState(false);
   const tabs = useRef<(HTMLButtonElement | null)[]>([]);
+  const errorDescriptionSuffix = error ? ` ${id}-error` : "";
+  const hasValidationError = !!error;
+  const isWriteMode = !preview;
+  const hasPreviewContent = Boolean(value.trim());
+
+  function isEditorTabSelected(isPreview: boolean) {
+    return preview === isPreview;
+  }
+
+  function getTabIndex(isPreview: boolean) {
+    return preview === isPreview ? 0 : -1;
+  }
+
+  function getControlledPanelId(isPreview: boolean) {
+    return isPreview ? `${id}-preview` : `${id}-write`;
+  }
+
+  function getEditorTabIcon(isPreview: boolean) {
+    return isPreview ? "eye-line" : "edit-line";
+  }
+
+  function getEditorTabLabel(isPreview: boolean) {
+    return isPreview ? "プレビュー" : "書く";
+  }
+
+  function handleTabRef(index: number, node: HTMLButtonElement | null) {
+    tabs.current[index] = node;
+  }
+
+  function handleSelectEditorMode(isPreview: boolean) {
+    setPreview(isPreview);
+  }
+
+  function handleTabKeyDown(index: number, event: KeyboardEvent<HTMLButtonElement>) {
+    let target: number;
+    if (event.key === "ArrowLeft" || event.key === "ArrowRight") target = 1 - index;
+    else if (event.key === "Home") target = 0;
+    else if (event.key === "End") target = 1;
+    else return;
+    event.preventDefault();
+    setPreview(target === 1);
+    tabs.current[target]?.focus();
+  }
+
+  function handleInputChange(e: ChangeEvent<HTMLTextAreaElement>) {
+    onChange(e.target.value);
+  }
+
   return (
-    <div className="field">
+    <Field className="field">
       <div className="field-label">
         <label id={`${id}-label`} htmlFor={id}>{label}</label>
         <span id={`${id}-hint`} className="hint">{hint}</span>
@@ -22,38 +74,29 @@ export function MarkdownEditor({ id, label, hint, value, onChange, placeholder, 
       <div className="markdown-editor">
         <div className="markdown-editor-header" role="tablist" aria-label={`${label}の表示切り替え`}>
           {([false, true] as const).map((isPreview, index) => (
-            <button
-              key={String(isPreview)} ref={(node) => { tabs.current[index] = node; }}
+            <Button
+              key={String(isPreview)} ref={node => handleTabRef(index, node)}
               type="button" role="tab" id={`${id}-tab-${index}`}
-              aria-selected={preview === isPreview} tabIndex={preview === isPreview ? 0 : -1}
-              aria-controls={isPreview ? `${id}-preview` : `${id}-write`}
-              onClick={() => setPreview(isPreview)}
-              onKeyDown={(event) => {
-                let target: number;
-                if (event.key === "ArrowLeft" || event.key === "ArrowRight") target = 1 - index;
-                else if (event.key === "Home") target = 0;
-                else if (event.key === "End") target = 1;
-                else return;
-                event.preventDefault();
-                setPreview(target === 1);
-                tabs.current[target]?.focus();
-              }}
+              aria-selected={isEditorTabSelected(isPreview)} tabIndex={getTabIndex(isPreview)}
+              aria-controls={getControlledPanelId(isPreview)}
+              onClick={() => handleSelectEditorMode(isPreview)}
+              onKeyDown={event => handleTabKeyDown(index, event)}
             >
-              <Icon name={isPreview ? "eye-line" : "edit-line"} />
-              {isPreview ? "プレビュー" : "書く"}
-            </button>
+              <Icon name={getEditorTabIcon(isPreview)} />
+              {getEditorTabLabel(isPreview)}
+            </Button>
           ))}
         </div>
         <div id={`${id}-write`} role="tabpanel" aria-labelledby={`${id}-tab-0`} hidden={preview}>
-          <textarea id={id} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder}
-            aria-describedby={`${id}-hint${error ? ` ${id}-error` : ""}`} aria-invalid={!!error} />
+          <textarea id={id} value={value} onChange={handleInputChange} placeholder={placeholder}
+            aria-describedby={`${id}-hint${errorDescriptionSuffix}`} aria-invalid={hasValidationError} />
         </div>
-        <div id={`${id}-preview`} hidden={!preview} className="markdown-preview" role="tabpanel"
+        <div id={`${id}-preview`} hidden={isWriteMode} className="markdown-preview" role="tabpanel"
           aria-labelledby={`${id}-tab-1`} tabIndex={0}>
-          {preview && (value.trim() ? <Markdown>{value}</Markdown> : <p className="empty">まだ記入されていません</p>)}
+          {preview && (hasPreviewContent ? <Markdown>{value}</Markdown> : <EmptyState className="empty">まだ記入されていません</EmptyState>)}
         </div>
       </div>
       {error && <div id={`${id}-error`} className="error">{error}</div>}
-    </div>
+    </Field>
   );
 }

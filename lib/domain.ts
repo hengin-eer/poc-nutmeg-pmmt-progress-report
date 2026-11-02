@@ -1,5 +1,9 @@
 // フレームワークに依存しないロジック。本番で FW を作り直す時もそのまま持っていける。
 
+// ---------- 確認事項の種別 ----------
+export const ITEM_KINDS = ["confirm", "talk"] as const;
+export type ItemKind = (typeof ITEM_KINDS)[number];
+
 // ---------- 認証 ----------
 
 /** NUTMEG の Google アカウントの形式（例: 25.t.yamada.nutfes@gmail.com） */

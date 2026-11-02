@@ -1,3 +1,4 @@
+import { ITEM_KINDS } from "../lib/domain";
 import { comments, items, records, reports, units } from "@schema";
 import { HTTPException } from "hono/http-exception";
 import { defineHandler, type InferProps } from "void";
@@ -48,7 +49,7 @@ const saveSchema = z.object({
 });
 
 const itemSchema = z.object({
-  kind: z.enum(["confirm", "talk"]),
+  kind: z.enum(ITEM_KINDS),
   body: z.string().trim().min(1, "内容を書いてください").max(2000),
   crossBureau: z.boolean().default(false),
 });
