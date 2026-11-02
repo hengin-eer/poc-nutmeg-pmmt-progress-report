@@ -1,14 +1,14 @@
-import { action, Form, useForm, useShared } from "@void/react";
-import type { ChangeEvent } from "react";
-import { useState } from "react";
+import { Form, action, useForm, useShared } from "@void/react";
+import { useState, type ChangeEvent } from "react";
 import { type Props } from "../../pages/admin/index.server";
-import { Badge, Button, Card, Icon, IconButton, SectionHeader } from "../ui";
+import { Badge, Button, Card, Icon, IconButton, Input, Label, SectionHeader, Select, Table } from "../ui";
+import { headingStyles, textStyles } from "../ui/styles";
 import { ROLE_LABEL } from "./labels";
 import { MemberEditRow } from "./MemberEditRow";
 
-type Member = Props["members"][number];
-
 type MemberSectionProps = Pick<Props, "members" | "units">;
+
+type Member = Props["members"][number];
 
 export function MemberSection({ members, units }: MemberSectionProps) {
   const { me } = useShared();
@@ -68,15 +68,15 @@ export function MemberSection({ members, units }: MemberSectionProps) {
   }
 
   return (
-    <Card as="section" className="card card-lg section">
-      <SectionHeader className="section-head">
-        <Icon name="group-line" className="muted" />
-        <h2>メンバー</h2>
-        <Badge className="count">{members.length}</Badge>
+    <Card as="section" size="large" className="mt-10">
+      <SectionHeader>
+        <Icon name="group-line" className="text-muted" />
+        <h2 className={headingStyles({ level: "heading" })}>メンバー</h2>
+        <Badge>{members.length}</Badge>
       </SectionHeader>
-      <p className="hint">ここに登録された NUTMEG アカウントだけがログインできます。Slack のユーザー ID を入れると、リマインドでメンションされます。</p>
-      <div className="table-wrap">
-        <table>
+      <p className={textStyles({ className: "mb-3", role: "hint" })}>ここに登録された NUTMEG アカウントだけがログインできます。Slack のユーザー ID を入れると、リマインドでメンションされます。</p>
+      <div className="overflow-x-auto">
+        <Table className="min-w-[760px] whitespace-nowrap [&_td:first-child]:min-w-32 [&_td:nth-child(3)]:min-w-24 [&_td:nth-child(4)]:min-w-32">
           <thead>
             <tr>
               <th>名前</th>
@@ -93,14 +93,14 @@ export function MemberSection({ members, units }: MemberSectionProps) {
             ) : (
               <tr key={m.id}>
                 <td>{m.name}</td>
-                <td className="meta">{m.email}</td>
+                <td className={textStyles({ role: "meta" })}>{m.email}</td>
                 <td>{ROLE_LABEL[m.role]}</td>
                 <td>{unitName(m.unitId)}</td>
-                <td className="meta">{getMemberSlackLabel(m)}</td>
+                <td className={textStyles({ role: "meta" })}>{getMemberSlackLabel(m)}</td>
                 <td>
                   <IconButton
                     type="button"
-                    className="icon-button"
+
                     title="編集"
                     aria-label={`${m.name} さんを編集`}
                     onClick={() => handleEditMember(m)}
@@ -108,7 +108,7 @@ export function MemberSection({ members, units }: MemberSectionProps) {
                     <Icon name="pencil-line" />
                   </IconButton>
                   <IconButton
-                    className="icon-button danger"
+                     danger
                     title="削除"
                     aria-label={`${m.name} さんを削除`}
                     onClick={() => handleDeleteMember(m)}
@@ -119,46 +119,46 @@ export function MemberSection({ members, units }: MemberSectionProps) {
               </tr>
             ))}
           </tbody>
-        </table>
+        </Table>
       </div>
 
-      <Form form={form} className="grid add-member" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))", alignItems: "end", marginTop: 24, gap: 12 }}>
+      <Form form={form} className="grid grid-cols-[repeat(auto-fit,_minmax(170px,_1fr))] items-end mt-6 gap-3">
         <div>
-          <label>名前</label>
-          <input type="text" value={form.data.name} onChange={handleNameChange} />
-          {hasNameError && <div className="error">{form.errors.name}</div>}
+          <Label>名前</Label>
+          <Input type="text" value={form.data.name} onChange={handleNameChange} />
+          {hasNameError && <div className={textStyles({ role: "error" })}>{form.errors.name}</div>}
         </div>
         <div>
-          <label>アドレス</label>
-          <input type="email" value={form.data.email} onChange={handleEmailChange} placeholder="25.t.yamada.nutfes@gmail.com" />
-          {hasEmailError && <div className="error">{form.errors.email}</div>}
+          <Label>アドレス</Label>
+          <Input type="email" value={form.data.email} onChange={handleEmailChange} placeholder="25.t.yamada.nutfes@gmail.com" />
+          {hasEmailError && <div className={textStyles({ role: "error" })}>{form.errors.email}</div>}
         </div>
         <div>
-          <label>役割</label>
-          <select value={form.data.role} onChange={handleRoleChange}>
+          <Label>役割</Label>
+          <Select value={form.data.role} onChange={handleRoleChange}>
             {Object.entries(ROLE_LABEL).map(([k, v]) => (
               <option key={k} value={k}>
                 {v}
               </option>
             ))}
-          </select>
+          </Select>
         </div>
         <div>
-          <label>ユニット</label>
-          <select value={form.data.unitId} onChange={handleUnitIdChange}>
+          <Label>ユニット</Label>
+          <Select value={form.data.unitId} onChange={handleUnitIdChange}>
             <option value={0}>なし</option>
             {units.map((u) => (
               <option key={u.id} value={u.id}>
                 {u.name}
               </option>
             ))}
-          </select>
+          </Select>
         </div>
         <div>
-          <label>Slack ID <span className="hint">任意</span></label>
-          <input type="text" value={form.data.slackUserId} onChange={handleSlackUserIdChange} placeholder="U0123ABCD" />
+          <Label>Slack ID <span className={textStyles({ role: "hint" })}>任意</span></Label>
+          <Input type="text" value={form.data.slackUserId} onChange={handleSlackUserIdChange} placeholder="U0123ABCD" />
         </div>
-        <Button type="submit" className="primary" disabled={form.pending}>
+        <Button type="submit" variant="primary" disabled={form.pending}>
           <Icon name="user-add-line" />
           追加
         </Button>

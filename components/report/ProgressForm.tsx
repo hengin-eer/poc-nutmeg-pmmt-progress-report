@@ -1,8 +1,10 @@
 import { Form, useForm } from "@void/react";
-import type { Props } from "../../pages/report.server";
-import { BUSY_OPTIONS, Busy, PROGRESS_OPTIONS, type BusyValue, type ProgressValue } from "../domain";
+import { type Props } from "../../pages/report.server";
+import { Busy, BUSY_OPTIONS, PROGRESS_OPTIONS, type BusyValue, type ProgressValue } from "../domain";
 import { MarkdownEditor } from "../markdown-editor";
-import { Button, Card, Field, Icon, SectionHeader } from "../ui";
+import { Button, Card, Choice, Dot, Field, FieldLabel, Icon, Label, Row, SectionHeader } from "../ui";
+import { flowStyles } from "../ui/Flow";
+import { headingStyles, textStyles } from "../ui/styles";
 import { REPORT_COPY } from "./copy";
 
 type ProgressFormProps = Pick<Props, "unit" | "cycle" | "report">;
@@ -27,12 +29,12 @@ export function ProgressForm({ unit, cycle, report }: ProgressFormProps) {
   const showSavedFeedback = form.recentlySuccessful;
   const submitLabel = report?.submittedAt ? "更新する" : "提出する";
 
-  function getProgressChoiceClass(value: ProgressValue) {
-    return form.data.progress === value ? "selected" : "";
+  function isProgressSelected(value: ProgressValue) {
+    return form.data.progress === value;
   }
 
-  function getBusynessChoiceClass(value: BusyValue) {
-    return form.data.busyness === value ? "selected" : "";
+  function isBusynessSelected(value: BusyValue) {
+    return form.data.busyness === value;
   }
 
   function handleSelectProgress(value: ProgressValue) {
@@ -61,77 +63,77 @@ export function ProgressForm({ unit, cycle, report }: ProgressFormProps) {
   }
 
   return (
-    <Card as="section" className="card card-lg">
-      <SectionHeader className="section-head">
-        <h2>今週の進捗</h2>
+    <Card as="section" size="large">
+      <SectionHeader>
+        <h2 className={headingStyles({ level: "heading" })}>今週の進捗</h2>
       </SectionHeader>
       <Form form={form}>
         {showProgress && (
-          <Field className="field">
-            <div className="field-label">
-              <label>進み具合</label>
-            </div>
-            <div className="choices">
+          <Field>
+            <FieldLabel>
+              <Label>進み具合</Label>
+            </FieldLabel>
+            <div className={flowStyles({ direction: "wrap", gap: 2 })}>
               {PROGRESS_OPTIONS.map(({ value, label }) => (
-                <Button
+                <Choice
                   type="button"
                   key={value}
-                  className={`choice ${getProgressChoiceClass(value)}`}
+                  selected={isProgressSelected(value)}
                   onClick={() => handleSelectProgress(value)}
                 >
-                  <span className={`dot ${value}`} />
+                  <Dot tone={value} />
                   {label}
-                </Button>
+                </Choice>
               ))}
             </div>
           </Field>
         )}
 
-        <Field className="field">
-          <div className="field-label">
-            <label>忙しさ</label>
-          </div>
-          <div className="choices">
+        <Field>
+          <FieldLabel>
+            <Label>忙しさ</Label>
+          </FieldLabel>
+          <div className={flowStyles({ direction: "wrap", gap: 2 })}>
             {BUSY_OPTIONS.map(({ value, label, icon }) => (
-              <Button
+              <Choice
                 type="button"
                 key={value}
-                className={`choice busy-${value} ${getBusynessChoiceClass(value)}`}
+                selected={isBusynessSelected(value)}
                 onClick={() => handleSelectBusyness(value)}
               >
                 <Icon name={icon} />
                 {label}
                 <Busy value={value} />
-              </Button>
+              </Choice>
             ))}
           </div>
-          {hasBusynessError && <div className="error">{form.errors.busyness}</div>}
+          {hasBusynessError && <div className={textStyles({ role: "error" })}>{form.errors.busyness}</div>}
         </Field>
 
-        <MarkdownEditor id="done" label={REPORT_COPY.done.label} hint={REPORT_COPY.done.hint}
+        <MarkdownEditor id="done" label="今週やったこと" hint="やったこと・結果・遅れを箇条書きで。数字やリンク、関わった局も添えると、当日聞かなくても伝わります"
           value={doneText} onChange={handleDoneChange}
           placeholder={REPORT_COPY.done.placeholder} error={form.errors.done} />
-        <MarkdownEditor id="next" label={REPORT_COPY.next.label} hint={REPORT_COPY.next.hint}
+        <MarkdownEditor id="next" label="次にやること" hint="次の回までにやること。担当と期限があれば添えて"
           value={nextText} onChange={handleNextChange}
-          placeholder={REPORT_COPY.next.placeholder} error={form.errors.next} />
+          placeholder="- ○○のレビュー（佐藤・11/6）" error={form.errors.next} />
 
-        {formError && <p className="error">{formError.message}</p>}
-        <div className="row" style={{ marginTop: 8 }}>
-          <Button type="submit" className="ghost" disabled={isSavingDisabled} onClick={handleSaveDraft}>
+        {formError && <p className={textStyles({ className: "mb-3", role: "error" })}>{formError.message}</p>}
+        <Row className="mt-2">
+          <Button type="submit" variant="ghost" disabled={isSavingDisabled} onClick={handleSaveDraft}>
             <Icon name="save-3-line" />
             下書き保存
           </Button>
           {showSavedFeedback && (
-            <span className="sub">
+            <span className={textStyles({ role: "meta" })}>
               <Icon name="check-line" /> 保存しました
             </span>
           )}
-          <span className="spacer" />
-          <Button type="submit" className="primary" disabled={isSavingDisabled} onClick={handleSubmitReport}>
+          <span className="flex-1" />
+          <Button type="submit" variant="primary" disabled={isSavingDisabled} onClick={handleSubmitReport}>
             <Icon name="send-plane-2-line" />
             {submitLabel}
           </Button>
-        </div>
+        </Row>
       </Form>
     </Card>
   );

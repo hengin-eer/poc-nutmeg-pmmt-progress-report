@@ -1,13 +1,115 @@
-/*
- * @import "tailwindcss" のうち Preflight だけを除外する。
- * PR A は既存のブラウザー標準スタイルと style.css の見た目を維持する。
- * https://tailwindcss.com/docs/preflight#disabling-preflight
- * トークン定義とユーティリティへの移植は PR B で行う。
- */
-@layer theme, base, components, utilities;
-@import "tailwindcss/theme.css" layer(theme);
-@import "tailwindcss/utilities.css" layer(utilities);
+@import "tailwindcss";
 
-/* ログインで使っている既存の container は幅制限を持たない。
- * Tailwind の同名ユーティリティによる位置ずれを防ぐ（PR B で再検討）。 */
-@source not inline("container");
+@theme {
+  --color-*: initial;
+  --color-white: #fff;
+  --color-overlay: #0a0e14;
+  --font-sans: "Hiragino Sans", "Noto Sans JP", system-ui, -apple-system, sans-serif;
+  --breakpoint-*: initial;
+  --breakpoint-sm: 600px;
+  --breakpoint-md: 900px;
+  --text-display: 2.6rem;
+  --text-display--line-height: 1.1;
+  --text-title: 1.75rem;
+  --text-title--line-height: 1.35;
+  --text-heading: 1.15rem;
+  --text-heading--line-height: 1.35;
+  --text-subheading: 1rem;
+  --text-subheading--line-height: 1.35;
+  --text-body: 0.9375rem;
+  --text-body--line-height: 1.7;
+  --text-meta: 0.875rem;
+  --text-meta--line-height: 1.6;
+  --text-caption: 0.8125rem;
+  --text-caption--line-height: 1.5;
+  --animate-fade: fade 150ms ease-out;
+  --animate-drawer: drawer-in 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  --animate-sheet: sheet-in 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  --animate-shimmer: shimmer 1.2s infinite;
+  @keyframes fade { from { opacity: 0; } }
+  @keyframes drawer-in { from { translate: 40px 0; opacity: 0; } }
+  @keyframes sheet-in { from { translate: 0 60px; opacity: 0; } }
+  @keyframes shimmer { to { background-position: -200% 0; } }
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --color-text: var(--text);
+  --color-text-2: var(--text-2);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-green: var(--green);
+  --color-green-soft: var(--green-soft);
+  --color-yellow: var(--yellow);
+  --color-yellow-soft: var(--yellow-soft);
+  --color-red: var(--red);
+  --color-red-soft: var(--red-soft);
+  --color-purple: var(--purple);
+  --color-purple-soft: var(--purple-soft);
+  --radius-card: var(--radius);
+  --radius-control: var(--radius-sm);
+  --shadow-card: var(--shadow);
+  --shadow-panel: var(--shadow-lg);
+  --spacing-sidebar: var(--sidebar);
+}
+
+:root {
+  --bg: #f4f5f7;
+  --surface: #ffffff;
+  --surface-2: #f1f3f6;
+  --border: #e6e8ec;
+  --text: #16191f;
+  --text-2: #3d4452;
+  --muted: #7a8294;
+  --accent: #2f6fed;
+  --accent-soft: #e9f0ff;
+  --green: #1a8f4e;
+  --green-soft: #e2f5ea;
+  --yellow: #a96a0b;
+  --yellow-soft: #fdf1d8;
+  --red: #cf3f3f;
+  --red-soft: #fde9e9;
+  --purple: #6d43e6;
+  --purple-soft: #efe9ff;
+  --radius: 16px;
+  --radius-sm: 10px;
+  --shadow: 0 1px 2px rgb(16 24 40 / 4%), 0 2px 8px rgb(16 24 40 / 4%);
+  --shadow-lg: 0 12px 40px rgb(16 24 40 / 18%);
+  --sidebar: 248px;
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0e1114;
+    --surface: #171b20;
+    --surface-2: #20252c;
+    --border: #2a3039;
+    --text: #eef0f3;
+    --text-2: #c3c8d1;
+    --muted: #8f97a6;
+    --accent: #7aa2ff;
+    --accent-soft: #1c2944;
+    --green: #4cc38a;
+    --green-soft: #142c22;
+    --yellow: #e2b04a;
+    --yellow-soft: #33290f;
+    --red: #f07171;
+    --red-soft: #3a1c1e;
+    --purple: #a98bff;
+    --purple-soft: #29214a;
+    --shadow: none;
+    --shadow-lg: 0 12px 40px rgb(0 0 0 / 50%);
+  }
+}
+
+@layer base {
+  html { -webkit-text-size-adjust: 100%; }
+  body { @apply bg-bg text-text font-sans text-body antialiased; }
+  body.no-scroll { overflow: hidden; }
+  [data-void-form-error] { display: none; }
+}

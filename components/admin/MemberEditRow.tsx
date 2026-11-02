@@ -1,8 +1,9 @@
 import { Form, useForm } from "@void/react";
-import type { ChangeEvent } from "react";
-import { useEffect } from "react";
+import { useEffect, type ChangeEvent } from "react";
 import { type Props } from "../../pages/admin/index.server";
-import { Button, Icon, IconButton } from "../ui";
+import { Button, Icon, IconButton, Input, Row, Select } from "../ui";
+import { flowStyles } from "../ui/Flow";
+import { textStyles } from "../ui/styles";
 import { ROLE_LABEL } from "./labels";
 
 type MemberEditRowProps = {
@@ -50,39 +51,39 @@ export function MemberEditRow({ member, units, isSelf, onDone }: MemberEditRowPr
   return (
     <tr>
       <td>
-        <input form={formId} aria-label="名前" aria-invalid={Boolean(form.errors.name)} value={form.data.name} onChange={handleNameChange} />
-        {hasNameError && <div className="error" role="alert">{form.errors.name}</div>}
+        <Input form={formId} aria-label="名前" aria-invalid={Boolean(form.errors.name)} value={form.data.name} onChange={handleNameChange} />
+        {hasNameError && <div className={textStyles({ role: "error" })} role="alert">{form.errors.name}</div>}
       </td>
-      <td className="meta">{member.email}</td>
+      <td className={textStyles({ role: "meta" })}>{member.email}</td>
       <td>
-        <select form={formId} aria-label="役割" aria-invalid={Boolean(form.errors.role)} value={form.data.role} disabled={isSelf} onChange={handleRoleChange}>
+        <Select form={formId} aria-label="役割" aria-invalid={Boolean(form.errors.role)} value={form.data.role} disabled={isSelf} onChange={handleRoleChange}>
           {Object.entries(ROLE_LABEL).map(([key, label]) => <option key={key} value={key}>{label}</option>)}
-        </select>
-        {isSelf && <div className="hint">自分の役割は変更できません</div>}
-        {hasRoleError && <div className="error" role="alert">{form.errors.role}</div>}
+        </Select>
+        {isSelf && <div className={textStyles({ role: "hint" })}>自分の役割は変更できません</div>}
+        {hasRoleError && <div className={textStyles({ role: "error" })} role="alert">{form.errors.role}</div>}
       </td>
       <td>
-        <select form={formId} aria-label="ユニット" aria-invalid={Boolean(form.errors.unitId)} value={form.data.unitId} onChange={handleUnitIdChange}>
+        <Select form={formId} aria-label="ユニット" aria-invalid={Boolean(form.errors.unitId)} value={form.data.unitId} onChange={handleUnitIdChange}>
           <option value={0}>なし</option>
           {units.map((unit) => <option key={unit.id} value={unit.id}>{unit.name}</option>)}
-        </select>
-        {hasUnitIdError && <div className="error" role="alert">{form.errors.unitId}</div>}
+        </Select>
+        {hasUnitIdError && <div className={textStyles({ role: "error" })} role="alert">{form.errors.unitId}</div>}
       </td>
       <td>
-        <input form={formId} aria-label="Slack ID" aria-invalid={Boolean(form.errors.slackUserId)} value={form.data.slackUserId} placeholder="U0123ABCD" onChange={handleSlackUserIdChange} />
-        {hasSlackUserIdError && <div className="error" role="alert">{form.errors.slackUserId}</div>}
+        <Input form={formId} aria-label="Slack ID" aria-invalid={Boolean(form.errors.slackUserId)} value={form.data.slackUserId} placeholder="U0123ABCD" onChange={handleSlackUserIdChange} />
+        {hasSlackUserIdError && <div className={textStyles({ role: "error" })} role="alert">{form.errors.slackUserId}</div>}
       </td>
       <td>
-        <Form id={formId} form={form} className="stack" style={{ gap: 8 }}>
-          <div className="row" style={{ gap: 4, flexWrap: "nowrap" }}>
-            <Button type="submit" className="small primary" disabled={form.pending}>
+        <Form id={formId} form={form} className={flowStyles({ direction: "column", gap: 2 })}>
+          <Row className="gap-1 flex-nowrap">
+            <Button type="submit" variant="primary" size="small" disabled={form.pending}>
               <Icon name="check-line" />保存
             </Button>
-            <IconButton type="button" className="icon-button" title="キャンセル" aria-label="編集をキャンセル" disabled={form.pending} onClick={onDone}>
+            <IconButton type="button" title="キャンセル" aria-label="編集をキャンセル" disabled={form.pending} onClick={onDone}>
               <Icon name="close-line" />
             </IconButton>
-          </div>
-          {hasIdError && <div className="error" role="alert">{form.errors.id}</div>}
+          </Row>
+          {hasIdError && <div className={textStyles({ role: "error" })} role="alert">{form.errors.id}</div>}
         </Form>
       </td>
     </tr>

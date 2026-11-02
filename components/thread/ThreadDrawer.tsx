@@ -1,8 +1,8 @@
-import { Link, useRouter } from "@void/react";
+import { useRouter } from "@void/react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { ThreadData } from "../../lib/items";
+import { type ThreadData } from "../../lib/items";
 import { ITEM_KIND_CONFIG } from "../domain";
-import { EmptyState, Icon, IconButton } from "../ui";
+import { EmptyState, Icon, IconButton, Link, iconButtonStyles } from "../ui";
 import { ThreadView } from "./ThreadView";
 
 type ThreadDrawerProps = { id: number; onClose: () => void };
@@ -41,11 +41,11 @@ export function ThreadDrawer({ id, onClose }: ThreadDrawerProps) {
   }
 
   return (
-    <div className="drawer-root" role="dialog" aria-modal="true" aria-label="スレッド">
-      <div className="drawer-backdrop" onClick={close} />
-      <aside className="drawer">
-        <div className="drawer-bar">
-          <span className="drawer-title">
+    <div data-slot="drawer-root" className="fixed inset-0 z-50" role="dialog" aria-modal="true" aria-label="スレッド">
+      <div className="absolute inset-0 animate-fade bg-overlay/35" onClick={close} />
+      <aside data-slot="drawer" className="absolute inset-y-0 right-0 flex w-[min(600px,100vw)] animate-drawer flex-col bg-surface shadow-panel max-md:top-[8vh] max-md:w-screen max-md:animate-sheet max-md:rounded-t-[20px]">
+        <div className="flex items-center gap-1 border-b border-border py-4 pr-4 pl-6 max-md:pl-4">
+          <span className="flex items-center gap-2 text-caption font-bold text-muted">
             {data ? (
               <>
                 <Icon name={ITEM_KIND_CONFIG[data.item.kind].icon} />
@@ -55,24 +55,24 @@ export function ThreadDrawer({ id, onClose }: ThreadDrawerProps) {
               "スレッド"
             )}
           </span>
-          <span className="spacer" />
-          <Link href={`/items/${id}`} className="icon-button" title="全画面で開く" aria-label="全画面で開く" onClick={onClose}>
+          <span className="flex-1" />
+          <Link className={iconButtonStyles()} href={`/items/${id}`} title="全画面で開く" aria-label="全画面で開く" onClick={onClose}>
             <Icon name="external-link-line" />
           </Link>
-          <IconButton type="button" className="icon-button" onClick={close} title="閉じる（Esc）" aria-label="閉じる">
+          <IconButton type="button" onClick={close} title="閉じる（Esc）" aria-label="閉じる">
             <Icon name="close-line" />
           </IconButton>
         </div>
-        <div className="drawer-body">
+        <div className="flex-1 overflow-y-auto px-6 pt-6 pb-10 max-md:px-4">
           {failed ? (
-            <EmptyState className="empty">読み込めませんでした</EmptyState>
+            <EmptyState>読み込めませんでした</EmptyState>
           ) : data ? (
             <ThreadView
               data={data}
               onChange={handleThreadChange}
             />
           ) : (
-            <div className="skeleton" />
+            <div className="h-50 animate-shimmer rounded-xl bg-linear-to-r from-surface-2 via-surface to-surface-2 bg-size-[200%_100%]" />
           )}
         </div>
       </aside>

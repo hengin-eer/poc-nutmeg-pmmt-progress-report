@@ -5,7 +5,7 @@ import type { Props } from "./index.server";
 
 export default function ItemsPage({ tab, cycle, list, counts }: Props) {
   return (
-    <div className="narrow" style={{ maxWidth: 960 }}>
+    <div className="max-w-[960px]">
       <ItemsHeader cycle={cycle} />
       <ItemTabs tab={tab} counts={counts} />
       <ItemsPanel tab={tab} list={list} />

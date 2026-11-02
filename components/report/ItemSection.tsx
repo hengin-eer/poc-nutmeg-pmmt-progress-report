@@ -1,19 +1,20 @@
-import { action, Form, useForm } from "@void/react";
-import type { ChangeEvent } from "react";
-import { useEffect, useState } from "react";
-import type { ItemKind } from "../../lib/domain";
-import type { Props } from "../../pages/report.server";
-import { CrossBureau, ITEM_KIND_CONFIG, StatePill } from "../domain";
+import { Form, action, useForm } from "@void/react";
+import { useEffect, useState, type ChangeEvent } from "react";
+import { type ItemKind } from "../../lib/domain";
+import { type Props } from "../../pages/report.server";
+import { CrossBureau, KindIcon, StatePill, ITEM_KIND_CONFIG } from "../domain";
 import { ThreadButton, useThread } from "../thread";
-import { Badge, Button, Card, Icon, IconButton, SectionHeader } from "../ui";
-
-type MyItem = Props["myItems"][number];
+import { Badge, Button, Card, Checkbox, Icon, IconButton, Label, List, Row, SectionHeader, Textarea } from "../ui";
+import { flowStyles } from "../ui/Flow";
+import { headingStyles, textStyles } from "../ui/styles";
 
 type ItemSectionProps = {
   kind: ItemKind;
   list: Props["myItems"];
   isOpen: boolean;
 };
+
+type MyItem = Props["myItems"][number];
 
 export function ItemSection({
   kind,
@@ -64,34 +65,32 @@ export function ItemSection({
   }
 
   return (
-    <Card as="section" className="card">
-      <SectionHeader className="section-head">
-        <span className={`kind-icon ${kind}`}>
-          <Icon name={kindConfig.icon} />
-        </span>
-        <h2>{kindConfig.label}</h2>
-        <Badge className="count">{list.length}</Badge>
+    <Card as="section">
+      <SectionHeader>
+        <KindIcon kind={kind} />
+        <h2 className={headingStyles({ level: "heading" })}>{kindConfig.label}</h2>
+        <Badge>{list.length}</Badge>
       </SectionHeader>
-      <p className="hint" style={{ marginTop: -8 }}>
+      <p className="mb-3 text-caption font-normal text-muted -mt-2">
         {kindConfig.hint}
       </p>
 
       {hasItems && (
-        <ul className="list" style={{ margin: "8px 0 16px" }}>
+        <List className="mt-2 mb-4">
           {list.map((i) => (
-            <li key={i.id} className="my-item">
-              <Button type="button" className="my-item-body" onClick={() => handleOpenThread(i)} title="スレッドを開く">
+            <li key={i.id} className={flowStyles({ direction: "column", gap: 2 })}>
+              <Button variant="plain" type="button" className="-mx-2 cursor-pointer rounded-lg px-2 py-1 text-left whitespace-pre-wrap leading-relaxed font-medium hover:bg-surface-2 focus-visible:outline-3 focus-visible:outline-accent-soft" onClick={() => handleOpenThread(i)} title="スレッドを開く">
                 {i.body}
               </Button>
-              <div className="row">
+              <Row>
                 <StatePill state={i.state} />
                 <CrossBureau on={i.crossBureau} />
-                <span className="spacer" />
+                <span className="flex-1" />
                 <ThreadButton id={i.id} comments={i.comments} />
                 {canDeleteItem(i) && (
                   <IconButton
                     type="button"
-                    className="icon-button danger"
+                     danger
                     title="削除"
                     aria-label="削除"
                     onClick={() => handleDeleteItem(i.id)}
@@ -99,42 +98,42 @@ export function ItemSection({
                     <Icon name="delete-bin-line" />
                   </IconButton>
                 )}
-              </div>
+              </Row>
             </li>
           ))}
-        </ul>
+        </List>
       )}
 
       {isOpen &&
         (adding ? (
-          <Form form={form} className="stack" style={{ gap: 10 }}>
+          <Form form={form} className={flowStyles({ direction: "column", gap: 2 })}>
             <div>
-              <textarea
+              <Textarea
                 autoFocus
                 value={form.data.body}
                 onChange={handleBodyChange}
                 placeholder={kindConfig.placeholder}
               />
-              {hasBodyError && <div className="error">{form.errors.body}</div>}
+              {hasBodyError && <div className={textStyles({ role: "error" })}>{form.errors.body}</div>}
             </div>
-            <div className="row">
+            <Row>
               {canMarkCrossBureau && (
-                <label className="row" style={{ fontWeight: 500, margin: 0, cursor: "pointer" }}>
-                  <input type="checkbox" checked={form.data.crossBureau} onChange={handleCrossBureauChange} />
+                <Label className="flex flex-wrap items-center gap-2 font-medium m-0 cursor-pointer">
+                  <Checkbox checked={form.data.crossBureau} onChange={handleCrossBureauChange} />
                   他局・実行委員全体に関わる
-                </label>
+                </Label>
               )}
-              <span className="spacer" />
-              <Button type="button" className="ghost small" onClick={handleCancelAdding}>
+              <span className="flex-1" />
+              <Button type="button" variant="ghost" size="small" onClick={handleCancelAdding}>
                 やめる
               </Button>
-              <Button type="submit" className="primary small" disabled={form.pending}>
+              <Button type="submit" variant="primary" size="small" disabled={form.pending}>
                 追加
               </Button>
-            </div>
+            </Row>
           </Form>
         ) : (
-          <Button type="button" className="ghost add-button" onClick={handleStartAdding}>
+          <Button type="button" variant="ghost" className="w-full border border-dashed border-border text-muted hover:border-accent hover:bg-accent-soft hover:text-accent" onClick={handleStartAdding}>
             <Icon name="add-line" />
             追加
           </Button>

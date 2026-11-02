@@ -1,8 +1,21 @@
 import type { ComponentProps } from "react";
-import { withBase } from "./classes";
+import { type VariantProps } from "tailwind-variants";
+import { tv } from "./styles";
 
-type PillProps = ComponentProps<"span">;
+const pill = tv({
+  base: "inline-flex items-center gap-1 rounded-full px-2 py-1 text-caption leading-normal font-bold whitespace-nowrap [&_i]:text-caption",
+  variants: { tone: {
+    neutral: "bg-surface-2 text-muted",
+    green: "bg-green-soft text-green",
+    yellow: "bg-yellow-soft text-yellow",
+    red: "bg-red-soft text-red",
+    purple: "bg-purple-soft text-purple",
+    accent: "bg-accent-soft text-accent",
+  } },
+  defaultVariants: { tone: "neutral" },
+});
+type PillProps = ComponentProps<"span"> & VariantProps<typeof pill>;
 
-export function Pill({ className, ...props }: PillProps) {
-  return <span {...props} className={withBase("pill", className)} />;
+export function Pill({ className, tone, ...props }: PillProps) {
+  return <span {...props} data-slot="pill" className={pill({ tone, className })} />;
 }

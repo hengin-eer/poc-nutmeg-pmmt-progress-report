@@ -1,8 +1,10 @@
-import { Form, Link, useForm } from "@void/react";
-import type { ChangeEvent } from "react";
+import { Form, useForm } from "@void/react";
+import { type ChangeEvent } from "react";
 import { type Props } from "../../pages/admin/index.server";
 import { UNIT_KIND_LABEL, type UnitKind } from "../domain";
-import { Badge, Button, Card, Icon, SectionHeader } from "../ui";
+import { Badge, Button, Card, Icon, Input, Link, List, SectionHeader, Select } from "../ui";
+import { flowStyles } from "../ui/Flow";
+import { headingStyles, textStyles } from "../ui/styles";
 
 type UnitSectionProps = Pick<Props, "units">;
 
@@ -19,35 +21,35 @@ export function UnitSection({ units }: UnitSectionProps) {
   }
 
   return (
-    <Card as="section" className="card card-lg section">
-      <SectionHeader className="section-head">
-        <Icon name="flag-line" className="muted" />
-        <h2>報告ユニット</h2>
-        <Badge className="count">{units.length}</Badge>
+    <Card as="section" size="large" className="mt-10">
+      <SectionHeader>
+        <Icon name="flag-line" className="text-muted" />
+        <h2 className={headingStyles({ level: "heading" })}>報告ユニット</h2>
+        <Badge>{units.length}</Badge>
       </SectionHeader>
-      <p className="hint">進捗を報告する単位です。目的・概要は各ユニットのページで編集できます。</p>
-      <ul className="list">
+      <p className={textStyles({ className: "mb-3", role: "hint" })}>進捗を報告する単位です。目的・概要は各ユニットのページで編集できます。</p>
+      <List>
         {units.map((u) => (
-          <li key={u.id} className="row">
+          <li key={u.id} className={flowStyles({ direction: "row", gap: 2 })}>
             <Link href={`/units/${u.id}`}>{u.name}</Link>
-            <span className="meta">{UNIT_KIND_LABEL[u.kind]}</span>
+            <span className={textStyles({ role: "meta" })}>{UNIT_KIND_LABEL[u.kind]}</span>
           </li>
         ))}
-      </ul>
-      <Form form={form} className="row" style={{ marginTop: 20 }}>
-        <input type="text" value={form.data.name} onChange={handleNameChange} placeholder="ユニット名" style={{ flex: 1, minWidth: 160 }} />
-        <select value={form.data.kind} onChange={handleKindChange} style={{ width: "auto" }}>
+      </List>
+      <Form form={form} className="flex flex-wrap items-center gap-2 mt-4">
+        <Input type="text" value={form.data.name} onChange={handleNameChange} placeholder="ユニット名" className="flex-1 min-w-[160px]" />
+        <Select value={form.data.kind} onChange={handleKindChange} className="w-auto">
           {(Object.keys(UNIT_KIND_LABEL) as UnitKind[]).map((k) => (
             <option key={k} value={k}>
               {UNIT_KIND_LABEL[k]}
             </option>
           ))}
-        </select>
+        </Select>
         <Button type="submit" disabled={form.pending}>
           追加
         </Button>
       </Form>
-      {hasNameError && <p className="error">{form.errors.name}</p>}
+      {hasNameError && <p className={textStyles({ className: "mb-3", role: "error" })}>{form.errors.name}</p>}
     </Card>
   );
 }

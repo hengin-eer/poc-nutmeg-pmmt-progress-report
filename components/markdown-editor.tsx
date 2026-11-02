@@ -1,8 +1,7 @@
-import type { ChangeEvent, KeyboardEvent } from "react";
-import { useRef, useState } from "react";
+import { useRef, useState, type ChangeEvent, type KeyboardEvent } from "react";
 import { Markdown } from "./markdown";
-import { Button, EmptyState, Field, Icon } from "./ui";
-
+import { Button, EmptyState, Field, FieldLabel, Icon, Label, Textarea } from "./ui";
+import { textStyles, tv } from "./ui/styles";
 
 type MarkdownEditorProps = {
   id: string;
@@ -14,9 +13,22 @@ type MarkdownEditorProps = {
   error?: string;
 };
 
+const editor = tv({
+  slots: {
+    root: "rounded-control border border-border bg-surface outline-3 outline-transparent transition-colors focus-within:border-accent focus-within:outline-accent-soft",
+    header: "flex gap-1 rounded-t-control border-b border-border bg-surface-2 px-2 pt-2",
+    panel: "min-h-40 w-full rounded-b-control border-0 bg-surface p-3 leading-[1.7] focus:outline-none",
+  },
+});
+const editorTab = tv({
+  base: "-mb-px gap-2 rounded-t-lg rounded-b-none border border-transparent bg-transparent px-3 py-2 text-meta font-bold text-muted transition-colors focus-visible:outline-2 focus-visible:outline-accent focus-visible:-outline-offset-4",
+  variants: { selected: { true: "border-border border-b-surface bg-surface text-text" } },
+});
+
 export function MarkdownEditor({ id, label, hint, value, onChange, placeholder, error }: MarkdownEditorProps) {
   const [preview, setPreview] = useState(false);
   const tabs = useRef<(HTMLButtonElement | null)[]>([]);
+  const styles = editor();
   const errorDescriptionSuffix = error ? ` ${id}-error` : "";
   const hasValidationError = !!error;
   const isWriteMode = !preview;
@@ -66,17 +78,17 @@ export function MarkdownEditor({ id, label, hint, value, onChange, placeholder, 
   }
 
   return (
-    <Field className="field">
-      <div className="field-label">
-        <label id={`${id}-label`} htmlFor={id}>{label}</label>
-        <span id={`${id}-hint`} className="hint">{hint}</span>
-      </div>
-      <div className="markdown-editor">
-        <div className="markdown-editor-header" role="tablist" aria-label={`${label}の表示切り替え`}>
+    <Field>
+      <FieldLabel>
+        <Label id={`${id}-label`} htmlFor={id}>{label}</Label>
+        <span id={`${id}-hint`} className={textStyles({ role: "hint" })}>{hint}</span>
+      </FieldLabel>
+      <div data-slot="markdown-editor" className={styles.root()}>
+        <div className={styles.header()} role="tablist" aria-label={`${label}の表示切り替え`}>
           {([false, true] as const).map((isPreview, index) => (
             <Button
               key={String(isPreview)} ref={node => handleTabRef(index, node)}
-              type="button" role="tab" id={`${id}-tab-${index}`}
+              variant="plain" className={editorTab({ selected: isEditorTabSelected(isPreview) })} type="button" role="tab" id={`${id}-tab-${index}`}
               aria-selected={isEditorTabSelected(isPreview)} tabIndex={getTabIndex(isPreview)}
               aria-controls={getControlledPanelId(isPreview)}
               onClick={() => handleSelectEditorMode(isPreview)}
@@ -88,15 +100,15 @@ export function MarkdownEditor({ id, label, hint, value, onChange, placeholder, 
           ))}
         </div>
         <div id={`${id}-write`} role="tabpanel" aria-labelledby={`${id}-tab-0`} hidden={preview}>
-          <textarea id={id} value={value} onChange={handleInputChange} placeholder={placeholder}
+          <Textarea className={styles.panel({ className: "block min-h-40 focus:outline-none" })} id={id} value={value} onChange={handleInputChange} placeholder={placeholder}
             aria-describedby={`${id}-hint${errorDescriptionSuffix}`} aria-invalid={hasValidationError} />
         </div>
-        <div id={`${id}-preview`} hidden={isWriteMode} className="markdown-preview" role="tabpanel"
+        <div id={`${id}-preview`} hidden={isWriteMode} data-slot="markdown-preview" className={styles.panel()} role="tabpanel"
           aria-labelledby={`${id}-tab-1`} tabIndex={0}>
-          {preview && (hasPreviewContent ? <Markdown>{value}</Markdown> : <EmptyState className="empty">まだ記入されていません</EmptyState>)}
+          {preview && (hasPreviewContent ? <Markdown>{value}</Markdown> : <EmptyState>まだ記入されていません</EmptyState>)}
         </div>
       </div>
-      {error && <div id={`${id}-error`} className="error">{error}</div>}
+      {error && <div id={`${id}-error`} className={textStyles({ role: "error" })}>{error}</div>}
     </Field>
   );
 }

@@ -1,4 +1,4 @@
-import { useCallback, useState, type ReactNode } from "react";
+import { type ReactNode, useCallback, useState } from "react";
 import { ThreadContext } from "./context";
 import { ThreadDrawer } from "./ThreadDrawer";
 

@@ -1,7 +1,6 @@
-import { Link } from "@void/react";
 import { formatJst, remainingLabel } from "../../lib/domain";
-import type { Props } from "../../pages/index.server";
-import { Card, Icon } from "../ui";
+import { type Props } from "../../pages/index.server";
+import { ButtonLink, Card, Icon } from "../ui";
 
 type HeroProps = { cycle: NonNullable<Props["cycle"]>; cards: Props["cards"]; unitId: number | null; now: string };
 
@@ -10,39 +9,39 @@ export function Hero({ cycle, cards, unitId, now }: HeroProps) {
   const myCard = cards.find((c) => c.id === unitId);
   const isOpen = cycle.status === "open";
   const over = new Date(cycle.deadlineAt) <= new Date(now);
-  const remainingClass = over ? "over" : "";
+  const remainingClass = over ? "font-bold text-red" : "font-bold text-accent";
   const isCycleClosed = !isOpen;
   const canEditReport = Boolean(myCard) && isOpen;
-  const reportActionVariant = myCard?.submitted ? "" : "primary";
+  const reportActionVariant = myCard?.submitted ? "default" : "primary";
   const reportActionLabel = myCard?.submitted ? "記入を直す" : "事前記入する";
   const progressBarWidth = `${(done / Math.max(cards.length, 1)) * 100}%`;
 
   return (
-    <Card as="section" className="card hero">
+    <Card as="section" className="grid grid-cols-[1fr_auto] items-center gap-6 px-8 py-6 max-sm:grid-cols-1 max-sm:p-6">
       <div>
-        <div className="hero-label">
+        <div className="flex items-center gap-2 text-caption font-semibold text-muted">
           <Icon name="calendar-event-line" />
           {formatJst(cycle.meetingAt)} の PMMT
         </div>
-        <div className="hero-num">
+        <div className="mt-2 mb-1 text-display font-extrabold tracking-[-.02em]">
           {done}
-          <small>/ {cards.length} 提出</small>
+          <small className="ml-1 text-heading font-bold text-muted">/ {cards.length} 提出</small>
         </div>
-        <div className="progress-bar" aria-label={`提出 ${done} / ${cards.length}`}>
+        <div className="mt-4 mb-3 h-2 max-w-[520px] overflow-hidden rounded-full bg-surface-2 [&>span]:block [&>span]:h-full [&>span]:rounded-full [&>span]:bg-accent" aria-label={`提出 ${done} / ${cards.length}`}>
           <span style={{ width: progressBarWidth }} />
         </div>
-        <div className="hero-deadline">
+        <div className="flex flex-wrap items-center gap-2 text-meta text-text-2 [&_strong]:text-text">
           <Icon name="alarm-line" />
           締切 <strong>{formatJst(cycle.deadlineAt)}</strong>
-          {isOpen && <span className={`remaining ${remainingClass}`}>{remainingLabel(cycle.deadlineAt, new Date(now))}</span>}
-          {isCycleClosed && <span className="muted">この回は終了しました</span>}
+          {isOpen && <span data-slot="remaining" className={remainingClass}>{remainingLabel(cycle.deadlineAt, new Date(now))}</span>}
+          {isCycleClosed && <span className="text-muted">この回は終了しました</span>}
         </div>
       </div>
       {canEditReport && (
-        <Link href="/report" className={`button big ${reportActionVariant}`}>
+        <ButtonLink href="/report" size="big" variant={reportActionVariant}>
           <Icon name="edit-box-line" />
           {reportActionLabel}
-        </Link>
+        </ButtonLink>
       )}
     </Card>
   );

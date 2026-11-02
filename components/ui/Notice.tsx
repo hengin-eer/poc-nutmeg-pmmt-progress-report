@@ -1,9 +1,14 @@
 import type { ComponentProps } from "react";
+import { type VariantProps } from "tailwind-variants";
+import { tv } from "./styles";
 
-type NoticeProps = ComponentProps<"p"> & { tone?: "notice" | "warn" | "info" };
+const notice = tv({
+  base: "m-0 flex items-center gap-2 rounded-xl px-4 py-3 text-meta font-semibold [&_i]:text-lg",
+  variants: { tone: { notice: "bg-green-soft text-green", warn: "bg-yellow-soft text-yellow", info: "bg-accent-soft text-accent" } },
+  defaultVariants: { tone: "notice" },
+});
+type NoticeProps = ComponentProps<"p"> & VariantProps<typeof notice>;
 
-export function Notice({ tone = "notice", className, ...props }: NoticeProps) {
-  const noticeClassName = className ?? tone;
-
-  return <p {...props} className={noticeClassName} />;
+export function Notice({ tone, className, ...props }: NoticeProps) {
+  return <p {...props} className={notice({ tone, className })} />;
 }

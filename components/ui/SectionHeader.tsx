@@ -1,8 +1,8 @@
 import type { ComponentProps } from "react";
-import { withBase } from "./classes";
+import { twMerge } from "./styles";
 
 type SectionHeaderProps = ComponentProps<"div">;
 
 export function SectionHeader({ className, ...props }: SectionHeaderProps) {
-  return <div {...props} className={withBase("section-head", className)} />;
+  return <div {...props} data-slot="sectionheader" className={twMerge("mb-4 flex items-center gap-2", className)} />;
 }

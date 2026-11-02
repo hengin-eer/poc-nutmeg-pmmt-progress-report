@@ -2,8 +2,9 @@ import { ItemSection } from "../components/report/ItemSection";
 import { PendingRecords } from "../components/report/PendingRecords";
 import { ProgressForm } from "../components/report/ProgressForm";
 import { ReportHeader } from "../components/report/ReportHeader";
+import { Grid, Stack } from "../components/ui";
 import { ITEM_KINDS } from "../lib/domain";
-import type { Props } from "./report.server";
+import { type Props } from "./report.server";
 
 export default function ReportPage({ unit, cycle, report, myItems, pending, now }: Props) {
   const isOpen = cycle.status === "open";
@@ -12,14 +13,14 @@ export default function ReportPage({ unit, cycle, report, myItems, pending, now 
     <>
       <ReportHeader unit={unit} cycle={cycle} report={report} now={now} />
       <PendingRecords pending={pending} isOpen={isOpen} />
-      <div className="grid grid-2 section">
+      <Grid columns="two" className="mt-10">
         <ProgressForm unit={unit} cycle={cycle} report={report} />
-        <div className="stack" style={{ gap: 24 }}>
+        <Stack className="gap-6">
           {itemSections.map(({ kind, items }) => (
             <ItemSection key={kind} kind={kind} list={items} isOpen={isOpen} />
           ))}
-        </div>
-      </div>
+        </Stack>
+      </Grid>
     </>
   );
 }
