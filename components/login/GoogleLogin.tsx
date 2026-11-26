@@ -3,13 +3,13 @@ import { type Props } from "../../pages/login.server";
 import { BrandMark, Button, Card, Icon, Row } from "../ui";
 import { textStyles } from "../ui/styles";
 
-type GoogleLoginProps = Pick<Props, "googleReady">;
+type GoogleLoginProps = Pick<Props, "googleReady" | "destination">;
 
-export function GoogleLogin({ googleReady }: GoogleLoginProps) {
+export function GoogleLogin({ googleReady, destination }: GoogleLoginProps) {
   const isGoogleUnavailable = !googleReady;
 
   function handleGoogleLogin() {
-    auth.signIn.social({ provider: "google", callbackURL: "/" });
+    auth.signIn.social({ provider: "google", callbackURL: destination });
   }
 
   return (

@@ -9,9 +9,15 @@ import { DEMO_COOKIE } from "../lib/server";
 
 export type Props = InferProps<typeof loader>;
 
+function loginDestination(cycle: string | undefined) {
+  return cycle && /^[1-9]\d*$/.test(cycle) ? `/report?cycle=${cycle}` : "/";
+}
+
 export const loader = defineHandler(async (c) => {
   const shared = c.get("shared");
-  if (shared?.me) return c.redirect("/");
+  const cycle = c.req.query("cycle");
+  const destination = loginDestination(cycle);
+  if (shared?.me) return c.redirect(destination);
   const demo = env.DEMO_MODE;
   // デモモードの時だけ、メンバーを選んでログインできるように一覧を返す
   const demoMembers = demo
@@ -21,16 +27,16 @@ export const loader = defineHandler(async (c) => {
         .leftJoin(units, eq(members.unitId, units.id))
         .orderBy(asc(units.sortOrder))
     : [];
-  return { demo, demoMembers, googleReady: Boolean(env.AUTH_GOOGLE_CLIENT_ID) };
+  return { demo, demoMembers, cycle, destination, googleReady: Boolean(env.AUTH_GOOGLE_CLIENT_ID) };
 });
 
 export const actions = {
   login: defineHandler.withValidator({
-    body: z.object({ memberId: z.number().int() }),
+    body: z.object({ memberId: z.number().int(), cycle: z.string().optional() }),
   })(async (c, { body }) => {
     if (!env.DEMO_MODE) throw new HTTPException(404);
     setCookie(c, DEMO_COOKIE, String(body.memberId), { path: "/", httpOnly: true, sameSite: "Lax", maxAge: 60 * 60 * 24 * 30 });
-    return c.redirect("/");
+    return c.redirect(loginDestination(body.cycle));
   }),
   logout: defineHandler(async (c) => {
     deleteCookie(c, DEMO_COOKIE, { path: "/" });

@@ -19,6 +19,9 @@ export default defineMiddleware(async (c, next) => {
   c.set("shared", { me, demo, path });
 
   const isPublic = PUBLIC_PREFIXES.some((p) => path.startsWith(p)) || /\.[a-z0-9]+$/i.test(path);
-  if (!me && !isPublic) return c.redirect("/login");
+  if (!me && !isPublic) {
+    const cycle = path === "/report" && c.req.query("cycle");
+    return c.redirect(cycle ? `/login?cycle=${encodeURIComponent(cycle)}` : "/login");
+  }
   await next();
 });
