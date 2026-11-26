@@ -1,7 +1,7 @@
-import { formatJst, remainingLabel } from "../../lib/domain";
+import { cycleLabel, formatJst, isAfterDeadline, remainingLabel } from "../../lib/domain";
 import { type Props } from "../../pages/report.server";
 import { UNIT_KIND_LABEL } from "../domain";
-import { Icon, Notice, PageHeader } from "../ui";
+import { Icon, Notice, PageHeader, Pill } from "../ui";
 import { headingStyles, textStyles } from "../ui/styles";
 
 type ReportHeaderProps = Pick<Props, "unit" | "cycle" | "report" | "now">;
@@ -17,8 +17,9 @@ export function ReportHeader({ unit, cycle, report, now }: ReportHeaderProps) {
     <>
       <PageHeader>
         <div>
-          <div className={textStyles({ role: "eyebrow" })}>{UNIT_KIND_LABEL[unit.kind]}</div>
+          <div className={textStyles({ role: "eyebrow" })}>{UNIT_KIND_LABEL[unit.kind]} · {cycleLabel(cycle.meetingAt)}</div>
           <h1 className={headingStyles({ level: "title" })}>{unit.name} の事前記入</h1>
+          {isAfterDeadline(submittedAt, cycle.deadlineAt) && <Pill tone="yellow">締切後</Pill>}
         </div>
         <div className="flex flex-wrap items-center gap-2 text-meta text-text-2 [&_strong]:text-text">
           <Icon name="alarm-line" />
@@ -30,7 +31,7 @@ export function ReportHeader({ unit, cycle, report, now }: ReportHeaderProps) {
       {hasSubmittedReport ? (
         <Notice>
           <Icon name="checkbox-circle-fill" />
-          提出済み（{submittedAtLabel}）。締切までは直せます
+          提出済み（{submittedAtLabel}）{isOpen && "。受付中は更新できます"}
         </Notice>
       ) : (
         <Notice tone="warn">

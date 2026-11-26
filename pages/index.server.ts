@@ -1,15 +1,16 @@
 import { comments, items, reactions, records, reports, units } from "@schema";
 import { defineHandler, type InferProps } from "void";
 import { and, asc, count, db, desc, eq, inArray, isNull } from "void/db";
-import { currentCycle, requireMe } from "../lib/server";
+import { isAfterDeadline } from "../lib/domain";
+import { loadCycleSelection, requireMe } from "../lib/server";
 
 export type Props = InferProps<typeof loader>;
 
 export const loader = defineHandler(async (c) => {
   const me = requireMe(c);
-  const cycle = await currentCycle();
+  const { cycle, cycleOptions } = await loadCycleSelection(c.req.query("cycle"));
   const unitList = await db.select().from(units).orderBy(asc(units.sortOrder));
-  if (!cycle) return { me, cycle: null, cards: [], liveItems: [], openItems: [], pending: [], now: new Date().toISOString() };
+  if (!cycle) return { me, cycle: null, cycleOptions, cards: [], liveItems: [], openItems: [], pending: [], now: new Date().toISOString() };
 
   const reportList = await db.select().from(reports).where(eq(reports.cycleId, cycle.id));
   const itemList = await db.select().from(items).where(eq(items.cycleId, cycle.id)).orderBy(desc(items.createdAt));
@@ -32,6 +33,7 @@ export const loader = defineHandler(async (c) => {
       name: u.name,
       kind: u.kind,
       submitted: Boolean(r?.submittedAt),
+      late: isAfterDeadline(r?.submittedAt, cycle.deadlineAt),
       progress: r?.progress ?? null,
       busyness: r?.busyness ?? null,
       excerpt: r?.done ?? "",
@@ -43,6 +45,7 @@ export const loader = defineHandler(async (c) => {
   const toView = (i: (typeof itemList)[number]) => ({
     id: i.id,
     body: i.body,
+    late: isAfterDeadline(i.createdAt, cycle.deadlineAt),
     kind: i.kind,
     state: i.state,
     crossBureau: i.crossBureau,
@@ -62,6 +65,7 @@ export const loader = defineHandler(async (c) => {
   return {
     me,
     cycle,
+    cycleOptions,
     cards,
     liveItems: itemList.filter((i) => i.state === "live").map(toView),
     openItems: itemList.filter((i) => i.state === "open" && i.kind === "confirm").map(toView),

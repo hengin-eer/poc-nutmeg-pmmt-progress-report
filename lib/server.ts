@@ -4,7 +4,7 @@ import type { Context } from "hono";
 import { HTTPException } from "hono/http-exception";
 import { getUser } from "void/auth";
 import { db, desc, eq } from "void/db";
-import { isAdminRole, isAllowedEmail, type Role } from "./domain";
+import { isAdminRole, isAllowedEmail, selectCurrentCycle, type Role } from "./domain";
 
 export type Me = {
   id: number;
@@ -63,12 +63,18 @@ export function requireAdmin(c: Context): Me {
   return me;
 }
 
-/** 今の回（開いている中で一番新しいもの。なければ一番新しい回） */
-export async function currentCycle() {
-  const [open] = await db.select().from(cycles).where(eq(cycles.status, "open")).orderBy(desc(cycles.meetingAt)).limit(1);
-  if (open) return open;
-  const [latest] = await db.select().from(cycles).orderBy(desc(cycles.meetingAt)).limit(1);
-  return latest ?? null;
+export async function loadCycleSelection(requestedId: string | undefined) {
+  const list = await db.select({
+    id: cycles.id,
+    meetingAt: cycles.meetingAt,
+    deadlineAt: cycles.deadlineAt,
+    status: cycles.status,
+  }).from(cycles).orderBy(desc(cycles.meetingAt), desc(cycles.id));
+  const cycle = requestedId === undefined
+    ? selectCurrentCycle(list)
+    : list.find((row) => String(row.id) === requestedId) ?? null;
+  if (requestedId !== undefined && !cycle) throw new HTTPException(404, { message: "指定した回が見つかりません" });
+  return { cycle, cycleOptions: list.filter((row) => row.status === "open" || row.id === cycle?.id) };
 }
 
 export const nowIso = () => new Date().toISOString();

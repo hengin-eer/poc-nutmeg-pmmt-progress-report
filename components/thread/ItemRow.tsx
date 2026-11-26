@@ -1,6 +1,6 @@
 import { type ItemState } from "../../lib/domain";
 import { Counts, CrossBureau, KindIcon, StatePill } from "../domain";
-import { Button, Icon, Row } from "../ui";
+import { Button, Icon, Pill, Row } from "../ui";
 import { useThread } from "./context";
 
 type ItemRowProps = { item: ItemSummary; showState?: boolean };
@@ -13,6 +13,7 @@ export type ItemSummary = {
   crossBureau: boolean;
   unitName?: string;
   resolutionNote?: string | null;
+  late?: boolean;
   comments?: number;
   reactions?: number;
 };
@@ -45,6 +46,7 @@ export function ItemRow({ item, showState = true }: ItemRowProps) {
         <div className="flex flex-col items-end gap-2">
           <Row>
             <CrossBureau on={item.crossBureau} />
+            {item.late && <Pill tone="yellow">締切後</Pill>}
             {showState && <StatePill state={item.state} />}
           </Row>
           <Counts comments={commentCount} reactions={reactionCount} />

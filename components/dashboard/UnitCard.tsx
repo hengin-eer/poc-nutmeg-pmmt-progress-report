@@ -34,6 +34,7 @@ export function UnitCard({ card }: UnitCardProps) {
       {hasSubmittedReport && <Markdown compact className={styles.excerpt()}>{card.excerpt}</Markdown>}
       <div className={styles.foot()}>
         {hasSubmittedReport && <Busy value={card.busyness} label />}
+        {card.late && <Pill tone="yellow">締切後</Pill>}
         <span className="flex-1" />
         {hasOpenItems && (
           <Pill tone="yellow" title={`未解決の確認事項 ${card.openCount} 件`}>
