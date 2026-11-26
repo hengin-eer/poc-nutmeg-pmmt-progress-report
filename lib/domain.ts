@@ -24,26 +24,20 @@ export const isAdminRole = (role: Role) => role === "chief" || role === "vice";
 // ---------- 日時（JST） ----------
 
 const JST_OFFSET_MS = 9 * 60 * 60 * 1000;
-const DAY_MS = 24 * 60 * 60 * 1000;
 
 /** JST の年月日時分から UTC の Date を作る */
 export function jstDate(y: number, m: number, d: number, hh = 0, mm = 0): Date {
   return new Date(Date.UTC(y, m - 1, d, hh, mm) - JST_OFFSET_MS);
 }
 
-/**
- * 次の PMMT（月曜 20:00 JST）と、デフォルトの締切（その前の金曜 12:00 JST）を返す。
- * 月曜 22:00 より前なら、その日の PMMT を「次の回」とみなす。
- */
-export function defaultSchedule(now: Date): { meetingAt: Date; deadlineAt: Date } {
+/** 次の PMMT（月曜 20:00 JST）を返す。 */
+export function defaultMeetingAt(now: Date): Date {
   const jst = new Date(now.getTime() + JST_OFFSET_MS);
   const dow = jst.getUTCDay(); // 0=日, 1=月
   let addDays = (1 - dow + 7) % 7;
-  if (addDays === 0 && jst.getUTCHours() >= 22) addDays = 7;
+  if (addDays === 0 && jst.getUTCHours() >= 20) addDays = 7;
   const base = new Date(Date.UTC(jst.getUTCFullYear(), jst.getUTCMonth(), jst.getUTCDate() + addDays));
-  const meetingAt = jstDate(base.getUTCFullYear(), base.getUTCMonth() + 1, base.getUTCDate(), 20, 0);
-  const deadlineAt = new Date(meetingAt.getTime() - 3 * DAY_MS - 8 * 60 * 60 * 1000); // 金 12:00
-  return { meetingAt, deadlineAt };
+  return jstDate(base.getUTCFullYear(), base.getUTCMonth() + 1, base.getUTCDate(), 20, 0);
 }
 
 const fmt = new Intl.DateTimeFormat("ja-JP", {
@@ -65,14 +59,57 @@ const fmtDate = new Intl.DateTimeFormat("ja-JP", {
 export const formatJst = (iso: string | Date) => fmt.format(new Date(iso));
 export const formatJstDate = (iso: string | Date) => fmtDate.format(new Date(iso));
 
+const fmtMeetingDate = new Intl.DateTimeFormat("ja-JP", {
+  timeZone: "Asia/Tokyo",
+  month: "numeric",
+  day: "numeric",
+  weekday: "short",
+});
+export const cycleLabel = (meetingAt: string) => `${fmtMeetingDate.format(new Date(meetingAt))} の PMMT 分`;
+
 /** <input type="datetime-local"> 用の JST 文字列 */
 export function toJstInput(iso: string | Date): string {
   const d = new Date(new Date(iso).getTime() + JST_OFFSET_MS);
   return d.toISOString().slice(0, 16);
 }
 /** <input type="datetime-local"> の JST 文字列を ISO (UTC) に */
-export function fromJstInput(value: string): string {
-  return new Date(new Date(`${value}:00Z`).getTime() - JST_OFFSET_MS).toISOString();
+function fromJstInput(value: string): string | null {
+  const date = new Date(`${value}:00+09:00`);
+  return Number.isFinite(date.getTime()) && toJstInput(date) === value ? date.toISOString() : null;
+}
+
+// ---------- 回 ----------
+
+type CycleSchedule = { meetingAt: string; deadlineAt: string };
+type CycleStatus = "open" | "closed";
+
+export function selectCurrentCycle<T extends CycleSchedule & { id: number; status: CycleStatus }>(cycles: readonly T[]): T | null {
+  const open = cycles.filter((cycle) => cycle.status === "open");
+  const date = open.length ? "deadlineAt" : "meetingAt";
+  return (open.length ? open : cycles).reduce<T | null>((current, cycle) => {
+    if (!current || cycle[date] > current[date] || (cycle[date] === current[date] && cycle.id > current.id)) return cycle;
+    return current;
+  }, null);
+}
+
+export function validateCycleSchedule(input: CycleSchedule): { schedule: CycleSchedule } | { errors: Record<string, string> } {
+  const meetingAt = fromJstInput(input.meetingAt);
+  const deadlineAt = fromJstInput(input.deadlineAt);
+  if (!meetingAt) return { errors: { meetingAt: "会議日時を入れてください" } };
+  if (!deadlineAt) return { errors: { deadlineAt: "締切を入れてください" } };
+  if (deadlineAt >= meetingAt) return { errors: { deadlineAt: "締切は会議より前にしてください" } };
+  return { schedule: { meetingAt, deadlineAt } };
+}
+
+export function validateCycleCreation(meetingAt: string, past: boolean, now: Date): string | null {
+  const meetingIsPast = new Date(meetingAt).getTime() < now.getTime();
+  if (past && !meetingIsPast) return "過去の回の会議日時は過去にしてください";
+  if (!past && meetingIsPast) return "過去の回なら「過去の回として作る」を選んでください";
+  return null;
+}
+
+export function isAfterDeadline(at: string | null | undefined, deadlineAt: string): boolean {
+  return Boolean(at && new Date(at).getTime() > new Date(deadlineAt).getTime());
 }
 
 /** 締切までの残り時間を「あと 2 日 3 時間」のように */
