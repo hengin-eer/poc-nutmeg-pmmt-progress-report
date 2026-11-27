@@ -19,7 +19,7 @@ export const loader = defineHandler(async (c) => {
   const cycle = c.req.query("cycle");
   const cyclePath = c.req.query("cyclePath");
   const destination = loginDestination(cycle, cyclePath);
-  if (shared?.me) return c.redirect(destination);
+  if (shared?.me) return c.newResponse(null, 302, { Location: destination });
   const demo = env.DEMO_MODE;
   // デモモードの時だけ、メンバーを選んでログインできるように一覧を返す
   const demoMembers = demo
@@ -38,7 +38,7 @@ export const actions = {
   })(async (c, { body }) => {
     if (!env.DEMO_MODE) throw new HTTPException(404);
     setCookie(c, DEMO_COOKIE, String(body.memberId), { path: "/", httpOnly: true, sameSite: "Lax", maxAge: 60 * 60 * 24 * 30 });
-    return c.redirect(loginDestination(body.cycle, body.cyclePath));
+    return c.newResponse(null, 302, { Location: loginDestination(body.cycle, body.cyclePath) });
   }),
   logout: defineHandler(async (c) => {
     deleteCookie(c, DEMO_COOKIE, { path: "/" });
