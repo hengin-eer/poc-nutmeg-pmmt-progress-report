@@ -37,7 +37,8 @@ async function buildMessage(
   );
   const missing = allUnits.filter((u) => !submitted.has(u.id));
   const missingMembers = (await db.select().from(members)).filter((m) => m.unitId && missing.some((u) => u.id === m.unitId));
-  const link = new URL(`/report?cycle=${cycleId}`, env.APP_URL).href;
+  const path = kind === "deadline" ? "/" : "/report";
+  const link = new URL(`${path}?cycle=${cycleId}`, env.APP_URL).href;
   const schedule = `${cycleLabel(meetingAt)}・締切 ${formatJst(deadlineAt)}`;
 
   if (kind === "deadline") {

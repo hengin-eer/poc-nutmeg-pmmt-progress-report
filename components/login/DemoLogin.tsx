@@ -4,13 +4,13 @@ import { Button, Card, Icon, List, Row } from "../ui";
 import { flowStyles } from "../ui/Flow";
 import { textStyles } from "../ui/styles";
 
-type DemoLoginProps = Pick<Props, "demoMembers" | "cycle">;
+type DemoLoginProps = Pick<Props, "demoMembers" | "cycle" | "cyclePath">;
 
 type DemoMember = Props["demoMembers"][number];
 
-export function DemoLogin({ demoMembers, cycle }: DemoLoginProps) {
+export function DemoLogin({ demoMembers, cycle, cyclePath }: DemoLoginProps) {
   function loginAs(memberId: number) {
-    return action("/login?login", { data: { memberId, cycle } });
+    return action("/login?login", { data: { memberId, cycle, cyclePath } });
   }
 
   function handleDemoLogin(m: DemoMember) {
