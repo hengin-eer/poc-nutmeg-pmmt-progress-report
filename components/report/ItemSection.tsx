@@ -1,10 +1,11 @@
 import { Form, action, useForm } from "@void/react";
 import { useEffect, useState, type ChangeEvent } from "react";
+import { getValidationErrors } from "void/pages-client";
 import { type ItemKind } from "../../lib/domain";
 import { type Props } from "../../pages/report.server";
 import { CrossBureau, KindIcon, StatePill, ITEM_KIND_CONFIG } from "../domain";
 import { ThreadButton, useThread } from "../thread";
-import { Badge, Button, Card, Checkbox, Icon, IconButton, Label, List, Row, SectionHeader, Textarea } from "../ui";
+import { Badge, Button, Card, Checkbox, Icon, IconButton, Label, List, Pill, Row, SectionHeader, Textarea } from "../ui";
 import { flowStyles } from "../ui/Flow";
 import { headingStyles, textStyles } from "../ui/styles";
 
@@ -12,6 +13,7 @@ type ItemSectionProps = {
   kind: ItemKind;
   list: Props["myItems"];
   isOpen: boolean;
+  cycleId: number;
 };
 
 type MyItem = Props["myItems"][number];
@@ -20,8 +22,10 @@ export function ItemSection({
   kind,
   list,
   isOpen,
+  cycleId,
 }: ItemSectionProps) {
-  const form = useForm("/report?addItem", { kind, body: "", crossBureau: false }, { resetOnSuccess: true });
+  const form = useForm("/report?addItem", { cycleId, kind, body: "", crossBureau: false }, { resetOnSuccess: true });
+  const [deleteError, setDeleteError] = useState<string>();
   const [adding, setAdding] = useState(false);
   const { open } = useThread();
 
@@ -32,7 +36,7 @@ export function ItemSection({
   const kindConfig = ITEM_KIND_CONFIG[kind];
   const canMarkCrossBureau = kindConfig.allowsCrossBureau;
   const hasItems = list.length > 0;
-  const hasBodyError = Boolean(form.errors.body);
+  const addError = form.errors.body ?? form.errors.cycleId ?? form.error?.message;
 
   function canDeleteItem(i: MyItem) {
     return i.state === "open" && isOpen;
@@ -45,7 +49,9 @@ export function ItemSection({
   async function handleDeleteItem(id: number) {
     const confirmed = confirm("削除しますか？");
     if (!confirmed) return;
-    await action("/report?deleteItem", { data: { id } });
+    setDeleteError(undefined);
+    const result = await action("/report?deleteItem", { data: { id, cycleId } });
+    if (!result.ok) setDeleteError(getValidationErrors(result.error.body)?.cycleId ?? result.error.message);
   }
 
   function handleBodyChange(e: ChangeEvent<HTMLTextAreaElement>) {
@@ -85,6 +91,7 @@ export function ItemSection({
               <Row>
                 <StatePill state={i.state} />
                 <CrossBureau on={i.crossBureau} />
+                {i.late && <Pill tone="yellow">締切後</Pill>}
                 <span className="flex-1" />
                 <ThreadButton id={i.id} comments={i.comments} />
                 {canDeleteItem(i) && (
@@ -104,6 +111,7 @@ export function ItemSection({
         </List>
       )}
 
+      {deleteError && <p role="alert" className={textStyles({ role: "error" })}>{deleteError}</p>}
       {isOpen &&
         (adding ? (
           <Form form={form} className={flowStyles({ direction: "column", gap: 2 })}>
@@ -114,7 +122,7 @@ export function ItemSection({
                 onChange={handleBodyChange}
                 placeholder={kindConfig.placeholder}
               />
-              {hasBodyError && <div className={textStyles({ role: "error" })}>{form.errors.body}</div>}
+              {addError && <div role="alert" className={textStyles({ role: "error" })}>{addError}</div>}
             </div>
             <Row>
               {canMarkCrossBureau && (

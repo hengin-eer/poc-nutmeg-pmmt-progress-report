@@ -12,6 +12,7 @@ type ProgressFormProps = Pick<Props, "unit" | "cycle" | "report">;
 export function ProgressForm({ unit, cycle, report }: ProgressFormProps) {
   const initialProgress: ProgressValue | "" = report?.progress ?? "";
   const form = useForm("/report?save", {
+    cycleId: cycle.id,
     progress: initialProgress,
     busyness: report?.busyness ?? 0,
     done: report?.done ?? "",
@@ -24,7 +25,7 @@ export function ProgressForm({ unit, cycle, report }: ProgressFormProps) {
   const hasBusynessError = Boolean(form.errors.busyness);
   const doneText = form.data.done ?? "";
   const nextText = form.data.next ?? "";
-  const formError = form.error;
+  const formError = form.errors.cycleId ?? form.error?.message;
   const isSavingDisabled = !isOpen || form.pending;
   const showSavedFeedback = form.recentlySuccessful;
   const submitLabel = report?.submittedAt ? "更新する" : "提出する";
@@ -117,7 +118,7 @@ export function ProgressForm({ unit, cycle, report }: ProgressFormProps) {
           value={nextText} onChange={handleNextChange}
           placeholder="- ○○のレビュー（佐藤・11/6）" error={form.errors.next} />
 
-        {formError && <p className={textStyles({ className: "mb-3", role: "error" })}>{formError.message}</p>}
+        {formError && <p className={textStyles({ className: "mb-3", role: "error" })}>{formError}</p>}
         <Row className="mt-2">
           <Button type="submit" variant="ghost" disabled={isSavingDisabled} onClick={handleSaveDraft}>
             <Icon name="save-3-line" />

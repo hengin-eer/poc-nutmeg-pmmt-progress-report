@@ -1,4 +1,4 @@
-import { formatJst } from "../../lib/domain";
+import { cycleLabel } from "../../lib/domain";
 import { type Props } from "../../pages/items/index.server";
 import { PageHeader } from "../ui";
 import { headingStyles, textStyles } from "../ui/styles";
@@ -9,7 +9,7 @@ export function ItemsHeader({ cycle }: ItemsHeaderProps) {
   return (
     <PageHeader>
       <div>
-        {cycle && <div className={textStyles({ role: "eyebrow" })}>{formatJst(cycle.meetingAt)} の PMMT</div>}
+        {cycle && <div className={textStyles({ role: "eyebrow" })}>{cycleLabel(cycle.meetingAt)}</div>}
         <h1 className={headingStyles({ level: "title" })}>確認事項</h1>
       </div>
     </PageHeader>

@@ -1,8 +1,8 @@
 import { comments, items, reactions, units } from "@schema";
 import { defineHandler, type InferProps } from "void";
 import { asc, count, db, desc, eq, inArray } from "void/db";
-import type { ItemState } from "../../lib/domain";
-import { currentCycle, requireMe } from "../../lib/server";
+import { isAfterDeadline, type ItemState } from "../../lib/domain";
+import { loadCycleSelection, requireMe } from "../../lib/server";
 
 export type Props = InferProps<typeof loader>;
 
@@ -12,8 +12,8 @@ export type Tab = (typeof TABS)[number];
 export const loader = defineHandler(async (c) => {
   requireMe(c);
   const tab = (TABS as readonly string[]).includes(c.req.query("tab") ?? "") ? (c.req.query("tab") as Tab) : "open";
-  const cycle = await currentCycle();
-  if (!cycle) return { tab, cycle: null, list: [], counts: { open: 0, live: 0, closed: 0, all: 0 } };
+  const { cycle, cycleOptions } = await loadCycleSelection(c.req.query("cycle"));
+  if (!cycle) return { tab, cycle: null, cycleOptions, list: [], counts: { open: 0, live: 0, closed: 0, all: 0 } };
 
   const all = await db
     .select({
@@ -46,7 +46,8 @@ export const loader = defineHandler(async (c) => {
   return {
     tab,
     cycle,
-    list: list.map((i) => ({ ...i, comments: ccm.get(i.id) ?? 0, reactions: rcm.get(i.id) ?? 0 })),
+    cycleOptions,
+    list: list.map((i) => ({ ...i, late: isAfterDeadline(i.createdAt, cycle.deadlineAt), comments: ccm.get(i.id) ?? 0, reactions: rcm.get(i.id) ?? 0 })),
     counts: { open: pick("open").length, live: pick("live").length, closed: pick("closed").length, all: all.length },
   };
 });

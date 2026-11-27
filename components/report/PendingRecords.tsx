@@ -4,14 +4,14 @@ import { RecordPill } from "../domain";
 import { Card, Checkbox, Icon, Label, List, SectionHeader } from "../ui";
 import { headingStyles, textStyles } from "../ui/styles";
 
-type PendingRecordsProps = Pick<Props, "pending"> & { isOpen: boolean };
+type PendingRecordsProps = Pick<Props, "pending"> & { isOpen: boolean; cycleId: number };
 
-export function PendingRecords({ pending, isOpen }: PendingRecordsProps) {
+export function PendingRecords({ pending, isOpen, cycleId }: PendingRecordsProps) {
   if (pending.length === 0) return null;
   const isCycleClosed = !isOpen;
 
   function handleToggleRecord(id: number, checked: boolean) {
-    action("/report?toggleRecord", { data: { id, done: checked } });
+    action("/report?toggleRecord", { data: { id, done: checked, cycleId } });
   }
 
   return (

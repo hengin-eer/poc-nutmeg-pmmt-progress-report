@@ -1,9 +1,9 @@
 import { cycles, items, members, records, reports, units } from "@schema";
 import { defineHandler, type InferProps } from "void";
-import { and, asc, count, db, desc, eq, isNotNull } from "void/db";
+import { and, asc, count, db, desc, eq, isNotNull, sql } from "void/db";
 import { ValidationError } from "void/handler";
 import { z } from "zod";
-import { defaultSchedule, fromJstInput, isAllowedEmail } from "../../lib/domain";
+import { defaultMeetingAt, isAllowedEmail, validateCycleCreation, validateCycleSchedule } from "../../lib/domain";
 import { requireAdmin } from "../../lib/server";
 
 export type Props = InferProps<typeof loader>;
@@ -21,12 +21,11 @@ export const loader = defineHandler(async (c) => {
     .select({ id: members.id, name: members.name, email: members.email, role: members.role, unitId: members.unitId, slackUserId: members.slackUserId })
     .from(members)
     .orderBy(asc(members.id));
-  const next = defaultSchedule(new Date());
   return {
     cycles: cycleList.map((cy) => ({ ...cy, submitted: submitted.find((s) => s.cycleId === cy.id)?.n ?? 0 })),
     units: unitList,
     members: memberList,
-    defaults: { meetingAt: next.meetingAt.toISOString(), deadlineAt: next.deadlineAt.toISOString() },
+    defaults: { meetingAt: defaultMeetingAt(new Date()).toISOString() },
   };
 });
 
@@ -56,38 +55,51 @@ const memberSchema = z.object({
   slackUserId: z.string().trim().default(""),
 });
 
+const scheduleSchema = z.object({
+  meetingAt: z.string().min(1, "会議日時を入れてください"),
+  deadlineAt: z.string().min(1, "締切を入れてください"),
+});
+
+function readSchedule(body: z.infer<typeof scheduleSchema>) {
+  const result = validateCycleSchedule(body);
+  if ("errors" in result) throw new ValidationError(result.errors);
+  return result.schedule;
+}
+
 export const actions = {
-  /** 新しい回を作る。過去の日付なら「閉じた回」として作る（過去の議事録の取り込み用） */
   createCycle: defineHandler.withValidator({
-    body: z.object({ meetingAt: z.string().min(1, "日時を入れてください"), deadlineAt: z.string().min(1, "日時を入れてください") }),
+    body: scheduleSchema.extend({ past: z.boolean().default(false) }),
   })(async (c, { body }) => {
     requireAdmin(c);
-    const meetingAt = fromJstInput(body.meetingAt);
-    const deadlineAt = fromJstInput(body.deadlineAt);
-    if (deadlineAt > meetingAt) throw new ValidationError({ deadlineAt: "締切は PMMT より前にしてください" });
-    const isPast = new Date(meetingAt) < new Date();
-    if (!isPast) {
-      // 開いている回は 1 つだけにする
-      for (const open of await db.select().from(cycles).where(eq(cycles.status, "open"))) await closeCycle(open.id);
-    }
+    const schedule = readSchedule(body);
+    const error = validateCycleCreation(schedule.meetingAt, body.past, new Date());
+    if (error) throw new ValidationError({ past: error });
     await db.insert(cycles).values({
-      meetingAt,
-      deadlineAt,
-      status: isPast ? "closed" : "open",
+      ...schedule,
+      status: body.past ? "closed" : "open",
       // 過去の回には通知を送らない
-      ...(isPast ? { remind48SentAt: "past", remind24SentAt: "past", deadlineSentAt: "past" } : {}),
+      ...(body.past ? { remind48SentAt: "past", remind24SentAt: "past", deadlineSentAt: "past" } : {}),
     });
   }),
 
   updateDeadline: defineHandler.withValidator({
-    body: z.object({ id: z.number().int(), deadlineAt: z.string().min(1) }),
+    body: scheduleSchema.extend({ id: z.number().int().positive() }),
   })(async (c, { body }) => {
     requireAdmin(c);
-    // 締切を動かしたら、リマインドを送り直せるようにする
-    await db
+    const schedule = readSchedule(body);
+    // 締切を動かしたときだけ通知の送信済み状態を戻す
+    const deadlineChanged = sql`${cycles.deadlineAt} <> ${schedule.deadlineAt}`;
+    const [updated] = await db
       .update(cycles)
-      .set({ deadlineAt: fromJstInput(body.deadlineAt), remind48SentAt: null, remind24SentAt: null, deadlineSentAt: null })
-      .where(eq(cycles.id, body.id));
+      .set({
+        ...schedule,
+        remind48SentAt: sql`case when ${deadlineChanged} then null else ${cycles.remind48SentAt} end`,
+        remind24SentAt: sql`case when ${deadlineChanged} then null else ${cycles.remind24SentAt} end`,
+        deadlineSentAt: sql`case when ${deadlineChanged} then null else ${cycles.deadlineSentAt} end`,
+      })
+      .where(and(eq(cycles.id, body.id), eq(cycles.status, "open")))
+      .returning({ id: cycles.id });
+    if (!updated) throw new ValidationError({ id: "受付中の回だけ日程を変更できます" });
   }),
 
   closeCycle: defineHandler.withValidator({ body: z.object({ id: z.number().int() }) })(async (c, { body }) => {

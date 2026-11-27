@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { defaultSchedule, dueNotifications, isAllowedEmail, jstDate, nextStates, parseMinutes, recordKindFor } from "./domain.ts";
+import { defaultMeetingAt, dueNotifications, isAfterDeadline, isAllowedEmail, jstDate, nextStates, parseMinutes, recordKindFor, selectCurrentCycle, validateCycleCreation, validateCycleSchedule } from "./domain.ts";
 
 test("isAllowedEmail: NUTMEG 形式だけ通す", () => {
   assert.equal(isAllowedEmail("25.t.yamada.nutfes@gmail.com"), true);
@@ -9,15 +9,57 @@ test("isAllowedEmail: NUTMEG 形式だけ通す", () => {
   assert.equal(isAllowedEmail("25.t.yamada.nutfes@gmail.com.evil.com"), false);
 });
 
-test("defaultSchedule: 水曜なら次の月曜 20:00、締切は金曜 12:00", () => {
-  const { meetingAt, deadlineAt } = defaultSchedule(jstDate(2026, 10, 28, 10, 0)); // 水
-  assert.equal(meetingAt.toISOString(), jstDate(2026, 11, 2, 20, 0).toISOString());
-  assert.equal(deadlineAt.toISOString(), jstDate(2026, 10, 30, 12, 0).toISOString());
+test("defaultMeetingAt: 水曜なら次の月曜 20:00", () => {
+  assert.deepEqual(defaultMeetingAt(jstDate(2026, 10, 28, 10)), jstDate(2026, 11, 2, 20));
 });
 
-test("defaultSchedule: 月曜 PMMT 後なら翌週", () => {
-  const { meetingAt } = defaultSchedule(jstDate(2026, 11, 2, 22, 30));
-  assert.equal(meetingAt.toISOString(), jstDate(2026, 11, 9, 20, 0).toISOString());
+test("defaultMeetingAt: 月曜 20:00 以降は翌週", () => {
+  assert.deepEqual(defaultMeetingAt(jstDate(2026, 11, 2, 19, 59)), jstDate(2026, 11, 2, 20));
+  assert.deepEqual(defaultMeetingAt(jstDate(2026, 11, 2, 20)), jstDate(2026, 11, 9, 20));
+});
+
+const deadlineAt = "2026-11-27T03:00:00.000Z";
+const meetingAt = "2026-11-30T11:00:00.000Z";
+
+test("今の回: 受付中なら締切順、同じ締切なら ID 順", () => {
+  const first = { id: 1, status: "open", deadlineAt, meetingAt } as const;
+  const tied = { ...first, id: 2, meetingAt: "2026-11-29T11:00:00.000Z" };
+  const earlier = { ...first, id: 3, deadlineAt: "2026-11-26T03:00:00.000Z", meetingAt: "2026-12-07T11:00:00.000Z" };
+  const closed = { ...earlier, id: 4, status: "closed", deadlineAt: "2026-12-04T03:00:00.000Z" } as const;
+  assert.equal(selectCurrentCycle([earlier, tied, first, closed]), tied);
+});
+
+test("今の回: 受付中がなければ会議がいちばん新しい回", () => {
+  const latest = { id: 1, status: "closed", deadlineAt, meetingAt } as const;
+  const earlier = { ...latest, id: 2, deadlineAt: "2026-11-28T03:00:00.000Z", meetingAt: "2026-11-29T11:00:00.000Z" };
+  assert.equal(selectCurrentCycle([earlier, latest]), latest);
+  assert.equal(selectCurrentCycle([]), null);
+});
+
+test("日程: JST 入力を変換し、締切が会議より前のときだけ通す", () => {
+  const meeting = "2026-11-30T20:00";
+  assert.deepEqual(validateCycleSchedule({ meetingAt: meeting, deadlineAt: "2026-11-27T12:00" }), { schedule: { meetingAt, deadlineAt } });
+  for (const deadline of ["", meeting, "2026-12-01T20:00", "2026-11-31T12:00"]) {
+    assert.ok("errors" in validateCycleSchedule({ meetingAt: meeting, deadlineAt: deadline }));
+  }
+  assert.ok("errors" in validateCycleSchedule({ meetingAt: "不正", deadlineAt: "2026-11-27T12:00" }));
+});
+
+test("過去の回: 会議が過去のときだけ選択が必要で、締切が過去でも作れる", () => {
+  const now = jstDate(2026, 11, 28);
+  assert.equal(validateCycleCreation(meetingAt, false, now), null);
+  assert.ok(validateCycleCreation(meetingAt, true, now));
+  assert.equal(validateCycleCreation(deadlineAt, true, now), null);
+  assert.ok(validateCycleCreation(deadlineAt, false, now));
+  assert.ok(validateCycleCreation(meetingAt, true, new Date(meetingAt)));
+});
+
+test("締切後: 締切と同時・それ以前・未提出には付かない", () => {
+  const submittedAt = "2026-11-27T03:00:00.001Z";
+  assert.equal(isAfterDeadline(submittedAt, deadlineAt), true);
+  assert.equal(isAfterDeadline(submittedAt, meetingAt), false);
+  assert.equal(isAfterDeadline(deadlineAt, deadlineAt), false);
+  assert.equal(isAfterDeadline(null, deadlineAt), false);
 });
 
 test("dueNotifications: 送っていないものだけ返す", () => {

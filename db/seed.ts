@@ -1,7 +1,7 @@
 // デモ用のサンプルデータ。名前やアドレスは架空（年度 99 = ダミー）。
 // 実際の運用では、管理画面からユニット・メンバーを登録する。
 import { defineSeed } from "void/seed";
-import { defaultSchedule } from "../lib/domain";
+import { defaultMeetingAt } from "../lib/domain";
 
 const WEEK = 7 * 24 * 60 * 60 * 1000;
 
@@ -45,7 +45,8 @@ export default defineSeed<typeof import("./schema")>(async ({ db, schema }) => {
   const lead = (unit: keyof typeof U) => M[U[unit]];
 
   // ---- 回：過去 2 回（閉じた）+ 今の回 ----
-  const { meetingAt, deadlineAt } = defaultSchedule(new Date());
+  const meetingAt = defaultMeetingAt(new Date());
+  const deadlineAt = new Date(meetingAt.getTime() - 24 * 60 * 60 * 1000);
   const at = (d: Date, weeksAgo: number) => new Date(d.getTime() - weeksAgo * WEEK).toISOString();
   const [past2, past1, current] = await db
     .insert(s.cycles)

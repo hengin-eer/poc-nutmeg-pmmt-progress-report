@@ -1,3 +1,4 @@
+import { CycleSwitcher } from "../components/CycleSwitcher";
 import { Hero } from "../components/dashboard/Hero";
 import { ItemList } from "../components/dashboard/ItemList";
 import { PendingSummary } from "../components/dashboard/PendingSummary";
@@ -6,7 +7,7 @@ import { Card, Grid, Link, SectionHeader } from "../components/ui";
 import { headingStyles, textStyles } from "../components/ui/styles";
 import { type Props } from "./index.server";
 
-export default function Dashboard({ me, cycle, cards, liveItems, openItems, pending, now }: Props) {
+export default function Dashboard({ me, cycle, cycleOptions, cards, liveItems, openItems, pending, now }: Props) {
   const canCreateCycle = me.isAdmin;
   if (!cycle) {
     return (
@@ -20,6 +21,7 @@ export default function Dashboard({ me, cycle, cards, liveItems, openItems, pend
   return (
     <>
       <Hero cycle={cycle} cards={cards} unitId={me.unitId} now={now} />
+      <CycleSwitcher path="/" selectedId={cycle.id} cycles={cycleOptions} />
       <section className="mt-10">
         <SectionHeader><h2 className={headingStyles({ level: "heading" })}>各ユニット</h2></SectionHeader>
         <Grid columns="cards">
@@ -28,7 +30,7 @@ export default function Dashboard({ me, cycle, cards, liveItems, openItems, pend
       </section>
       <Grid columns="two" className="mt-10">
         <ItemList title="当日に話すこと" icon="mic-line" items={liveItems} empty="今のところ、当日の議題はありません" />
-        <ItemList title="未解決の確認事項" icon="question-answer-line" items={openItems} empty="未解決の確認事項はありません" moreHref="/items" moreLabel="すべての確認事項" />
+        <ItemList title="未解決の確認事項" icon="question-answer-line" items={openItems} empty="未解決の確認事項はありません" moreHref={`/items?cycle=${cycle.id}`} moreLabel="すべての確認事項" />
       </Grid>
       <PendingSummary pending={pending} />
     </>

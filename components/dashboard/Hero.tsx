@@ -1,4 +1,4 @@
-import { formatJst, remainingLabel } from "../../lib/domain";
+import { cycleLabel, formatJst, isAfterDeadline, remainingLabel } from "../../lib/domain";
 import { type Props } from "../../pages/index.server";
 import { ButtonLink, Card, Icon } from "../ui";
 
@@ -8,7 +8,7 @@ export function Hero({ cycle, cards, unitId, now }: HeroProps) {
   const done = cards.filter((c) => c.submitted).length;
   const myCard = cards.find((c) => c.id === unitId);
   const isOpen = cycle.status === "open";
-  const over = new Date(cycle.deadlineAt) <= new Date(now);
+  const over = isAfterDeadline(now, cycle.deadlineAt);
   const remainingClass = over ? "font-bold text-red" : "font-bold text-accent";
   const isCycleClosed = !isOpen;
   const canEditReport = Boolean(myCard) && isOpen;
@@ -21,7 +21,7 @@ export function Hero({ cycle, cards, unitId, now }: HeroProps) {
       <div>
         <div className="flex items-center gap-2 text-caption font-semibold text-muted">
           <Icon name="calendar-event-line" />
-          {formatJst(cycle.meetingAt)} の PMMT
+          {cycleLabel(cycle.meetingAt)}
         </div>
         <div className="mt-2 mb-1 text-display font-extrabold tracking-[-.02em]">
           {done}
@@ -38,7 +38,7 @@ export function Hero({ cycle, cards, unitId, now }: HeroProps) {
         </div>
       </div>
       {canEditReport && (
-        <ButtonLink href="/report" size="big" variant={reportActionVariant}>
+        <ButtonLink href={`/report?cycle=${cycle.id}`} size="big" variant={reportActionVariant}>
           <Icon name="edit-box-line" />
           {reportActionLabel}
         </ButtonLink>

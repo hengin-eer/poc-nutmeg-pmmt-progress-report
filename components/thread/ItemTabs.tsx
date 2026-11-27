@@ -2,7 +2,7 @@ import { type Props, type Tab } from "../../pages/items/index.server";
 import { Badge, Icon, Link, Tabs } from "../ui";
 import { tv } from "../ui/styles";
 
-type ItemTabsProps = Pick<Props, "tab" | "counts">;
+type ItemTabsProps = Pick<Props, "tab" | "counts"> & { cycleId?: number };
 
 const TABS: Record<Tab, { label: string; icon: string }> = {
   open: { label: "未解決", icon: "time-line" },
@@ -16,7 +16,7 @@ const tabLink = tv({
   variants: { active: { true: "bg-text text-bg hover:bg-text [&_span]:text-inherit [&_span]:opacity-70" } },
 });
 
-export function ItemTabs({ tab, counts }: ItemTabsProps) {
+export function ItemTabs({ tab, counts, cycleId }: ItemTabsProps) {
   function isTabActive(value: Tab) {
     return value === tab;
   }
@@ -28,7 +28,7 @@ export function ItemTabs({ tab, counts }: ItemTabsProps) {
   return (
     <Tabs>
       {(Object.keys(TABS) as Tab[]).map((t) => (
-        <Link key={t} href={`/items?tab=${t}`} className={tabLink({ active: isTabActive(t) })} aria-current={getTabCurrent(t)} preserveScroll>
+        <Link key={t} href={`/items?tab=${t}${cycleId ? `&cycle=${cycleId}` : ""}`} className={tabLink({ active: isTabActive(t) })} aria-current={getTabCurrent(t)} preserveScroll>
           <Icon name={TABS[t].icon} />
           {TABS[t].label}
           <Badge>{counts[t]}</Badge>

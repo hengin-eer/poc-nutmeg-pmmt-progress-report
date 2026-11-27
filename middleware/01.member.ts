@@ -19,6 +19,13 @@ export default defineMiddleware(async (c, next) => {
   c.set("shared", { me, demo, path });
 
   const isPublic = PUBLIC_PREFIXES.some((p) => path.startsWith(p)) || /\.[a-z0-9]+$/i.test(path);
-  if (!me && !isPublic) return c.redirect("/login");
+  if (!me && !isPublic) {
+    const cycle = c.req.query("cycle");
+    const location = (path === "/" || path === "/report") && cycle && /^[1-9]\d*$/.test(cycle)
+      ? `/login?${new URLSearchParams({ cycle, cyclePath: path })}`
+      : "/login";
+    // Void の c.redirect は元のクエリを補うため、ここでは遷移先をそのまま返す。
+    return c.newResponse(null, 302, { Location: location });
+  }
   await next();
 });
